@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'main.dart';
+import 'login2.dart';
 import 'login.dart';
 import 'joinus.dart';
 

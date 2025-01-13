@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'app_styles.dart';
 import 'router.dart';
 
 class JoinWidget extends StatefulWidget {
