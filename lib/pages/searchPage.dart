@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
 import 'package:final_project/widgets/recent_searches.dart';
 import 'package:final_project/widgets/search_results.dart';
+import 'package:final_project/pages/detailPage.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart' show rootBundle;
 
@@ -16,6 +17,7 @@ class _SearchPageState extends State<SearchPage> {
   final TextEditingController _controller = TextEditingController();
   List<dynamic> _allPlaces = []; // 모든 장소 데이터
   List<dynamic> _filteredPlaces = []; // 필터링된 검색 결과
+  List<Map<String, dynamic>> _recentSearches = []; // 최근 검색 기록
 
   @override
   void initState() {
@@ -34,6 +36,13 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _filterPlaces(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        _filteredPlaces = [];
+      });
+      return;
+    }
+
     final filtered = _allPlaces.where((place) {
       final placeName = place['name'].toString().toLowerCase();
       final keywords = (place['keywords'] as List<dynamic>)
@@ -49,13 +58,34 @@ class _SearchPageState extends State<SearchPage> {
     });
   }
 
-  void _navigateToDetail(Map<String, dynamic> place) {
-    // 상세 페이지로 이동
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => DetailPage(place: place),
-      ),
+  void _deleteRecentSearch(String placeName) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('삭제 확인'),
+          content: Text('$placeName 검색 기록을 삭제하시겠습니까?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('취소'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  _recentSearches
+                      .removeWhere((search) => search['name'] == placeName);
+                });
+                Navigator.pop(context);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('검색 기록이 삭제되었습니다.')),
+                );
+              },
+              child: const Text('확인'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -81,64 +111,52 @@ class _SearchPageState extends State<SearchPage> {
                 });
               },
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
+
             // 검색 결과
-            Flexible(
-              child: _controller.text.isNotEmpty && _filteredPlaces.isNotEmpty
-                  ? SizedBox(
-                      child: Expanded(
-                        child: SearchResults(
-                          query: _controller.text,
-                          places: _filteredPlaces,
-                          onTap: _navigateToDetail,
+            if (_controller.text.isNotEmpty)
+              Flexible(
+                child: _filteredPlaces.isNotEmpty
+                    ? SearchResults(
+                        query: _controller.text,
+                        places: _filteredPlaces,
+                        onTap: (place) {
+                          // DetailPage로 이동
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailPage(place: place),
+                            ),
+                          );
+                        },
+                      )
+                    : const Center(
+                        child: Text(
+                          '검색 결과가 없습니다.',
+                          style: TextStyle(color: Colors.grey),
                         ),
                       ),
-                    )
-                  : const SizedBox(), // 검색 텍스트가 없거나 결과가 없으면 빈 위젯 반환
-            ),
+              ),
+            const SizedBox(height: 16),
 
             // 최근 검색 기록
             RecentSearches(
+              searches: _recentSearches,
               onTap: (placeName) {
                 final place = _allPlaces.firstWhere(
                   (p) => p['name'] == placeName,
                   orElse: () => null,
                 );
-                if (place != null) _navigateToDetail(place);
+
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        DetailPage(place: place), // null이 전달될 수 있음
+                  ),
+                );
               },
             ),
-            const SizedBox(height: 16),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class DetailPage extends StatelessWidget {
-  final Map<String, dynamic> place;
-
-  const DetailPage({super.key, required this.place});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(place['name']),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Name: ${place['name']}',
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            Text('Address: ${place['address'] ?? 'No address available'}'),
-            const SizedBox(height: 8),
-            Text('Keywords: ${place['keywords'].join(', ')}'),
           ],
         ),
       ),

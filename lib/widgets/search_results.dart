@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:final_project/pages/detailPage.dart';
 
 class SearchResults extends StatelessWidget {
   final List<dynamic> places;
