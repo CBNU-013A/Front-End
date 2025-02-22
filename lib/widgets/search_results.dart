@@ -16,9 +16,10 @@ class SearchResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (places.isEmpty) {
-      return Center(
+      return Expanded(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: const [
             Text(
               '검색 결과가 없습니다.',

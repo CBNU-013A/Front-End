@@ -3,7 +3,7 @@ import 'package:final_project/pages/detailPage.dart';
 
 class RecentSearches extends StatelessWidget {
   final Function(String placeName) onTap; // 항목 클릭 시 실행되는 콜백
-  final List<Map<String, dynamic>> searches; // 검색 기록 데이터
+  final List<String> searches; // 검색 기록 데이터
 
   const RecentSearches({
     super.key,
@@ -35,8 +35,7 @@ class RecentSearches extends StatelessWidget {
                   physics: const NeverScrollableScrollPhysics(), // 외부 스크롤 허용
                   itemCount: searches.length,
                   itemBuilder: (context, index) {
-                    final search = searches[index];
-                    final placeName = search['name'] ?? '이름 없음';
+                    final placeName = searches[index];
 
                     return ListTile(
                       title: Text(placeName),
@@ -44,6 +43,7 @@ class RecentSearches extends StatelessWidget {
                         icon: const Icon(Icons.delete, color: Colors.red),
                         onPressed: () {
                           // 검색 기록 삭제 로직
+
                           onTap(placeName); // 삭제 콜백 호출
                         },
                       ),
@@ -52,8 +52,7 @@ class RecentSearches extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                DetailPage(place: placeName),
+                            builder: (context) => DetailPage(place: placeName),
                           ),
                         );
                       },

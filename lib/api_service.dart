@@ -15,7 +15,6 @@ class ApiService {
     debugPrint("📌 서버 응답 코드: ${response.statusCode}");
     debugPrint("📌 서버 응답 본문: ${response.body}");
 
-
     if (response.statusCode == 200) {
       return json.decode(response.body); // 🔹 JSON 데이터 반환
     } else {

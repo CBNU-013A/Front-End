@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../api_service.dart';
 import 'loginPage.dart'; // 회원가입 후 로그인 페이지로 이동
-import 'package:intl/intl.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 class RegisterPage extends StatefulWidget {
