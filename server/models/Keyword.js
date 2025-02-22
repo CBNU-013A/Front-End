@@ -1,9 +1,9 @@
 const mongoose = require("mongoose");
 
 const KeywordSchema = new mongoose.Schema({
-  keyword: { type: String, required: true },
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // ✅ userId 필드 추가
-  prefer: { type: Number, default: 1 },
+  id: { type: String, required: true, unique: true }, // 키워드 id
+  text: { type: String, required: true }, // 키워드 텍스트
 });
 
 module.exports = mongoose.model("Keyword", KeywordSchema);
+

@@ -6,7 +6,8 @@ const UserSchema = new mongoose.Schema({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   age: { type: Number, required: false },
-  keywords: [{ type: mongoose.Schema.Types.ObjectId,ref: "Keywords" }],
+  recentsearch: [{ type: String, required: false }],
+  keywords: [{ type: mongoose.Schema.Types.ObjectId, ref: "Keyword" }],
   address: { type: String, required: false },
   birthdate: { type: Date, required: true },
 });
