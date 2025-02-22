@@ -15,7 +15,6 @@ class _DetailPageState extends State<DetailPage> {
   bool _isLoading = true;
   bool _isPlaceFound = false;
   Map<String, dynamic>? _matchedPlace;
-  Map<String, dynamic>? _locationData;
 
   @override
   void initState() {
@@ -97,7 +96,7 @@ class _DetailPageState extends State<DetailPage> {
             //_buildImageSection(_locationData!),
             _buildInfoSection(_matchedPlace!),
             _buildMapSection(_matchedPlace!),
-           // _buildKeywordsSection(_locationData!),
+            // _buildKeywordsSection(_locationData!),
           ],
         ),
       ),
