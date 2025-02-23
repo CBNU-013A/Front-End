@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Keyword = require("../models/Keyword");
+const Location = require("../models/Location")
 
 const router = express.Router();
 

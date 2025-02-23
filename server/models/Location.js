@@ -9,12 +9,8 @@ const LocationSchema = new mongoose.Schema({
     longitude: { type: Number, required: true }, // 경도
   },
   tell: { type: String, required: false }, // 전화번호
-  keywords: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "Keyword", required: false },
-  ], // 키워드 참조
-  review: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "Review", required: false },
-  ], // 리뷰 참조
+  keywords: [{ type: String, required: false }], //키워드
+  review: [{ type: String, required: false }], // 리뷰
 });
 
 module.exports = mongoose.model("Location", LocationSchema);

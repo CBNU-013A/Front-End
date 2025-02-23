@@ -55,4 +55,15 @@ class ApiService {
       return false;
     }
   }
+
+  //Location-keywords
+  Future<Map<String, dynamic>> fetchLocationWithKeywords(String locationId) async {
+    final response = await http.get(Uri.parse('$baseUrl/location/$locationId'));
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Failed to load location data');
+    }
+  }
 }

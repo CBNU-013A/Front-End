@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import '../api_service.dart';
 import 'loginPage.dart'; // 회원가입 후 로그인 페이지로 이동
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,42 +17,63 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
   //final TextEditingController birthdateController = TextEditingController();
+  DateTime selectedDate = DateTime.now();
+  
+
+  void _showDatePicker(BuildContext context) {
+    showCupertinoModalPopup(
+      context: context,
+      builder: (BuildContext context) => Container(
+        height: 300,
+        color: Colors.white,
+        child: Column(
+          children: [
+            // 완료 버튼
+            SizedBox(
+              height: 50,
+              child: CupertinoButton(
+                child: const Text('완료',
+                    style: TextStyle(color: CupertinoColors.activeBlue)),
+                onPressed: () => Navigator.pop(context), // 팝업 닫기
+              ),
+            ),
+            // 날짜 선택기
+            Expanded(
+              child: CupertinoDatePicker(
+                mode: CupertinoDatePickerMode.date, // 연, 월, 일 모드
+                initialDateTime: selectedDate,
+                minimumDate: DateTime(1900, 1, 1), // 최소 날짜
+                maximumDate: DateTime.now(), // 최대 날짜
+                onDateTimeChanged: (DateTime date) {
+                  setState(() {
+                    selectedDate = date;
+                  });
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
   bool _isPasswordVisible = false;
 
-  // ✅ 연도 리스트 생성
-  final List<int> _years =
-      List.generate(100, (index) => DateTime.now().year - index);
-  final List<int> _months = List.generate(12, (index) => index + 1);
-  final List<int> _days = List.generate(31, (index) => index + 1);
-
-  List<int> getDaysInMonth(int year, int month) {
-    return List.generate(
-        DateTime(year, month + 1, 0).day, (index) => index + 1);
-  }
-
-  int selectedYear = DateTime.now().year;
-  int selectedMonth = 1;
-  int selectedDay = 1;
-
   void _register() async {
-    DateTime birthdate = DateTime(
-      selectedYear,
-      selectedMonth,
-      selectedDay,
-    );
+    String formattedDate =
+        DateFormat('yyyy-MM-dd').format(selectedDate); // 날짜 포맷 적용
 
     debugPrint("📌registerPage.dart : 회원가입 요청 데이터:");
     debugPrint("이름: ${nameController.text}");
     debugPrint("이메일: ${emailController.text}");
     debugPrint("비밀번호: ${passwordController.text}");
-    debugPrint("생년월일: $birthdate\n");
+    debugPrint("생년월일: $selectedDate\n");
 
     bool success = await ApiService().register(
       nameController.text,
       emailController.text,
       passwordController.text,
-      birthdate,
+      selectedDate,
     );
 
     if (success) {
@@ -161,47 +184,40 @@ class _RegisterPageState extends State<RegisterPage> {
                   // const SizedBox(
                   //   width: 15,
                   // ),
+                  Text(
+                    '${selectedDate.year}년   ${selectedDate.month}월   ${selectedDate.day}일',
+                    style: const TextStyle(
+                      fontSize: 17,
+                      color: Colors.black87,
+                    ),
+                  ),
+                  Container(
+                    height: 36,
+                    margin: EdgeInsets.only(top: 10, bottom: 10),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color:
+                              Color.fromRGBO(242, 141, 130, 1)), // 테두리를 블랙으로 설정
+                      borderRadius:
+                          BorderRadius.circular(8), // 버튼 모서리를 둥글게 (원하지 않으면 제거)
+                    ),
+                    child: CupertinoButton(
+                      alignment: Alignment.center,
 
-                  DropdownButton<int>(
-                    value: selectedYear,
-                    items: _years.map((year) {
-                      return DropdownMenuItem(
-                          value: year, child: Text("$year년"));
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedYear = value!;
-                      });
-                    },
-                  ),
-                  // const SizedBox(
-                  //   width: 15,
-                  // ),
-                  DropdownButton<int>(
-                    value: selectedMonth,
-                    items: _months.map((month) {
-                      return DropdownMenuItem(
-                          value: month, child: Text("$month월"));
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedMonth = value!;
-                      });
-                    },
-                  ),
-                  // const SizedBox(
-                  //   width: 15,
-                  // ),
-                  DropdownButton<int>(
-                    value: selectedDay,
-                    items: _days.map((day) {
-                      return DropdownMenuItem(value: day, child: Text("$day일"));
-                    }).toList(),
-                    onChanged: (value) {
-                      setState(() {
-                        selectedDay = value!;
-                      });
-                    },
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 3),
+                      minSize: 33,
+                      color:
+                          Colors.transparent, // 배경색을 투명하게 설정 (원하면 다른 색으로 변경 가능)
+                      child: const Text(
+                        '선택하기',
+                        style: TextStyle(
+                          fontSize: 15,
+                          color: Colors.black, // 텍스트 색상을 블랙으로 설정
+                        ),
+                      ),
+                      onPressed: () => _showDatePicker(context),
+                    ),
                   ),
                 ],
               ),
@@ -221,7 +237,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   child: const Text(
                     "회원가입",
                     style: TextStyle(
-                      fontSize: 15,
+                      fontSize: 16,
                       color: Color.fromRGBO(242, 141, 130, 1),
                     ),
                   ),
