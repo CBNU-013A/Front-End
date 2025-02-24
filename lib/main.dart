@@ -9,6 +9,9 @@ void main() {
   runApp(const MyApp());
 }
 
+final GlobalKey<ScaffoldMessengerState> rootScaffoldMessengerKey =
+    GlobalKey<ScaffoldMessengerState>(); // ✅ 전역 키 추가
+
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -43,6 +46,7 @@ class MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: rootScaffoldMessengerKey,
       // ✅ 로컬라이제이션 추가
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
