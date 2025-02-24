@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 //import 'package:http/http.dart';
-import '../main.dart'; 
+import '../main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api_service.dart';
 import 'homePage.dart'; // 로그인 성공 시 홈으로 이동
@@ -66,12 +66,16 @@ class _LoginPageState extends State<LoginPage> {
       }
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(builder: (context) => const HomePage()
+        ),
+      );
+      rootScaffoldMessengerKey.currentState!.showSnackBar(
+        SnackBarStyles.info("😎 로그인 성공!"),
       );
     } else {
       String errorMessage = response?["error"] ?? "로그인 실패! 이메일과 비밀번호를 확인하세요.";
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(errorMessage)),
+      rootScaffoldMessengerKey.currentState!.showSnackBar(
+        SnackBarStyles.info("🫤 아이디와 비밀번호를 확인하세요."),
       );
     }
   }
