@@ -65,7 +65,21 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: const Color.fromARGB(255, 206, 232, 162),
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            begin: Alignment.topCenter, // 시작점
+            end: Alignment.bottomCenter, // 끝점
+            colors: [
+              Color(0xFFF7F6FF), // Blue 50
+              Color(0xFFEAE8FF), // Blue 100
+              Color(0xFFCBC7FF), // Blue 200
+              Color(0xFFA39BFF), // Blue 300
+              Color(0xFF7B70FF), // Blue 400
+            ],
+          ),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        //color: const Color(0xFFEAE8FF),
         child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -79,7 +93,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
                     fontWeight: FontWeight.bold,
                     letterSpacing: 3.0,
                     fontFamily: 'Pretendard',
-                    color: Color.fromRGBO(242, 141, 130, 1),
+                    color: Color(0xFF2E2E7A),
                   ),
                 ),
               ),
