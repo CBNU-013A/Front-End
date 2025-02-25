@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 
 class AppStyles {
-  // ✅ Keyword Chip 스타일
-  static const keywordChipStyle = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.bold,
-  );
-
-  static const Color keywordChipBackgroundColor =
-      Color.fromRGBO(186, 221, 127, 0.5);
-  // ✅ Keyword Chip BoxDecoration
-  static final keywordChipDecoration = BoxDecoration(
-    color: Colors.green[100], // 칩의 배경색
-    borderRadius: BorderRadius.circular(16), // 칩의 둥근 모서리
-    border: Border.all(color: Colors.green, width: 1), // 칩의 테두리
+  static const Color keywordChipBackgroundColor = Colors.white;
+  static const keywordChipTextStyle = TextStyle(
+    fontSize: 17,
+    fontFamily: 'Pretendard',
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.2,
+    color: Color(0xFFbf99ff), // 칩의 글자색
   );
 
   // ✅ Keyword Chip Padding
   static const keywordChipPadding = EdgeInsets.symmetric(
-    horizontal: 3,
-    vertical: 3,
+    horizontal: 6,
+    vertical: 5,
+  );
+  static final OutlinedBorder keywordChipShape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(15),
+    side:
+        const BorderSide(color: Color.fromARGB(255, 215, 192, 255), width: 0.5),
   );
 }
 
 class TextFiledStyles {
   static const textStlye = TextStyle(
       fontSize: 16,
-      fontWeight: FontWeight.w600,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w200,
       letterSpacing: 0.9,
       color: Colors.black);
 
@@ -34,7 +34,7 @@ class TextFiledStyles {
       fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF777777));
 
   static const borderStyle = OutlineInputBorder(
-    borderRadius: BorderRadius.all(Radius.circular(10)),
+    borderRadius: BorderRadius.all(Radius.circular(15)),
     borderSide: BorderSide(color: Color(0xFF4738D7), width: 2.0),
   );
 }

@@ -1,6 +1,7 @@
 import 'package:final_project/pages/homePage.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:final_project/styles/styles.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -222,6 +223,39 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
     }
   }
 
+  //키워드 초기화 (user keyword)
+  Future<void> _resetKeyword() async {
+    if (_userId.isEmpty) return;
+
+    try {
+      final response = await http.delete(
+        Uri.parse('http://localhost:5001/users/$_userId/keywords'),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint("✅ 키워드 초기화 성공");
+
+        // ✅ 선택된 키워드 초기화 및 UI 업데이트
+        setState(() {
+          _selectedKeywords.clear();
+        });
+
+        // ✅ 사용자에게 알림 표시 (닫기 버튼 포함)
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBarStyles.info("키워드가 초기화되었습니다."),
+        );
+      } else {
+        debugPrint("🚨 키워드 초기화 실패: ${response.body}");
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('🚨 키워드 초기화 실패: ${response.body}')),
+        );
+      }
+    } catch (e) {
+      debugPrint("🚨 키워드 초기화 오류: $e");
+    }
+  }
+
   // // 🔹 키워드 삭제 (DB에서 제거)
   // Future<void> _removeKeyword(int index) async {
   //   if (_userId.isEmpty) return; // 로그인된 유저가 없으면 실행하지 않음
@@ -274,114 +308,108 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
-          child: Column(children: [
-            // SizedBox(
-            //   height: 50,
-            //   child: TextField(
-            //     cursorColor: Colors.grey,
-            //     controller: _keywordController,
-            //     decoration: InputDecoration(
-            //       labelText: "키워드 입력",
-            //       labelStyle: const TextStyle(color: Colors.black),
-            //       border: OutlineInputBorder(),
-            //       focusedBorder: const OutlineInputBorder(
-            //         borderSide: BorderSide(
-            //           color: Color.fromARGB(255, 149, 189, 108),
-            //         ),
-            //       ),
-            //       enabledBorder: const OutlineInputBorder(
-            //         borderSide: BorderSide(
-            //           color: Color.fromARGB(255, 149, 189, 108),
-            //         ),
-            //       ),
-            //       // suffixIcon: IconButton(
-            //       //   icon: const Icon(Icons.add),
-            //       //   onPressed: _addKeyword,
-            //       // ),
-            //     ),
-            //     //onSubmitted: (value) => _addKeyword(),
-            //   ),
-            // ),
-            const SizedBox(height: 10),
-            SizedBox(
-              child: Wrap(
-                spacing: 7.0, // ✅ 태그 간 가로 간격
-                runSpacing: 10.0,
-                //scrollDirection: Axis.vertical,
-                // itemCount: _keywords.length,
-                // itemBuilder: (context, index)
-                children: _keywords.map((keyword) {
-                  return Container(
-                    height: 40,
-                    // margin:
-                    //     const EdgeInsets.symmetric(vertical: 3, horizontal: 3),
-                    // padding:
-                    //     const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-                    // 리스트 간격 조절 (선택 사항)
-                    decoration: BoxDecoration(
-                      color: Colors.transparent, // 🔹 완전 투명 배경
-                      border: Border.all(
-                          color: Colors.black, width: 1), // 🔹 검정 테두리 추가
-                      borderRadius:
-                          BorderRadius.circular(10), // 🔹 모서리 둥글게 (선택 사항)
-                    ),
-                    // child: Row(
-                    //   mainAxisAlignment:
-                    //       MainAxisAlignment.center, // 🔹 가로 중앙 정렬
-                    //   crossAxisAlignment: CrossAxisAlignment.center,
-                    //   children: [
-                    //     Expanded(
-                    //       child: Padding(
-                    //         padding: const EdgeInsets.only(
-                    //             left: 13), // 🔹 왼쪽 여백 추가
-                    child: TextButton(
-                      onPressed: () {
-                        String keywordId =
-                            keyword["_id"] ?? ""; // ✅ null일 경우 빈 문자열로 처리
-                        if (keywordId.isNotEmpty) {
-                          _toggleKeyword(keywordId);
-                        } else {
-                          debugPrint("🚨 키워드 ID가 null이거나 빈 문자열입니다.");
-                        }
-                        // if (keyword["id"] != null) {
-                        //   // 🔹 null 체크
-                        //   _toggleKeyword(keyword["id"]);
-                        // } else {
-                        //   debugPrint("🚨 키워드 ID가 null입니다.");
-                        // }
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor:
-                            _selectedKeywords.contains(keyword["_id"] ?? "")
-                                ? const Color.fromRGBO(
-                                    186, 221, 127, 0.5) // ✅ 선택된 경우 (파란색)
-                                : Colors.transparent, // ✅ 기본 배경색 (연한 회색)
-                        foregroundColor: Colors.black,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10), // ✅ 둥근 테두리
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 5),
-                      ),
-                      child: Text(
-                        "#${keyword["text"]}",
-                        style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(62, 132, 64, 0.9)),
-                        //textAlign: Alignment.center,
-                      ),
-                    ),
-                  );
-                }).toList(),
-                // IconButton(
-                //   icon: const Icon(Icons.delete_outline,
-                //       color: Colors.grey),
-                //   onPressed: () => _removeKeyword(index),
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // SizedBox(
+                //   height: 50,
+                //   child: TextField(
+                //     cursorColor: Colors.grey,
+                //     controller: _keywordController,
+                //     decoration: InputDecoration(
+                //       labelText: "키워드 입력",
+                //       labelStyle: const TextStyle(color: Colors.black),
+                //       border: OutlineInputBorder(),
+                //       focusedBorder: const OutlineInputBorder(
+                //         borderSide: BorderSide(
+                //           color: Color.fromARGB(255, 149, 189, 108),
+                //         ),
+                //       ),
+                //       enabledBorder: const OutlineInputBorder(
+                //         borderSide: BorderSide(
+                //           color: Color.fromARGB(255, 149, 189, 108),
+                //         ),
+                //       ),
+                //       // suffixIcon: IconButton(
+                //       //   icon: const Icon(Icons.add),
+                //       //   onPressed: _addKeyword,
+                //       // ),
+                //     ),
+                //     //onSubmitted: (value) => _addKeyword(),
+                //   ),
                 // ),
-              ),
-            ),
-          ]),
+
+                const Text(
+                  "관심 있는 키워드를 선택해주세요!",
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black),
+                  textAlign: TextAlign.left,
+                ),
+                const SizedBox(height: 10),
+                SizedBox(
+                  child: Wrap(
+                    spacing: 8.0, // ✅ 태그 간 가로 간격
+                    runSpacing: 3.0, // ✅ 줄 간 세로 간격
+                    children: _keywords.map((keyword) {
+                      return TextButton(
+                        onPressed: () {
+                          String keywordId =
+                              keyword["_id"] ?? ""; // ✅ null일 경우 빈 문자열로 처리
+                          if (keywordId.isNotEmpty) {
+                            _toggleKeyword(keywordId);
+                          } else {
+                            debugPrint("🚨 키워드 ID가 null이거나 빈 문자열입니다.");
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor:
+                              _selectedKeywords.contains(keyword["_id"] ?? "")
+                                  ? const Color(0xFFbf99ff) // ✅ 선택된 경우 (파란색)
+                                  : Colors.transparent, // ✅ 기본 배경색 (연한 회색)
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 1),
+                          side: const BorderSide(
+                              color: Color.fromARGB(255, 215, 192, 255),
+                              width: 0.5),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15),
+                            // ✅ 둥근 테두리
+                          ),
+                        ),
+                        child: Text("${keyword["text"]}",
+                            style: AppStyles.keywordChipTextStyle.copyWith(
+                              fontSize: 15,
+                              color: _selectedKeywords
+                                      .contains(keyword["_id"] ?? "")
+                                  ? Colors.white // ✅ 선택된 경우 (흰색)
+                                  : const Color(0xFFbf99ff), // ✅ 기본 글자색 (검정색)
+                            )),
+                      );
+                    }).toList(),
+                    // IconButton(
+                    //   icon: const Icon(Icons.delete_outline,
+                    //       color: Colors.grey),
+                    //   onPressed: () => _removeKeyword(index),
+                    // ),
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        _resetKeyword();
+                      },
+                      child: const Text(
+                        "초기화",
+                      ),
+                    ),
+                  ],
+                ),
+              ]),
         ),
       ),
     );

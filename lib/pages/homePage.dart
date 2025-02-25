@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:final_project/styles/styles.dart';
 import 'searchPage.dart';
 import 'loginPage.dart'; // 로그아웃 후 로그인 페이지 이동
 import 'package:http/http.dart' as http;
@@ -29,12 +30,12 @@ class HomePageState extends State<HomePage> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final String? storedUser = prefs.getString("userName");
-    final List<String>? storedKeywords = prefs.getStringList("userPreferences");
+    //rfinal List<String>? storedKeywords = prefs.getStringList("userPreferences");
 
-    if (storedUser != null && storedKeywords != null) {
+    if (storedUser != null) {
       setState(() {
         userName = storedUser;
-        userPreferences = storedKeywords;
+        //userPreferences = storedKeywords;
       });
     }
   }
@@ -78,7 +79,7 @@ class HomePageState extends State<HomePage> {
                 context,
                 MaterialPageRoute(builder: (context) => const SearchPage()),
               );
-            }, // 로그아웃 버튼 클릭 시
+            },
             tooltip: "검색",
           ),
         ),
@@ -86,80 +87,89 @@ class HomePageState extends State<HomePage> {
       body: SafeArea(
         child: CustomScrollView(
           slivers: [
-            //검색 바 & 사용자 취향 설정
             SliverToBoxAdapter(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //SizedBox(height: 3),
-                    //SearchBar(),
+                    //const SizedBox(height: 3),
+                    Container(
 
-                    const SizedBox(height: 3),
-                    SizedBox(
-                      child: Container(
-                        decoration: BoxDecoration(border: Border.all()),
-                        child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+              
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey
+                                  .withOpacity(0.2), // 그림자 색상 (불투명도 조절 가능)
+                              spreadRadius: 0.3, // 그림자 확산 정도
+                              blurRadius: 0.3, // 그림자 흐림 정도
+                              offset: const Offset(
+                                  0, 0.1), // x, y축으로 그림자 위치 (0, 3 = 아래쪽 그림자)
+                            ),
+                          ],
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    const Text(
-                                      "키워드",
-                                      style: TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                    TextButton(
-                                      onPressed: () {
-                                        Navigator.pushReplacement(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  const SetKeywordsPage()),
-                                        );
-                                      },
-                                      child: const Text(
-                                        "키워드 설정",
-                                        style: TextStyle(
-                                          fontSize: 16,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ],
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[100], // 배경색
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(50),
+                                    // border: Border.all(
+                                    //     color: Colors.black,
+                                    //     width: 0.1), // 테두리 추가
+                                  ),
+                                  child: IconButton(
+                                    icon: const Icon(Icons.person_rounded),
+                                    iconSize: 30,
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const SetKeywordsPage()),
+                                      );
+                                    },
+                                  ),
                                 ),
-                                const Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start, // ✅ 왼쪽 정렬
-                                    children: [
-                                      ShowKeywords(),
-                                    ]),
+                                const SizedBox(width: 10),
+                                Container(
+                                  child: Text(
+                                    '$userName',
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: 'Pretendard',
+                                        //letterSpacing: 0.9,
+                                        fontWeight: FontWeight.w700),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
                               ],
-                            )),
-                      ),
-                    ),
-                    //const ShowKeywords(),
-                  ],
-                ),
-              ),
-            ),
-
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // SizedBox(
-                    //   child: PlacePreferencesPage(),
-                    // ),
+                            ),
+                            const SizedBox(
+                              height: 11,
+                            ),
+                            const Text("여기에 현재 위치 정보 ..? (지역설정 같은거 넣을듯)", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400)),
+                            const SizedBox(
+                              height: 11,
+                            ),
+                            const ShowKeywords(),
+                          ],
+                        )),
                   ],
                 ),
               ),
@@ -207,6 +217,7 @@ class SearchBar extends StatelessWidget {
   }
 }
 
+//홈화면에서 키워드 보여주기
 class ShowKeywords extends StatefulWidget {
   const ShowKeywords({super.key});
 
@@ -285,24 +296,26 @@ class ShowKeywordsState extends State<ShowKeywords> {
             ),
           )
         else
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 3),
-            child: Wrap(
-              spacing: 5.0,
-              runSpacing: 5.0,
-              children: keywords
-                  .map((keyword) => Chip(
-                        label: Text(
-                          "#$keyword",
-                          style: const TextStyle(
-                              fontSize: 14, fontWeight: FontWeight.bold),
-                        ),
-                        backgroundColor:
-                            const Color.fromRGBO(186, 221, 127, 0.5),
-                      ))
-                  .toList(),
-            ),
-          ),
+          SizedBox(
+              // ✅ Chip 높이에 맞게 사이즈 조정
+              child: Wrap(
+            spacing: 6, // ✅ Chip 간의 가로 간격
+            runSpacing: 0, // ✅ Chip 간의 세로 간격
+            // ✅ 줄 정렬 방식
+
+            children: keywords.map((keyword) {
+              return Chip(
+                label: Text(
+                  keyword,
+                  style: AppStyles.keywordChipTextStyle,
+                ),
+                backgroundColor: AppStyles.keywordChipBackgroundColor,
+                shape: AppStyles.keywordChipShape,
+                padding: AppStyles.keywordChipPadding,
+                //visualDensity: const VisualDensity(vertical: -1),
+              );
+            }).toList(),
+          )),
       ],
     );
   }

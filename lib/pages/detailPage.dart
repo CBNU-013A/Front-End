@@ -190,7 +190,7 @@ class _DetailPageState extends State<DetailPage> {
             backgroundColor: AppStyles.keywordChipBackgroundColor,
             padding: AppStyles.keywordChipPadding,
             label: Text("#$keyword" ?? '알 수 없음',
-                style: AppStyles.keywordChipStyle), // ✅ `text` 반환
+                style: AppStyles.keywordChipTextStyle), // ✅ `text` 반환
           );
         }).toList(),
       ),

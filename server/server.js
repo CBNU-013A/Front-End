@@ -121,6 +121,30 @@ app.get("/users/:userId/keywords", async (req, res) => {
   }
 });
 
+// User Keyword 전체 초기화 (DELETE)
+app.delete("/users/:userId/keywords", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
+    }
+
+    // 🔹 MongoDB의 `$set` 연산자로 키워드 배열을 비웁니다.
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { keywords: [] } }, // ✅ 모든 키워드 초기화
+      { new: true } // 업데이트된 사용자 데이터 반환
+    );
+
+    res.json({ message: "모든 키워드 초기화 성공!", user: updatedUser });
+  } catch (error) {
+    console.error("🚨 사용자 키워드 초기화 오류:", error);
+    res.status(500).json({ error: "서버 오류 발생" });
+  }
+});
+
 // User Keyword 삭제 (DELETE)
 app.delete("/users/:userId/keywords/:keywordId", async (req, res) => {
   try {

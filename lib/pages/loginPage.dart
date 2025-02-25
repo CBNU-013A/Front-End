@@ -54,10 +54,12 @@ class _LoginPageState extends State<LoginPage> {
 
     if (response != null && response["success"] == true) {
       String userId = response["user"]["id"];
+      String userName = response["user"]["name"];
 
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString("userId", userId); // 🔹 로그인된 유저 ID 저장
       await prefs.setBool('saveId', _saveId);
+      await prefs.setString("userName", userName);
 
       if (_saveId) {
         await prefs.setString('savedEmail', emailController.text);
@@ -66,8 +68,7 @@ class _LoginPageState extends State<LoginPage> {
       }
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()
-        ),
+        MaterialPageRoute(builder: (context) => const HomePage()),
       );
       rootScaffoldMessengerKey.currentState!.showSnackBar(
         SnackBarStyles.info("😎 로그인 성공!"),
