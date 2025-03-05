@@ -30,7 +30,7 @@ class SearchResults extends StatelessWidget {
       );
     }
 
-    final double itemHeight = 100.0; // 각 아이템의 고정 높이
+    final double itemHeight = 50.0; // 각 아이템의 고정 높이
     final double maxHeight =
         MediaQuery.of(context).size.height * 0.4; // 최대 높이 제한
     final double calculatedHeight =
@@ -61,11 +61,11 @@ class SearchResults extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    (place['keywords'] as List<dynamic>).join(', '),
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
+                  // const SizedBox(height: 4),
+                  // Text(
+                  //   (place['keywords'] as List<dynamic>).join(', '),
+                  //   style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  // ),
                 ],
               ),
             ),
@@ -74,4 +74,5 @@ class SearchResults extends StatelessWidget {
       ),
     );
   }
+  
 }

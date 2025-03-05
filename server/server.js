@@ -278,6 +278,30 @@ app.get("/users/:userId/recentsearch", async (req, res) => {
   }
 });
 
+// User 최근 검색어 전체 초기화 (DELETE)
+app.delete("/users/:userId/recentsearch", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
+    }
+
+    // 🔹 MongoDB의 `$set` 연산자로 키워드 배열을 비웁니다.
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { $set: { recentsearch: [] } }, // ✅ 모든 키워드 초기화
+      { new: true } // 업데이트된 사용자 데이터 반환
+    );
+
+    res.json({ message: "최근 검색 기록 초기화 성공!", user: updatedUser });
+  } catch (error) {
+    console.error("🚨 사용자 키워드 초기화 오류:", error);
+    res.status(500).json({ error: "서버 오류 발생" });
+  }
+});
+
 // Location 장소 정보 가져오기 (GET)
 app.get("/location/all", async (req, res) => {
   try {

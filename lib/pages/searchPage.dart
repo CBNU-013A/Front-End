@@ -6,6 +6,7 @@ import 'package:final_project/pages/detailPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import '../widgets/recent_searches.dart';
 import 'package:http/http.dart' as http;
 
 class SearchPage extends StatefulWidget {
@@ -78,9 +79,8 @@ class _SearchPageState extends State<SearchPage> {
         debugPrint("✅ 검색어 추가 성공");
 
         setState(() {
-          if (!_recentsearch.contains(query)) {
-            _recentsearch.insert(0, query); // 최근 검색어 맨 위에 추가
-          }
+          _recentsearch.remove(query); // 중복 검색어 제거
+          _recentsearch.insert(0, query); // 최근 검색어 맨 위에 추가
         });
       } else {
         debugPrint("❗ 검색어 추가 실패: ${response.statusCode}");
@@ -111,6 +111,30 @@ class _SearchPageState extends State<SearchPage> {
       }
     } catch (e) {
       debugPrint("🚨 키워드 삭제 오류: $e");
+    }
+  }
+
+  // 최근 검색어 모두 삭제하기
+  Future<void> _clearAllRecentSearches() async {
+    if (_userId.isEmpty) return;
+
+    try {
+      final response = await http.delete(
+        Uri.parse('http://localhost:5001/users/$_userId/recentsearch'),
+        headers: {"Content-Type": "application/json"},
+      );
+
+      setState(() {
+        _recentsearch.clear(); // 🗑️ 리스트 비우기
+      });
+
+      if (response.statusCode == 200) {
+        debugPrint("✅ 모든 키워드 삭제 성공");
+      } else {
+        debugPrint("🚨 모든 키워드 삭제 실패: ${response.body}");
+      }
+    } catch (e) {
+      debugPrint("🚨 모든 키워드 삭제 오류: $e");
     }
   }
 
@@ -159,6 +183,67 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
+  Widget _buildRecentSearches() {
+    if (_recentsearch.isEmpty) {
+      return const Center(
+          child: Text('최근 검색 기록이 없습니다.', style: TextStyle(color: Colors.grey)));
+    }
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "최근 검색 기록",
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+                TextButton(
+                  onPressed: _clearAllRecentSearches,
+                  child: const Text(
+                    '모두 삭제',
+                    style: TextStyle(
+                        color: Colors.red, fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ListView.builder(
+            shrinkWrap: true,
+            padding: const EdgeInsets.only(left: 16.0, bottom: 32.0),
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: _recentsearch.length,
+            itemBuilder: (context, index) {
+              final placeName = _recentsearch[index];
+              return ListTile(
+                title: Text(placeName),
+                trailing: IconButton(
+                  padding: const EdgeInsets.only(left: 20.0),
+                  icon: const Icon(Icons.close_outlined, color: Colors.grey),
+                  onPressed: () => _deleteRecentSearch(placeName),
+                ),
+                onTap: () {
+                  _addRecentSearch(placeName);
+
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => DetailPage(place: placeName)),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -169,7 +254,7 @@ class _SearchPageState extends State<SearchPage> {
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -204,11 +289,11 @@ class _SearchPageState extends State<SearchPage> {
                         places: _filteredPlaces,
                         onTap: (place) {
                           _addRecentSearch(place['name']);
+
                           setState(() {
                             _controller.clear();
                             _filteredPlaces = [];
                           });
-
                           // DetailPage로 이동
                           Navigator.push(
                             context,
@@ -220,18 +305,21 @@ class _SearchPageState extends State<SearchPage> {
                         },
                       )
                     : const Padding(
-                        padding: EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(0.0),
                         child: Text(
-                          '...',
+                          '검색 결과가 없습니다.',
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       ),
               ]),
 
             const SizedBox(height: 16),
-
+            _buildRecentSearches(),
             // 최근 검색 기록
-            RecentSearches(searches: _recentsearch, onTap: _deleteRecentSearch),
+            // RecentSearches(
+            //     searches: _recentsearch,
+            //     onTap: _deleteRecentSearch,
+            //     onSearches: _addRecentSearch),
           ],
         ),
       ),

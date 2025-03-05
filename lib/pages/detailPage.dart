@@ -214,12 +214,16 @@ class _DetailPageState extends State<DetailPage> {
         spacing: 8,
         runSpacing: 8,
         children: reviews.map((review) {
-          return Row(
-            children: [
-              Text(
-                "$review" ?? '알 수 없음', // 🔥 문제 발생 부분
-              ),
-            ],
+          return Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Text(
+              review ?? '알 수 없음',
+              style: const TextStyle(fontSize: 14),
+            ),
           );
         }).toList(),
       ),
