@@ -43,3 +43,87 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Flutter/Dart 관련
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+build/
+pubspec.lock
+
+# IDE 및 환경설정 관련
+.vscode/
+.idea/
+*.iml
+
+# 환경설정 및 캐시파일
+*.DS_Store
+*.log
+*.tmp
+
+# Flutter 기본 폴더 제외 (생성/삭제 반복되는 경우)
+.flutter-plugins
+.flutter-plugins-dependencies
+.svn/
+*.lock
+*.log
+*.tmp
+*.swp
+*.swo
+*.bak
+*.backup
+
+# IntelliJ / Android Studio / VSCode
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# macOS
+*.DS_Store
+
+# Flutter 플랫폼별 설정파일 (자동 생성됨)
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/debug.keystore
+
+# iOS
+ios/Flutter/Flutter.podspec
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/engine/
+xcuserdata/
+
+# Linux
+linux/flutter/generated_plugin_registrant.cc
+
+# Web
+web/.sass-cache/
+
+# Windows
+windows/flutter/generated_plugin_registrant.cc
+
+# Firebase 관련 (필요에 따라 추가)
+firebase_app_id_file.json
+
+# Coverage 결과
+coverage/
+
+# 환경 설정 파일 (개발 환경에 따라 필요 시 추가)
+*.env
+.env
+
+# 기타 개인화 파일
+*.orig
+*.bak
+
+# 특수 환경 추가 (필요 시)
+*.g.dart
+*.mocks.dart
