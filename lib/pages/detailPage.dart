@@ -1,4 +1,5 @@
 import 'dart:convert';
+import './searchPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -95,7 +96,7 @@ class _DetailPageState extends State<DetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          '${_matchedPlace!['name']}',
+          'Detail',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
         backgroundColor: Colors.transparent,
@@ -105,57 +106,144 @@ class _DetailPageState extends State<DetailPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildImageSection(_matchedPlace!),
+            _buildKeywordsSection(_matchedPlace!),
             _buildInfoSection(_matchedPlace!),
             _buildMapSection(_matchedPlace!),
-            _buildKeywordsSection(_matchedPlace!),
             _buildReviewsSection(_matchedPlace!),
           ],
         ),
       ),
     );
+    // body: Stack(children: [
+    //   // 배경 이미지
+
+    //   Positioned.fromRect(
+    //     rect: const Rect.fromLTWH(12.0, 60.0, 380, 500),
+    //     child: Container(
+    //       //padding: const EdgeInsets.all(16.0),
+    //       decoration: BoxDecoration(
+    //         borderRadius: BorderRadius.circular(10),
+    //         color: AppColors.mustedBlush.withOpacity(0.2),
+    //         image: DecorationImage(
+    //             image: _matchedPlace!['image'] != null
+    //                 ? NetworkImage(_matchedPlace!['image']) as ImageProvider
+    //                 : AssetImage('assets/images/default_image.jpg')
+    //                     as ImageProvider, // 배경 이미지 경로
+    //             fit: BoxFit.cover,
+    //             opacity: 0.9 // 화면에 꽉 차게 설정
+    //             ),
+    //       ),
+    //     ),
+    //   ),
+
+    // ✅ SafeArea를 사용하여 버튼이 잘 보이도록 조정
+    //   SafeArea(
+    // child: Column(
+    //   crossAxisAlignment: CrossAxisAlignment.start,
+    //   children: [
+    //     AppBar(
+    //       backgroundColor: Colors.transparent,
+    //       // title: Text('${_matchedPlace!['name']}',
+    //       //     style: const TextStyle(
+    //       //       fontSize: 20,
+    //       //       fontWeight: FontWeight.bold,
+    //       //       color: Colors.white,
+    //       //       shadows: [
+    //       //         Shadow(
+    //       //           color: AppColors.marineBlue,
+    //       //           offset: Offset(1, 2),
+    //       //           blurRadius: 2,
+    //       //         )
+    //       //       ],
+    //       //     )),
+    //     ),
+
+    // ✅ SafeArea 내부에 포함된 스크롤 뷰
   }
 
   Widget _buildImageSection(Map<String, dynamic> place) {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(10),
-      child: Image.asset(
-        place['image_url'] ?? 'assets/images/default_image.jpg',
-        fit: BoxFit.cover,
-        height: 200,
-        width: double.infinity,
-        errorBuilder: (context, error, stackTrace) {
-          return Container(
-            alignment: Alignment.center,
-            height: 200,
-            color: Colors.grey[300],
-            child: const Icon(
-              Icons.broken_image,
-              size: 60,
-              color: Colors.grey,
-            ),
-          );
-        },
-      ),
-    );
+    List<String> imageUrls = List<String>.from(place['image'] ?? []);
+    debugPrint("Image URLs: $imageUrls");
+    // 🔹 이미지가 없으면 기본 이미지 추가 (예방)
+    if (imageUrls.isEmpty) {
+      imageUrls.add('https://example.com/default_image.jpg');
+    }
+    return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+            height: 200.0,
+            //width: double.infinity,
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: imageUrls.length,
+                padding: const EdgeInsets.symmetric(horizontal: 10),
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.only(right: 8),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        imageUrls[index],
+                        fit: BoxFit.cover,
+                        height: 200.0,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            alignment: Alignment.center,
+                            height: 200,
+                            width: 350,
+                            color: Colors.grey[300],
+                            child: const Icon(
+                              Icons.broken_image,
+                              size: 60,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  );
+                })));
   }
 
   Widget _buildInfoSection(Map<String, dynamic> data) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
+    return Container(
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(data['name'] ?? '이름 없음',
-              style:
-                  const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+          Text(
+            data['name'] ?? '이름 없음',
+            style: const TextStyle(
+                fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
           const SizedBox(height: 10),
-          Text('${data['address'] ?? '주소 정보 없음'}',
-              style: const TextStyle(fontSize: 16)),
+          Row(
+            mainAxisSize: MainAxisSize.min, // 내용물 크기에 맞춤
+            children: [
+              const Icon(Icons.location_on_outlined,
+                  size: 20, color: Color(0xFF4738D7)),
+              const SizedBox(width: 4), // 아이콘과 텍스트 간격 조정
+              Text(
+                '${data['address'] ?? '주소 정보 없음'}',
+                style: const TextStyle(fontSize: 16, color: Colors.grey),
+              ),
+            ],
+          ),
           const SizedBox(
             height: 5,
           ),
           if (data['tell'] != null)
-            Text('${data['tell']}', style: const TextStyle(fontSize: 16)),
+            Row(
+              mainAxisSize: MainAxisSize.min, // 내용물 크기에 맞춤
+              children: [
+                const Icon(Icons.phone, size: 20, color: Color(0xFF4738D7)),
+                const SizedBox(width: 4), // 아이콘과 텍스트 간격 조정
+                Text(
+                  '${data['tell'] ?? '주소 정보 없음'}',
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+              ],
+            ),
         ],
       ),
     );
@@ -163,7 +251,7 @@ class _DetailPageState extends State<DetailPage> {
 
   Widget _buildMapSection(Map<String, dynamic> data) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(32.0),
       child: Text('여기에 지도 api\n'
           '위도: ${data['location']['latitude']}, 경도: ${data['location']['longitude']}'),
     );
@@ -181,18 +269,29 @@ class _DetailPageState extends State<DetailPage> {
     debugPrint('Keywords: ${data['keywords']}');
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: keywords.map((keyword) {
-          return Chip(
-            backgroundColor: AppStyles.keywordChipBackgroundColor,
-            padding: AppStyles.keywordChipPadding,
-            label: Text("#$keyword" ?? '알 수 없음',
-                style: AppStyles.keywordChipTextStyle), // ✅ `text` 반환
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+            children: keywords.map((keyword) {
+          return Padding(
+            padding: EdgeInsets.only(right: 5),
+            child: Chip(
+              labelPadding: const EdgeInsets.only(left: 8, right: 8),
+
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+                side: const BorderSide(color: AppColors.lightTaube),
+              ),
+              backgroundColor: AppColors.lightTaube,
+
+              //padding: AppStyles.keywordChipPadding.copyWith(left: 8, right: 8),
+              label: Text("$keyword" ?? "알 수 없음",
+                  style: AppStyles.keywordChipTextStyle
+                      .copyWith(fontSize: 14)), // ✅ `text` 반환
+            ),
           );
-        }).toList(),
+        }).toList()),
       ),
     );
   }
@@ -209,23 +308,25 @@ class _DetailPageState extends State<DetailPage> {
     debugPrint('Reviews: ${data['review']}');
 
     return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
-        children: reviews.map((review) {
-          return Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: Colors.grey[200],
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              review ?? '알 수 없음',
-              style: const TextStyle(fontSize: 14),
-            ),
-          );
-        }).toList(),
+      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.vertical,
+        child: Column(
+          children: reviews.map((review) {
+            return Container(
+              padding: const EdgeInsets.all(8),
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                review ?? '알 수 없음',
+                style: const TextStyle(fontSize: 14),
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

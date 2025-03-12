@@ -367,13 +367,12 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
                         style: TextButton.styleFrom(
                           backgroundColor:
                               _selectedKeywords.contains(keyword["_id"] ?? "")
-                                  ? const Color(0xFFbf99ff) // ✅ 선택된 경우 (파란색)
+                                  ? AppColors.marineBlue // ✅ 선택된 경우 (파란색)
                                   : Colors.transparent, // ✅ 기본 배경색 (연한 회색)
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 1),
                           side: const BorderSide(
-                              color: Color.fromARGB(255, 215, 192, 255),
-                              width: 0.5),
+                              color: AppColors.marineBlue, width: 1),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(15),
                             // ✅ 둥근 테두리
@@ -382,10 +381,11 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
                         child: Text("${keyword["text"]}",
                             style: AppStyles.keywordChipTextStyle.copyWith(
                               fontSize: 15,
+                              fontWeight: FontWeight.w600,
                               color: _selectedKeywords
                                       .contains(keyword["_id"] ?? "")
                                   ? Colors.white // ✅ 선택된 경우 (흰색)
-                                  : const Color(0xFFbf99ff), // ✅ 기본 글자색 (검정색)
+                                  : AppColors.marineBlue, // ✅ 기본 글자색 (검정색)
                             )),
                       );
                     }).toList(),
@@ -405,6 +405,10 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
                       },
                       child: const Text(
                         "초기화",
+                        style: TextStyle(
+                          color: AppColors.mustedBlush,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ],

@@ -185,8 +185,7 @@ class _SearchPageState extends State<SearchPage> {
 
   Widget _buildRecentSearches() {
     if (_recentsearch.isEmpty) {
-      return const Center(
-          child: Text('최근 검색 기록이 없습니다.', style: TextStyle(color: Colors.grey)));
+      return const SizedBox.shrink();
     }
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -307,7 +306,7 @@ class _SearchPageState extends State<SearchPage> {
                     : const Padding(
                         padding: EdgeInsets.all(0.0),
                         child: Text(
-                          '검색 결과가 없습니다.',
+                          ' ',
                           style: TextStyle(fontSize: 16, color: Colors.grey),
                         ),
                       ),

@@ -40,8 +40,13 @@ async function insertLocation() {
           longitude: 126.943828,
         },
         tell: "064-710-7923",
-        keywords: ["자연", "산"],
+        keywords: ["자연", "산", "리뷰를", "추가함", "데이터", "없어요"],
         review: ["성산일출봉 리뷰1", "성산일출봉 리뷰2", "성산일출봉 리뷰3"],
+        image: [
+          "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcRM3zWKXQfX-6vd3wKpn-yTPoj0oWIuAVgg7TQi6T-AzbYMe0quwmnB8PDPryYMnwKMdEdatbiCoGWUpz7DiXfIqSX0pl2culQjx9xu5ck",
+          "https://encrypted-tbn0.gstatic.com/licensed-image?q=tbn:ANd9GcR8YaEFWFOfd29vtccb3EisO8K2aSNWP6NPX6LVBilOctz0N881qh1t2BLoaPgfD_-cL2Jh31tpfz-b6RO38dIx2vy0NjJcLqcNW9r0Cw",
+          "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcRM3zWKXQfX-6vd3wKpn-yTPoj0oWIuAVgg7TQi6T-AzbYMe0quwmnB8PDPryYMnwKMdEdatbiCoGWUpz7DiXfIqSX0pl2culQjx9xu5ck",
+        ],
       },
       {
         id: "loc004",
