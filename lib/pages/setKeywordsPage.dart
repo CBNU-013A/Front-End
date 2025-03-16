@@ -15,6 +15,7 @@ class SetKeywordsPage extends StatefulWidget {
 class _SetKeywordsPageState extends State<SetKeywordsPage> {
   //final TextEditingController _keywordController = TextEditingController();
   List<Map<String, dynamic>> _keywords = [];
+
   List<String> _selectedKeywords = [];
   String _userId = "";
 
