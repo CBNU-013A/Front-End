@@ -1,7 +1,8 @@
 import 'dart:convert';
-import './searchPage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 
 import '../styles/styles.dart';
 
@@ -22,6 +23,16 @@ class _DetailPageState extends State<DetailPage> {
   @override
   void initState() {
     super.initState();
+    WidgetsFlutterBinding.ensureInitialized(); // Flutter 초기화 필수
+    //auth : javascript key
+    AuthRepository.initialize(appKey: 'c4e1eb2e4df9471dd1f08410194cfd13');
+    // Kakao SDK 초기화 여부 확인
+    KakaoSdk.init(
+      nativeAppKey: '2a9e7d21868ff0932e17ad3708dcbe9b',
+      javaScriptAppKey: 'c4e1eb2e4df9471dd1f08410194cfd13',
+    );
+
+    debugPrint("✅ KakaoSdk 초기화 상태: ${KakaoSdk.origin}");
     _loadPlaceData();
   }
 
@@ -250,11 +261,58 @@ class _DetailPageState extends State<DetailPage> {
   }
 
   Widget _buildMapSection(Map<String, dynamic> data) {
-    return Padding(
-      padding: const EdgeInsets.all(32.0),
-      child: Text('여기에 지도 api\n'
-          '위도: ${data['location']['latitude']}, 경도: ${data['location']['longitude']}'),
-    );
+    // 1. location이 null인지 확인 (에러 방지)
+    if (data['location'] == null) {
+      return const Center(child: Text("위치 정보 없음"));
+    }
+
+    debugPrint("📍 위치 데이터: ${data['location']}");
+
+    if (data['location']['latitude'] == null ||
+        data['location']['longitude'] == null) {
+      return const Center(child: Text("위도 또는 경도 정보 없음"));
+    }
+
+    // 2. 위도, 경도 값 변환 (문자열일 경우 대비)
+    try {
+      double latitude = (data['location']['latitude'] is String)
+          ? double.parse(data['location']['latitude'])
+          : data['location']['latitude'];
+
+      double longitude = (data['location']['longitude'] is String)
+          ? double.parse(data['location']['longitude'])
+          : data['location']['longitude'];
+
+      // ✅ 수정: 변환된 값을 사용하여 LatLng 객체 생성
+      LatLng location = LatLng(latitude, longitude);
+
+      return Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SizedBox(
+          height: 200, // ✅ 높이 지정 (필수)
+          width: double.infinity, // ✅ 가로는 최대
+          child: KakaoMap(
+            center: location,
+            currentLevel: 5,
+            onMapCreated: (KakaoMapController controller) async {
+              debugPrint("🗺️ KakaoMap 컨트롤러 초기화 완료!");
+
+              await Future.delayed(const Duration(seconds: 1));
+            },
+            markers: [
+              Marker(
+                markerId: data['id'] ?? "default_id",
+                latLng: location, // ✅ latLng 값이 올바르게 설정됨
+                infoWindowContent: "위치",
+              )
+            ],
+          ),
+        ),
+      );
+    } catch (e) {
+      debugPrint("❗ 위치 변환 중 오류 발생: $e");
+      return const Center(child: Text("위치 정보를 불러오는 중 오류 발생"));
+    }
   }
 
   Widget _buildKeywordsSection(Map<String, dynamic> data) {
@@ -305,7 +363,7 @@ class _DetailPageState extends State<DetailPage> {
       );
     }
 
-    debugPrint('Reviews: ${data['review']}');
+    debugPrint('✅ Review 불러오기 성공');
 
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),

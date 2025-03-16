@@ -1,11 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk_template.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'pages/homePage.dart'; // 홈 페이지
 import 'pages/loginPage.dart';
 import 'widgets/splashLogo.dart'; // 로그인 페이지
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
+//import 'package:kakao_map_sdk/kakao_map.dart';
+//import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  AuthRepository.initialize(appKey: 'c4e1eb2e4df9471dd1f08410194cfd13');
+
+  KakaoSdk.init(
+    nativeAppKey: '2a9e7d21868ff0932e17ad3708dcbe9b',
+    javaScriptAppKey: 'c4e1eb2e4df9471dd1f08410194cfd13',
+  );
+
+  // Kakao SDK 초기화 여부 확인
+  debugPrint("✅ kakaoSdk 초기화 ");
+
   runApp(const MyApp());
 }
 
