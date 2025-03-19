@@ -1,20 +1,25 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
-require("dotenv").config();
+require("dotenv").config({ path: "./.env" });
 const cors = require("cors");
 const bodyParser = require("body-parser");
-//const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const authRoutes = require("./routes/authRoutes");
+console.log("🔹 authRoutes 확인:", authRoutes); // ✅ 추가된 디버깅 코드
 const User = require("./models/User");
 const Keyword = require("./models/Keyword");
 const Location = require("./models/Location");
 
-dotenv.config(); //환경변수
 const app = express();
 app.use(express.json());
+app.use("/api/auth", authRoutes);
 app.use(cors()); // 모든 요청을 허용
-app.use(bodyParser.json()); // JSON 요청 파싱
+//app.use(bodyParser.json()); // JSON 요청 파싱
+
+// 라우터 연결
+const locationRoutes = require("./routes/locationRoutes");
+app.use("/location", locationRoutes);
 
 // User 회원가입 (POST)
 app.post("/register", async (req, res) => {
@@ -105,14 +110,16 @@ app.post("/users/:userId/keywords", async (req, res) => {
 // User Keyword 가져오기 (GET)
 app.get("/users/:userId/keywords", async (req, res) => {
   try {
-    const { userId } = req.params;
-    const user = await User.findById(userId).populate("keywords");
+    const user = await User.findById(req.params.userId).populate(
+      "keywords",
+      "text"
+    );
 
     if (!user) {
       return res.status(404).json({ error: "사용자를 찾을 수 없습니다." });
     }
 
-    //const keywords = await Keyword.find({ userId }); //불러오기
+    // /const keywords = await Keyword.find({ userId }); //불러오기
 
     res.json(user.keywords);
   } catch (error) {
@@ -180,7 +187,7 @@ app.delete("/users/:userId/keywords/:keywordId", async (req, res) => {
 //  모든 키워드 반환하는 API (text & id 포함)
 app.get("/keywords/all", async (req, res) => {
   try {
-    const keywords = await Keyword.find({}, { text: 1, _id: 1 }); // ✅ _id는 기본 포함됨
+    const keywords = await Keyword.find({}, { text: 1 }); // ✅ _id는 기본 포함됨
 
     res.json(keywords); // ✅ 전체 키워드 리스트 반환 (text, _id 포함)
   } catch (error) {
@@ -353,20 +360,20 @@ app.get("/location/:placeName", async (req, res) => {
   }
 });
 
-// MongoDB 연결
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGODB_URI = process.env.MONGO_URI;
+if (!MONGODB_URI) {
+  console.error(
+    "❌ 환경변수 MONGO_URI가 설정되지 않았습니다. .env 파일을 확인하세요."
+  );
+  process.exit(1);
+}
 mongoose
-  .connect(process.env.MONGO_URI, {
-    //useNewUrlParser: true,
-    //useUnifiedTopology: true,
-  })
+  .connect(MONGODB_URI)
   .then(() => console.log("MongoDB 연결 성공"))
   .catch((err) => {
     console.error("MongoDB 연결 실패:", err.message);
     process.exit(1);
   });
-
-app.use("/api/auth", authRoutes);
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`서버 실행 중: http://localhost:${PORT}`));

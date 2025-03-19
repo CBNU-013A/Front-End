@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
-
+import 'dart:async';
 import '../styles/styles.dart';
 
 class DetailPage extends StatefulWidget {
@@ -16,6 +16,11 @@ class DetailPage extends StatefulWidget {
 }
 
 class _DetailPageState extends State<DetailPage> {
+  KakaoMapController? _mapController;
+  late PageController _pageController;
+  int _currentPage = 0;
+  Timer? _timer;
+
   bool _isLoading = true;
   bool _isPlaceFound = false;
   Map<String, dynamic>? _matchedPlace;
@@ -34,6 +39,29 @@ class _DetailPageState extends State<DetailPage> {
 
     debugPrint("✅ KakaoSdk 초기화 상태: ${KakaoSdk.origin}");
     _loadPlaceData();
+    _pageController = PageController(viewportFraction: 0.9);
+    // 3초마다 자동으로 다음 페이지 이동
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      if (_matchedPlace != null && _matchedPlace!['image'] != null) {
+        if (_currentPage < _matchedPlace!['image'].length - 1) {
+          _currentPage++;
+        } else {
+          _currentPage = 0; // 마지막 페이지에서 첫 페이지로 이동
+        }
+        _pageController.animateToPage(
+          _currentPage,
+          duration: const Duration(milliseconds: 500), // 애니메이션 속도 조절
+          curve: Curves.easeInOut,
+        );
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel(); // 타이머 해제 (메모리 누수 방지)
+    _pageController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadPlaceData() async {
@@ -125,51 +153,6 @@ class _DetailPageState extends State<DetailPage> {
         ),
       ),
     );
-    // body: Stack(children: [
-    //   // 배경 이미지
-
-    //   Positioned.fromRect(
-    //     rect: const Rect.fromLTWH(12.0, 60.0, 380, 500),
-    //     child: Container(
-    //       //padding: const EdgeInsets.all(16.0),
-    //       decoration: BoxDecoration(
-    //         borderRadius: BorderRadius.circular(10),
-    //         color: AppColors.mustedBlush.withOpacity(0.2),
-    //         image: DecorationImage(
-    //             image: _matchedPlace!['image'] != null
-    //                 ? NetworkImage(_matchedPlace!['image']) as ImageProvider
-    //                 : AssetImage('assets/images/default_image.jpg')
-    //                     as ImageProvider, // 배경 이미지 경로
-    //             fit: BoxFit.cover,
-    //             opacity: 0.9 // 화면에 꽉 차게 설정
-    //             ),
-    //       ),
-    //     ),
-    //   ),
-
-    // ✅ SafeArea를 사용하여 버튼이 잘 보이도록 조정
-    //   SafeArea(
-    // child: Column(
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: [
-    //     AppBar(
-    //       backgroundColor: Colors.transparent,
-    //       // title: Text('${_matchedPlace!['name']}',
-    //       //     style: const TextStyle(
-    //       //       fontSize: 20,
-    //       //       fontWeight: FontWeight.bold,
-    //       //       color: Colors.white,
-    //       //       shadows: [
-    //       //         Shadow(
-    //       //           color: AppColors.marineBlue,
-    //       //           offset: Offset(1, 2),
-    //       //           blurRadius: 2,
-    //       //         )
-    //       //       ],
-    //       //     )),
-    //     ),
-
-    // ✅ SafeArea 내부에 포함된 스크롤 뷰
   }
 
   Widget _buildImageSection(Map<String, dynamic> place) {
@@ -177,39 +160,27 @@ class _DetailPageState extends State<DetailPage> {
     debugPrint("Image URLs: $imageUrls");
     // 🔹 이미지가 없으면 기본 이미지 추가 (예방)
     if (imageUrls.isEmpty) {
-      imageUrls.add('https://example.com/default_image.jpg');
+      imageUrls.add(
+          'https://via.placeholder.com/300x200.png?text=No+Image'); // Use a valid placeholder image URL
     }
     return Padding(
         padding: const EdgeInsets.all(16.0),
         child: SizedBox(
             height: 200.0,
-            //width: double.infinity,
-            child: ListView.builder(
-                scrollDirection: Axis.horizontal,
+            //width: MediaQuery.of(context).size.width,
+            child: PageView.builder(
+                //scrollDirection: Axis.horizontal,
+                controller: _pageController,
                 itemCount: imageUrls.length,
-                padding: const EdgeInsets.symmetric(horizontal: 10),
                 itemBuilder: (context, index) {
                   return Padding(
-                    padding: const EdgeInsets.only(right: 8),
+                    padding: const EdgeInsets.only(right: 5, left: 0),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
                       child: Image.network(
                         imageUrls[index],
-                        fit: BoxFit.cover,
+                        fit: BoxFit.fill,
                         height: 200.0,
-                        errorBuilder: (context, error, stackTrace) {
-                          return Container(
-                            alignment: Alignment.center,
-                            height: 200,
-                            width: 350,
-                            color: Colors.grey[300],
-                            child: const Icon(
-                              Icons.broken_image,
-                              size: 60,
-                              color: Colors.grey,
-                            ),
-                          );
-                        },
                       ),
                     ),
                   );
@@ -221,34 +192,67 @@ class _DetailPageState extends State<DetailPage> {
       padding: const EdgeInsets.only(left: 16.0, right: 16.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             data['name'] ?? '이름 없음',
             style: const TextStyle(
                 fontSize: 24, fontWeight: FontWeight.bold, color: Colors.black),
           ),
-          const SizedBox(height: 10),
+          //const SizedBox(height: 10),
           Row(
-            mainAxisSize: MainAxisSize.min, // 내용물 크기에 맞춤
             children: [
-              const Icon(Icons.location_on_outlined,
-                  size: 20, color: Color(0xFF4738D7)),
-              const SizedBox(width: 4), // 아이콘과 텍스트 간격 조정
+              IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+                iconSize: 20,
+                icon: const Icon(
+                  Icons.location_on_outlined,
+                  size: 20,
+                  color: Color(0xFF4738D7),
+                ),
+                onPressed: () {
+                  if (_mapController != null) {
+                    _mapController!.setCenter(
+                      LatLng(
+                        data['location']['latitude'],
+                        data['location']['longitude'],
+                      ),
+                    );
+                  } else {
+                    debugPrint("⚠️ KakaoMapController가 아직 초기화되지 않았습니다.");
+                  }
+                },
+              ),
+              //const SizedBox(width: 4), // 아이콘과 텍스트 간격 조정
               Text(
                 '${data['address'] ?? '주소 정보 없음'}',
-                style: const TextStyle(fontSize: 16, color: Colors.grey),
+                style: const TextStyle(
+                  fontSize: 16,
+                  color: Colors.grey,
+                ),
               ),
             ],
           ),
           const SizedBox(
-            height: 5,
+            height: 0,
           ),
           if (data['tell'] != null)
             Row(
-              mainAxisSize: MainAxisSize.min, // 내용물 크기에 맞춤
               children: [
-                const Icon(Icons.phone, size: 20, color: Color(0xFF4738D7)),
-                const SizedBox(width: 4), // 아이콘과 텍스트 간격 조정
+                IconButton(
+                  padding: EdgeInsets.zero,
+                  constraints: const BoxConstraints(),
+                  iconSize: 20,
+                  icon: const Icon(
+                    Icons.phone,
+                    size: 20,
+                    color: Color(0xFF4738D7),
+                  ),
+                  onPressed: () {},
+                ),
+                // const Icon(Icons.phone, size: 20, color: Color(0xFF4738D7)),
+                // const SizedBox(width: 4), // 아이콘과 텍스트 간격 조정
                 Text(
                   '${data['tell'] ?? '주소 정보 없음'}',
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
@@ -293,10 +297,10 @@ class _DetailPageState extends State<DetailPage> {
           width: double.infinity, // ✅ 가로는 최대
           child: KakaoMap(
             center: location,
-            currentLevel: 5,
+            currentLevel: 6,
             onMapCreated: (KakaoMapController controller) async {
               debugPrint("🗺️ KakaoMap 컨트롤러 초기화 완료!");
-
+              _mapController = controller;
               await Future.delayed(const Duration(seconds: 1));
             },
             markers: [
@@ -329,11 +333,13 @@ class _DetailPageState extends State<DetailPage> {
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),
       child: SingleChildScrollView(
+        //controller: _pageController,
         scrollDirection: Axis.horizontal,
         child: Row(
             children: keywords.map((keyword) {
+          final String text = keyword.toString();
           return Padding(
-            padding: EdgeInsets.only(right: 5),
+            padding: const EdgeInsets.only(right: 5),
             child: Chip(
               labelPadding: const EdgeInsets.only(left: 8, right: 8),
 
@@ -344,7 +350,7 @@ class _DetailPageState extends State<DetailPage> {
               backgroundColor: AppColors.lightTaube,
 
               //padding: AppStyles.keywordChipPadding.copyWith(left: 8, right: 8),
-              label: Text("$keyword" ?? "알 수 없음",
+              label: Text(text,
                   style: AppStyles.keywordChipTextStyle
                       .copyWith(fontSize: 14)), // ✅ `text` 반환
             ),

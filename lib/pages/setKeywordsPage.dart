@@ -13,51 +13,21 @@ class SetKeywordsPage extends StatefulWidget {
 }
 
 class _SetKeywordsPageState extends State<SetKeywordsPage> {
-  //final TextEditingController _keywordController = TextEditingController();
+  //전체 키워드 목록 id, text 포함
   List<Map<String, dynamic>> _keywords = [];
-
+  //사용자가 선택한 키워드 _id 리스트
   List<String> _selectedKeywords = [];
+  //로그인 사용자 Id
   String _userId = "";
 
   @override
   void initState() {
     super.initState();
     //_fetchKeywords();
-    _loadUserId();
+    _loadUserId(); //userid 로드 후 -> 그 다음에 키워드 불러오기
   }
 
-  // 토글 키워드
-  void _toggleKeyword(String keywordId) {
-    bool isSelected = _selectedKeywords.contains(keywordId);
-
-    setState(() {
-      if (isSelected) {
-        _selectedKeywords.remove(keywordId);
-        _deleteKeyword(keywordId); // ✅ 선택 해제 시 DB에서 삭제
-      } else {
-        _selectedKeywords.add(keywordId);
-        _addKeyword(keywordId); // ✅ 선택 추가 시 DB에 저장
-      }
-    });
-
-    Future.delayed(const Duration(milliseconds: 50), () {
-      setState(() {
-        _sortKeywords(); // ✅ 선택된 키워드를 상단으로 정렬
-      });
-    });
-  }
-
-  void _sortKeywords() {
-    setState(() {
-      _keywords.sort((a, b) {
-        int aSelected = _selectedKeywords.contains(a["_id"]) ? 1 : 0;
-        int bSelected = _selectedKeywords.contains(b["_id"]) ? 1 : 0;
-        return bSelected - aSelected; // ✅ 선택된 키워드를 상단으로 정렬
-      });
-    });
-  }
-
-  // 🔹 로그인된 사용자 ID 불러오기
+  // 1. 로그인된 사용자 ID 불러오기
   Future<void> _loadUserId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -67,12 +37,12 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
     if (_userId.isEmpty) {
       debugPrint("🚨 저장된 userId가 없음!");
     } else {
-      _loadKeywords();
-      _fetchUserKeywords(); // ✅ 유저 ID가 있을 경우 키워드 불러오기
+      _loadKeywords(); //모든 키워드 불러오기
+      _fetchUserKeywords(); //사용자 선택 키워드 불러오기
     }
   }
 
-  // All Keywords 가져오기
+  // 2. 모든 키워드 가져오기
   Future<void> _loadKeywords() async {
     try {
       final response = await http.get(
@@ -83,16 +53,14 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
         final List<dynamic> fetchedKeywords =
             json.decode(response.body); // ✅ JSON을 List로 변환
 
-        debugPrint("✅ 모든 키워드 가져오기 성공");
-
-        setState(() {
-          _keywords = fetchedKeywords
-              .map((keyword) => {
-                    "_id": keyword["_id"] ?? "", // ✅ 키워드 ID 저장
-                    "text": keyword["text"] ?? "알 수 없음" // ✅ 키워드 내용 저장
-                  })
-              .toList();
-        });
+        debugPrint("$fetchedKeywords");
+        _keywords = fetchedKeywords
+            .map((json) => {
+                  "_id": json["_id"],
+                  "text": json["text"],
+                  // ✅ 키워드 내용 저장
+                })
+            .toList();
       } else {
         debugPrint(
             "🚨 _loadKeywords() 키워드 불러오기 실패: ${response.statusCode} ${response.body}");
@@ -102,77 +70,7 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
     }
   }
 
-  // // 🔹 DB에서 로그인된 사용자의 키워드 목록 가져오기
-  // Future<void> _fetchKeywords() async {
-  //   if (_userId.isEmpty) return; // 로그인된 유저가 없으면 실행하지 않음
-
-  //   try{
-  //     final response = await http.get(
-  //       Uri.parse('http://localhost:5001/users/$_userId/keywords'),
-  //     );
-
-  //     if (response.statusCode == 200) {
-  //       setState(() {
-  //         _keywords = List<String>.from(json.decode(response.body));
-  //       });
-  //       debugPrint("✅ 키워드 불러오기 성공: $_keywords");
-  //     } else {
-  //       debugPrint("🚨 키워드 불러오기 실패: ${response.statusCode} ${response.body}");
-  //     }
-  //   } catch (e) {
-  //     debugPrint("🚨 키워드 목록 가져오기 오류: $e");
-  //   }
-  // }
-
-  // 키워드 추가 (user keyword)
-  Future<void> _addKeyword(String keywordId) async {
-    if (_userId.isEmpty) {
-      debugPrint("🚨 userId가 없음!");
-      return;
-    }
-
-    if (keywordId.isEmpty) {
-      debugPrint("🚨 keywordId가 비어 있음!");
-      return;
-    }
-
-    final requestBody = jsonEncode({
-      "keywordId": keywordId,
-    });
-
-    debugPrint("📌 추가 요청 userId: $_userId, keywordId: $keywordId");
-    debugPrint("📌 요청 바디: $requestBody");
-
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost:5001/users/$_userId/keywords'),
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({
-          "keywordId": keywordId,
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        debugPrint("✅ 키워드 추가 성공: $keywordId");
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text('키워드 "$keywordId"가 추가되었습니다.'),
-        //   ),
-
-        _fetchUserKeywords();
-      } else if (response.statusCode == 409) {
-        debugPrint("⚠️ 이미 존재하는 키워드: $keywordId");
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('⚠️ " 이미 추가된 키워드입니다.')),
-        );
-      } else {
-        debugPrint("🚨 키워드 추가 실패: ${response.body}");
-      }
-    } catch (e) {
-      debugPrint("🚨 키워드 추가 오류: $e");
-    }
-  }
-
+  // 3. 사용자 키워드 불러오기
   Future<void> _fetchUserKeywords() async {
     if (_userId.isEmpty) {
       debugPrint("🚨 userId가 없음!");
@@ -186,13 +84,13 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
 
       if (response.statusCode == 200) {
         final List<dynamic> fetchedKeywords = json.decode(response.body);
-        final List<dynamic> selectedKeywords =
-            fetchedKeywords.map((k) => k["text"].toString()).toList();
-        debugPrint("✅ 사용자 선택 키워드 불러오기 성공: $selectedKeywords");
+        debugPrint("✅ 사용자 키워드 불러오기 성공: $fetchedKeywords");
+
+        final List<String> selectedIds = fetchedKeywords.map((k) => k["_id"].toString()).toList();
+        debugPrint("✅ 사용자 선택 키워드 불러오기 성공: $selectedIds");
 
         setState(() {
-          _selectedKeywords =
-              fetchedKeywords.map((k) => k["_id"].toString()).toList();
+          _selectedKeywords = selectedIds;
           _sortKeywords(); // ✅ 선택된 키워드를 상단으로 정렬
         });
       } else {
@@ -204,9 +102,47 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
     }
   }
 
-  // 키워드 삭제 (user keyword)
+  // 4. 사용자 키워드 추가
+  Future<void> _addKeyword(String keywordId) async {
+    if (_userId.isEmpty) {
+      debugPrint("🚨 userId가 없음!");
+      return;
+    }
+
+    if (keywordId.isEmpty) {
+      debugPrint("🚨 keywordId가 비어 있음!");
+      return;
+    }
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:5001/users/$_userId/keywords'),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "keywordId": keywordId,
+        }),
+      );
+
+      if (response.statusCode == 201) {
+        debugPrint("✅ 키워드 추가 성공: $keywordId");
+        await _fetchUserKeywords();
+      } else if (response.statusCode == 409) {
+        debugPrint("⚠️ 이미 존재하는 키워드: $keywordId");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('⚠️ " 이미 추가된 키워드입니다.')),
+        );
+      } else {
+        debugPrint("🚨 키워드 추가 실패: ${response.body}");
+      }
+    } catch (e) {
+      debugPrint("🚨 키워드 추가 오류: $e");
+    }
+  }
+
+  // 5. 사용자 키워드 삭제
   Future<void> _deleteKeyword(String keywordId) async {
     if (_userId.isEmpty) return;
+    if (keywordId.isEmpty) return;
 
     try {
       final response = await http.delete(
@@ -224,7 +160,7 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
     }
   }
 
-  //키워드 초기화 (user keyword)
+  // 6. 키워드 초기화 (user keyword)
   Future<void> _resetKeyword() async {
     if (_userId.isEmpty) return;
 
@@ -257,32 +193,35 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
     }
   }
 
-  // // 🔹 키워드 삭제 (DB에서 제거)
-  // Future<void> _removeKeyword(int index) async {
-  //   if (_userId.isEmpty) return; // 로그인된 유저가 없으면 실행하지 않음
+  // 7. 키워드 선택 토글
+  void _toggleKeyword(String keywordId) {
+    //final isSelected = _selectedKeywords.contains(keywordId);
 
-  //   String keywordId = _keywords[index]['_id'];
+    setState(() {
+      if (_selectedKeywords.contains(keywordId)) {
+        //이미 선택된 경우 -> 해제
+        _selectedKeywords.remove(keywordId);
+        _deleteKeyword(keywordId); //
+      } else {
+        //선택되지 않은 경우 -> 선택
+        _selectedKeywords.add(keywordId);
+        _addKeyword(keywordId);
+      }
+    });
 
-  //   try {
-  //     final response = await http.delete(
-  //       Uri.parse('http://localhost:5001/keywords/$keywordId?userId=$_userId'),
-  //       headers: {"Content-Type": "application/json"},
-  //     );
+    _sortKeywords();
+  }
 
-  //     if (response.statusCode == 200) {
-  //       _fetchKeywords(); // ✅ 키워드 삭제 후 목록 다시 불러오기
-  //     } else {
-  //       debugPrint("🚨 키워드 삭제 실패: ${response.body}");
-  //     }
-  //   } catch (e) {
-  //     debugPrint("🚨 키워드 삭제 오류: $e");
-  //   }
-  // }
-
-  // Future<void> saveUserId(String userId) async {
-  //   SharedPreferences prefs = await SharedPreferences.getInstance();
-  //   await prefs.setString("userId", userId);
-  // }
+  // 8. 선택된 키워드 상단 정렬
+  void _sortKeywords() {
+    setState(() {
+      _keywords.sort((a, b) {
+        int aSelected = _selectedKeywords.contains(a["_id"]) ? 1 : 0;
+        int bSelected = _selectedKeywords.contains(b["_id"]) ? 1 : 0;
+        return bSelected - aSelected; // ✅ 선택된 키워드를 상단으로 정렬
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -313,34 +252,6 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // SizedBox(
-                //   height: 50,
-                //   child: TextField(
-                //     cursorColor: Colors.grey,
-                //     controller: _keywordController,
-                //     decoration: InputDecoration(
-                //       labelText: "키워드 입력",
-                //       labelStyle: const TextStyle(color: Colors.black),
-                //       border: OutlineInputBorder(),
-                //       focusedBorder: const OutlineInputBorder(
-                //         borderSide: BorderSide(
-                //           color: Color.fromARGB(255, 149, 189, 108),
-                //         ),
-                //       ),
-                //       enabledBorder: const OutlineInputBorder(
-                //         borderSide: BorderSide(
-                //           color: Color.fromARGB(255, 149, 189, 108),
-                //         ),
-                //       ),
-                //       // suffixIcon: IconButton(
-                //       //   icon: const Icon(Icons.add),
-                //       //   onPressed: _addKeyword,
-                //       // ),
-                //     ),
-                //     //onSubmitted: (value) => _addKeyword(),
-                //   ),
-                // ),
-
                 const Text(
                   "관심 있는 키워드를 선택해주세요!",
                   style: TextStyle(
@@ -350,26 +261,28 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
                   textAlign: TextAlign.left,
                 ),
                 const SizedBox(height: 10),
-                SizedBox(
+                Expanded(
+                    child: SingleChildScrollView(
                   child: Wrap(
                     spacing: 8.0, // ✅ 태그 간 가로 간격
                     runSpacing: 3.0, // ✅ 줄 간 세로 간격
                     children: _keywords.map((keyword) {
+                      final keywordId = keyword["_id"] ?? "";
+                      final text = keyword["text"] ?? "";
+                      //debugPrint(keyword["text"]);
+                      final bool isSelected =
+                          _selectedKeywords.contains(keywordId);
                       return TextButton(
                         onPressed: () {
-                          String keywordId =
-                              keyword["_id"] ?? ""; // ✅ null일 경우 빈 문자열로 처리
+                          // 키워드 토글
                           if (keywordId.isNotEmpty) {
                             _toggleKeyword(keywordId);
-                          } else {
-                            debugPrint("🚨 키워드 ID가 null이거나 빈 문자열입니다.");
                           }
                         },
                         style: TextButton.styleFrom(
-                          backgroundColor:
-                              _selectedKeywords.contains(keyword["_id"] ?? "")
-                                  ? AppColors.marineBlue // ✅ 선택된 경우 (파란색)
-                                  : Colors.transparent, // ✅ 기본 배경색 (연한 회색)
+                          backgroundColor: isSelected
+                              ? AppColors.marineBlue // ✅ 선택된 경우 (파란색)
+                              : Colors.transparent, // ✅ 기본 배경색 (연한 회색)
                           padding: const EdgeInsets.symmetric(
                               horizontal: 8, vertical: 1),
                           side: const BorderSide(
@@ -379,30 +292,24 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
                             // ✅ 둥근 테두리
                           ),
                         ),
-                        child: Text("${keyword["text"]}",
+                        child: Text(text,
                             style: AppStyles.keywordChipTextStyle.copyWith(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
-                              color: _selectedKeywords
-                                      .contains(keyword["_id"] ?? "")
+                              color: isSelected
                                   ? Colors.white // ✅ 선택된 경우 (흰색)
                                   : AppColors.marineBlue, // ✅ 기본 글자색 (검정색)
                             )),
                       );
                     }).toList(),
-                    // IconButton(
-                    //   icon: const Icon(Icons.delete_outline,
-                    //       color: Colors.grey),
-                    //   onPressed: () => _removeKeyword(index),
-                    // ),
                   ),
-                ),
+                )),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     TextButton(
                       onPressed: () {
-                        _resetKeyword();
+                        _resetKeyword;
                       },
                       child: const Text(
                         "초기화",

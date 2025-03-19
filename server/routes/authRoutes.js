@@ -3,8 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const Keyword = require("../models/Keyword");
-const Location = require("../models/Location")
-
+const Location = require("../models/Location");
 const router = express.Router();
 
 // 회원가입 API
@@ -71,6 +70,5 @@ router.post("/login", async (req, res) => {
     console.error("🚨 로그인 오류:", error);
     res.status(500).json({ success: false, error: "서버 오류 발생" });
   }
-});
-
+}); // ✅ 올바르게 라우터 내보내기
 module.exports = router;
