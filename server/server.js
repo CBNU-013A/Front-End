@@ -63,6 +63,28 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// 회원가입 이메일 중복확인
+app.get("/check-email", async (req, res) => {
+  try {
+    const { email } = req.query;
+    if (!email) {
+      console.log("👿 이메일을 입력하세요!");
+      return res.status(400).json({ error: "이메일을 입력하세요." });
+    }
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+      console.log("👿 이미 존재하는 이메일:", email);
+      return res.status(400).json({ error: "이미 존재하는 이메일입니다." });
+    }
+    res.status(200).json({ message: "사용 가능한 이메일입니다." });
+  } catch (error) {
+    console.error("👿 이메일 중복 확인 중 오류 발생:", error.message); // 🔹 오류 메시지 출력
+    res
+      .status(500)
+      .json({ error: "이메일 중복 확인 실패", details: error.message });
+  }
+});
+
 // User Keyword 추가 (POST)
 app.post("/users/:userId/keywords", async (req, res) => {
   try {
