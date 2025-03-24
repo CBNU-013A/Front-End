@@ -164,10 +164,10 @@ class _DetailPageState extends State<DetailPage> {
           'https://via.placeholder.com/300x200.png?text=No+Image'); // Use a valid placeholder image URL
     }
     return Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.only(top: 16.0, bottom: 16.0),
         child: SizedBox(
             height: 200.0,
-            //width: MediaQuery.of(context).size.width,
+            width: MediaQuery.of(context).size.width,
             child: PageView.builder(
                 //scrollDirection: Axis.horizontal,
                 controller: _pageController,
@@ -181,6 +181,7 @@ class _DetailPageState extends State<DetailPage> {
                         imageUrls[index],
                         fit: BoxFit.fill,
                         height: 200.0,
+                        width: MediaQuery.of(context).size.width,
                       ),
                     ),
                   );
