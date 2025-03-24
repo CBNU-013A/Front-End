@@ -378,6 +378,7 @@ class _DetailPageState extends State<DetailPage> {
         child: Column(
           children: reviews.map((review) {
             return Container(
+              alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8),
               margin: const EdgeInsets.only(bottom: 8),
               decoration: BoxDecoration(
