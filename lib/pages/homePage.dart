@@ -6,7 +6,7 @@ import 'package:final_project/styles/styles.dart';
 import 'searchPage.dart';
 import 'loginPage.dart'; // 로그아웃 후 로그인 페이지 이동
 import 'package:http/http.dart' as http;
-
+import 'package:final_project/widgets/gps.dart';
 import 'setKeywordsPage.dart';
 
 class HomePage extends StatefulWidget {
@@ -95,8 +95,6 @@ class HomePageState extends State<HomePage> {
                   children: [
                     //const SizedBox(height: 3),
                     Container(
-
-              
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.rectangle,
@@ -147,23 +145,21 @@ class HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 const SizedBox(width: 10),
-                                Container(
-                                  child: Text(
-                                    '$userName',
-                                    style: const TextStyle(
-                                        fontSize: 20,
-                                        fontFamily: 'Pretendard',
-                                        //letterSpacing: 0.9,
-                                        fontWeight: FontWeight.w700),
-                                    textAlign: TextAlign.center,
-                                  ),
+                                Text(
+                                  '$userName',
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: 'Pretendard',
+                                      //letterSpacing: 0.9,
+                                      fontWeight: FontWeight.w700),
+                                  textAlign: TextAlign.center,
                                 ),
                               ],
                             ),
                             const SizedBox(
                               height: 11,
                             ),
-                            const Text("여기에 현재 위치 정보 ..? (지역설정 같은거 넣을듯)", style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400)),
+                            const CurrentAddressWidget(),
                             const SizedBox(
                               height: 11,
                             ),
@@ -320,159 +316,3 @@ class ShowKeywordsState extends State<ShowKeywords> {
     );
   }
 }
-
-// // 추천 장소 목록
-// class PlacePreferencesPage extends StatefulWidget {
-//   const PlacePreferencesPage({super.key});
-
-//   @override
-//   PlacePreferencesPageState createState() => PlacePreferencesPageState();
-// }
-
-// class PlacePreferencesPageState extends State<PlacePreferencesPage> {
-//   List<Place> recommendedPlaces = [];
-//   String userName = '';
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadRecommendedPlaces();
-//     _loadUserName();
-//   }
-
-//   // SharedPreferences에서 로그인된 사용자 이름 불러오기
-//   Future<void> _loadUserName() async {
-//     final prefs = await SharedPreferences.getInstance();
-//     setState(() {
-//       userName = prefs.getString("userName") ?? "사용자"; // 기본값 "사용자"
-//     });
-//   }
-
-//   Future<void> _loadRecommendedPlaces() async {
-//     try {
-//       final String jsonString =
-//           await rootBundle.loadString('assets/data/inform.json');
-//       final List<dynamic> jsonData = json.decode(jsonString);
-
-//       setState(() {
-//         recommendedPlaces =
-//             jsonData.map((place) => Place.fromJson(place)).toList();
-//       });
-//     } catch (e) {
-//       debugPrint('Error loading places: $e');
-//     }
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return recommendedPlaces.isEmpty
-//         ? const Center(
-//             child: Text('추천할 관광지가 없습니다.', style: TextStyle(color: Colors.grey)))
-//         : Column(
-//             crossAxisAlignment: CrossAxisAlignment.start,
-//             children: [
-//               Padding(
-//                 padding:
-//                     const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-//                 child: Text(
-//                   "$userName 님을 위한 추천 관광지",
-//                   style: const TextStyle(
-//                     fontSize: 20,
-//                     fontWeight: FontWeight.bold,
-//                   ),
-//                 ),
-//               ),
-//               SizedBox(
-//                 height: 420.0,
-//                 child: ListView.builder(
-//                   scrollDirection: Axis.horizontal,
-//                   itemCount: recommendedPlaces.length,
-//                   itemBuilder: (context, index) {
-//                     return SizedBox(
-//                       width: 340,
-//                       child: PlaceCard(place: recommendedPlaces[index]),
-//                     );
-//                   },
-//                 ),
-//               ),
-//             ],
-//           );
-//   }
-// }
-
-// // 장소 카드 위젯
-// class PlaceCard extends StatelessWidget {
-//   final Place place;
-//   const PlaceCard({super.key, required this.place});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Card(
-//       color: const Color.fromARGB(255, 249, 243, 232),
-//       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-//       shape: RoundedRectangleBorder(
-//         borderRadius: BorderRadius.circular(10.0),
-//       ),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           _buildImageSection(),
-//           _buildContentSection(),
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _buildImageSection() {
-//     return ClipRRect(
-//       borderRadius: const BorderRadius.vertical(
-//         top: Radius.circular(10.0),
-//       ),
-//       child: SizedBox(
-//         width: double.infinity,
-//         height: 200,
-//         child: Image.asset(
-//           place.imageUrl,
-//           fit: BoxFit.cover,
-//           errorBuilder: (context, error, stackTrace) {
-//             return const Center(
-//               child: Icon(Icons.broken_image, color: Colors.grey, size: 50),
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-
-//   Widget _buildContentSection() {
-//     return Padding(
-//       padding: const EdgeInsets.all(16.0),
-//       child: Column(
-//         crossAxisAlignment: CrossAxisAlignment.start,
-//         children: [
-//           Text(
-//             place.name,
-//             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//           ),
-//           const SizedBox(height: 2),
-//           Text(
-//             place.address,
-//             style: TextStyle(color: Colors.grey[600], fontSize: 14),
-//           ),
-//           const SizedBox(height: 12),
-//           Wrap(
-//             spacing: 5.0,
-//             children: place.keywords.map((keyword) {
-//               return Chip(
-//                 label: Text(keyword,
-//                     style: const TextStyle(
-//                         fontSize: 13, fontWeight: FontWeight.bold)),
-//                 backgroundColor: const Color.fromRGBO(170, 186, 154, 1),
-//               );
-//             }).toList(),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }

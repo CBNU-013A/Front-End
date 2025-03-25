@@ -45,6 +45,11 @@ class TextFiledStyles {
     borderRadius: BorderRadius.all(Radius.circular(15)),
     borderSide: BorderSide(color: AppColors.lightTaube, width: 2.0),
   );
+
+  static const errBorderStyle = OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(15)),
+    borderSide: BorderSide(color: Color.fromARGB(255, 238, 74, 62), width: 2.0),
+  );
 }
 
 class ButtonStyles {

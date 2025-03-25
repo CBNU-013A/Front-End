@@ -9,6 +9,8 @@ import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 //import 'package:kakao_map_sdk/kakao_map.dart';
 //import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
+import 'package:geolocator/geolocator.dart'; //위도 경도 가져옴
+import 'package:geocoding/geocoding.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -43,6 +45,7 @@ class MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
     _checkLoginStatus(); // 로그인 상태 확인
+    _printCurrentLocation(); //현재 위치 가져오기
   }
 
   Future<void> _checkLoginStatus() async {
@@ -60,6 +63,58 @@ class MyAppState extends State<MyApp> {
     }
   }
 
+  Future<Position> _getCurrentLocation() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('위치 서비스 비활성화');
+    }
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('위치 권한 거부');
+      }
+    }
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error("위치 권한 영구 거부");
+    }
+
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.high,
+    );
+  }
+
+  Future<void> _getAddressFromLatLng(double lat, double lng) async {
+    try {
+      List<Placemark> placemarks = await placemarkFromCoordinates(lat, lng);
+
+      if (placemarks.isNotEmpty) {
+        Placemark place = placemarks.first;
+        String address =
+            '${place.street}, ${place.locality}, ${place.administrativeArea} ${place.country}';
+
+        debugPrint("✅ 현재 위치 주소: $address");
+      } else {
+        debugPrint("❗ 주소 정보 없음");
+      }
+    } catch (e) {
+      debugPrint("❗ 역지오코딩 실패: $e");
+    }
+  }
+
+  void _printCurrentLocation() async {
+    try {
+      Position position = await _getCurrentLocation();
+      _getAddressFromLatLng(position.latitude, position.longitude);
+      debugPrint("✅ 현재 위치: ${position.latitude}, ${position.longitude}");
+    } catch (e) {
+      debugPrint("❗ 위치 가져오기 실패: $e");
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
