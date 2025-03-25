@@ -294,23 +294,26 @@ class _DetailPageState extends State<DetailPage> {
       return Padding(
         padding: const EdgeInsets.all(16.0),
         child: SizedBox(
-          height: 200, // ✅ 높이 지정 (필수)
+          height: 220, // ✅ 높이 지정 (필수)
           width: double.infinity, // ✅ 가로는 최대
           child: KakaoMap(
             center: location,
-            currentLevel: 6,
+            
+            currentLevel: 4,
             onMapCreated: (KakaoMapController controller) async {
               debugPrint("🗺️ KakaoMap 컨트롤러 초기화 완료!");
               _mapController = controller;
-              await Future.delayed(const Duration(seconds: 1));
+              //await Future.delayed(const Duration(seconds: 1));
+              await controller.addMarker(markers: [
+                Marker(
+                  width: 24,
+                  height: 30,
+                  markerId: data['id']?.toString() ?? 'default_id',
+                  latLng: location, // ✅ latLng 값이 올바르게 설정됨
+                  infoWindowContent: data['name'],
+                ),
+              ]);
             },
-            markers: [
-              Marker(
-                markerId: data['id'] ?? "default_id",
-                latLng: location, // ✅ latLng 값이 올바르게 설정됨
-                infoWindowContent: "위치",
-              )
-            ],
           ),
         ),
       );

@@ -21,8 +21,8 @@
     "name": "청남대",
     "address": "충청북도 청주시 상당구 문의면 청남대길 646",
     "location": {
-      "latitude": 36.518296,
-      "longitude": 127.482745
+      "latitude": 36.462537,
+      "longitude": 127.490775
     },
     "tell": "043-257-5080",
     "keywords": [
@@ -318,8 +318,8 @@
     "name": "상당산성",
     "address": "충청북도 청주시 상당구 산성동 산28-2",
     "location": {
-      "latitude": 36.607729,
-      "longitude": 127.527424
+      "latitude": 36.661856,
+      "longitude": 127.539881
     },
     "tell": "043-200-2114",
     "keywords": [
@@ -606,8 +606,8 @@
     "name": "국립청주박물관",
     "address": "충청북도 청주시 상당구 명암로 143",
     "location": {
-      "latitude": 36.645512,
-      "longitude": 127.488493
+      "latitude": 36.650066,
+      "longitude": 127.513557
     },
     "tell": "043-229-6500",
     "keywords": [
@@ -835,8 +835,8 @@
     "name": "수암골",
     "address": "충청북도 청주시 상당구 수동 81-12",
     "location": {
-      "latitude": 36.637092,
-      "longitude": 127.493932
+      "latitude": 36.648412,
+      "longitude": 127.497455
     },
     "tell": "043-200-2232",
     "keywords": [],
@@ -1065,8 +1065,8 @@
     "name": "국립현대미술관 청주",
     "address": "충청북도 청주시 상당구 상당로 314",
     "location": {
-      "latitude": 36.640028,
-      "longitude": 127.480653
+      "latitude": 36.656225,
+      "longitude": 127.490148
     },
     "tell": "043-261-1400",
     "keywords": ["미술", "도예", "조각", "회화", "도자기"],
@@ -1279,8 +1279,8 @@
     "name": "청주동물원",
     "address": "28311, 224 명암로 상당구 청주시 충청북도",
     "location": {
-      "latitude": 36.644274,
-      "longitude": 127.492379
+      "latitude": 36.652813,
+      "longitude": 127.523507
     },
     "tell": "043-201-4880",
     "keywords": [],
@@ -1711,8 +1711,8 @@
     "name": "정북동 토성",
     "address": "충청북도 청주시 상당구 정북동 351-1",
     "location": {
-      "latitude": 36.706186,
-      "longitude": 127.512517
+      "latitude": 36.68867,
+      "longitude": 127.456198
     },
     "tell": "043-220-6168",
     "keywords": [],
@@ -1965,8 +1965,8 @@
     "name": "육거리종합시장",
     "address": "충청북도 청주시 상당구 석교동 60-4",
     "location": {
-      "latitude": 36.627768,
-      "longitude": 127.502639
+      "latitude": 36.627884,
+      "longitude": 127.48857
     },
     "tell": "043-223-6696",
     "keywords": [],
@@ -2226,8 +2226,8 @@
     "name": "오창 호수공원",
     "address": "충청북도 청주시 청원구 오창읍 오창공원로 311",
     "location": {
-      "latitude": 36.712622,
-      "longitude": 127.422684
+      "latitude": 36.715488,
+      "longitude": 127.42648
     },
     "tell": "043-201-8622",
     "keywords": [],
@@ -2464,8 +2464,8 @@
     "name": "청주 고인쇄박물관",
     "address": "충청북도 청주시 흥덕구 직지대로 713",
     "location": {
-      "latitude": 36.628568,
-      "longitude": 127.436942
+      "latitude": 36.644389,
+      "longitude": 127.471904
     },
     "tell": null,
     "keywords": [],
@@ -2680,8 +2680,8 @@
     "name": "용화사",
     "address": "충청북도 청주시 서원구 무심서로 565",
     "location": {
-      "latitude": 36.612912,
-      "longitude": 127.488383
+      "latitude": 36.641713,
+      "longitude": 127.482196
     },
     "tell": "043-274-2159",
     "keywords": [],
