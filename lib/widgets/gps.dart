@@ -77,9 +77,13 @@ class _CurrentAddressWidgetState extends State<CurrentAddressWidget> {
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     } else {
+      debugPrint(_currentAddress);
       return Text(
         _currentAddress ?? '주소 없음',
-        style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppColors.marineBlue),
+        style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: AppColors.marineBlue),
         textAlign: TextAlign.center,
       );
     }
