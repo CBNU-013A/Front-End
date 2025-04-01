@@ -57,7 +57,7 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
         _keywords = fetchedKeywords
             .map((json) => {
                   "_id": json["_id"],
-                  "text": json["text"],
+                  "name": json["name"],
                   // ✅ 키워드 내용 저장
                 })
             .toList();
@@ -86,7 +86,8 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
         final List<dynamic> fetchedKeywords = json.decode(response.body);
         debugPrint("✅ 사용자 키워드 불러오기 성공: $fetchedKeywords");
 
-        final List<String> selectedIds = fetchedKeywords.map((k) => k["_id"].toString()).toList();
+        final List<String> selectedIds =
+            fetchedKeywords.map((k) => k["_id"].toString()).toList();
         debugPrint("✅ 사용자 선택 키워드 불러오기 성공: $selectedIds");
 
         setState(() {
@@ -268,7 +269,7 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
                     runSpacing: 3.0, // ✅ 줄 간 세로 간격
                     children: _keywords.map((keyword) {
                       final keywordId = keyword["_id"] ?? "";
-                      final text = keyword["text"] ?? "";
+                      final text = keyword["name"] ?? "";
                       //debugPrint(keyword["text"]);
                       final bool isSelected =
                           _selectedKeywords.contains(keywordId);
@@ -309,7 +310,7 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
                   children: [
                     TextButton(
                       onPressed: () {
-                        _resetKeyword;
+                        _resetKeyword();
                       },
                       child: const Text(
                         "초기화",

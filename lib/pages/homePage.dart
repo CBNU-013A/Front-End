@@ -8,6 +8,8 @@ import 'loginPage.dart'; // 로그아웃 후 로그인 페이지 이동
 import 'package:http/http.dart' as http;
 import 'package:final_project/widgets/gps.dart';
 import 'setKeywordsPage.dart';
+import 'package:final_project/widgets/jaccard.dart';
+import 'package:final_project/widgets/recent_searches.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -18,6 +20,7 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> {
   String userName = '';
+  String userId = '';
   List<String> userPreferences = [];
 
   @override
@@ -30,11 +33,12 @@ class HomePageState extends State<HomePage> {
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     final String? storedUser = prefs.getString("userName");
-    //rfinal List<String>? storedKeywords = prefs.getStringList("userPreferences");
+    final String? storedUserId = prefs.getString("userId");
 
-    if (storedUser != null) {
+    if (storedUser != null && storedUserId != null) {
       setState(() {
         userName = storedUser;
+        userId = storedUserId;
         //userPreferences = storedKeywords;
       });
     }
@@ -166,6 +170,72 @@ class HomePageState extends State<HomePage> {
                             const ShowKeywords(),
                           ],
                         )),
+                    const SizedBox(height: 10),
+                    Container(
+                        // decoration: BoxDecoration(
+                        //   color: Colors.white,
+                        //   shape: BoxShape.rectangle,
+                        //   borderRadius: BorderRadius.circular(10),
+                        //   border: Border(
+                        //     top: BorderSide(
+                        //       color: Colors.grey[500]!,
+                        //       width: 1,
+                        //     ),
+                        //     left: BorderSide(
+                        //       color: Colors.grey[500]!,
+                        //       width: 1,
+                        //     ),
+                        //     right: BorderSide(
+                        //       color: Colors.grey[500]!,
+                        //       width: 1,
+                        //     ),
+                        //   ),
+                        // ),
+                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      left: 16.0, right: 16.0),
+                                  child: Text(
+                                    '$userName 님을 위한 추천 여행지',
+                                    style: const TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: 'Pretendard',
+                                        //letterSpacing: 0.9,
+                                        fontWeight: FontWeight.w700),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            const RecommendationWidget(),
+                            const Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.all(16.0),
+                                  child: Text(
+                                    '최근 본 여행지',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: 'Pretendard',
+                                        //letterSpacing: 0.9,
+                                        fontWeight: FontWeight.w700),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )),
                   ],
                 ),
               ),
@@ -261,7 +331,7 @@ class ShowKeywordsState extends State<ShowKeywords> {
       if (response.statusCode == 200) {
         final List<dynamic> fetchedKeywords = json.decode(response.body);
         final List<String> selectedKeywords =
-            fetchedKeywords.map((k) => k["text"].toString()).toList();
+            fetchedKeywords.map((k) => k['name'].toString()).toList();
 
         setState(() {
           keywords = selectedKeywords; // ✅ 가져온 키워드를 리스트에 저장

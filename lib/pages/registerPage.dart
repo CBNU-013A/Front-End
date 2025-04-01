@@ -207,7 +207,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       ),
                       height: 30,
                       child: ElevatedButton(
-                        style: ButtonStyles.smallButtonStyle(),
+                        style: ButtonStyles.miniButtonStyle(context: context),
                         onPressed: () {
                           _idcheck();
                         },
@@ -272,7 +272,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   height: 30,
                   child: ElevatedButton(
-                    style: ButtonStyles.smallButtonStyle(),
+                    style: ButtonStyles.miniButtonStyle(context: context),
                     onPressed: () {
                       _passwordCheck();
                     },
@@ -335,7 +335,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   SizedBox(
                     height: 50,
                     child: ElevatedButton(
-                      style: ButtonStyles.smallButtonStyle(),
+                      style: ButtonStyles.miniButtonStyle(context: context),
                       onPressed: () => _showDatePicker(context),
                       child: const Text(
                         "선택하기",
@@ -353,7 +353,7 @@ class _RegisterPageState extends State<RegisterPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  style: ButtonStyles.bigButtonStyle(),
+                  style: ButtonStyles.smallButtonStyle(context: context),
                   child: const Text(
                     "뒤로가기",
                     style: TextFiledStyles.textStlye,
@@ -367,8 +367,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 ElevatedButton(
-                  style: ButtonStyles.bigButtonStyle(
-                      backgroundColor: Colors.grey[900]!),
+                  style: ButtonStyles.smallButtonStyle(
+                      context: context, backgroundColor: Colors.grey[900]!),
                   onPressed: () {
                     _register();
                   },

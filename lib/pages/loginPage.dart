@@ -138,7 +138,7 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  style: ButtonStyles.bigButtonStyle(),
+                  style: ButtonStyles.smallButtonStyle(context: context),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -152,8 +152,8 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 ElevatedButton(
-                  style: ButtonStyles.bigButtonStyle(
-                      backgroundColor: Colors.black),
+                  style: ButtonStyles.smallButtonStyle(
+                      context: context, backgroundColor: Colors.black),
                   onPressed: _login,
                   child: Text(
                     "로그인",

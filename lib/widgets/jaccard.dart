@@ -102,7 +102,7 @@ class RecommendationState extends State<RecommendationWidget> {
         .get(Uri.parse("http://localhost:5001/users/$userId/keywords"));
     if (response.statusCode == 200) {
       final List<dynamic> rawKeywords = json.decode(response.body);
-      return rawKeywords.map((e) => e['text'].toString()).toList();
+      return rawKeywords.map((e) => e['name'].toString()).toList();
     } else {
       throw Exception("사용자 키워드 로드 실패");
     }
@@ -125,29 +125,39 @@ class RecommendationState extends State<RecommendationWidget> {
 
     for (var place in allPlaces) {
       final List<dynamic> placeKeywords = place['keywords'] ?? [];
-      final Set<String> placeSet =
-          placeKeywords.map((e) => e.toString()).toSet();
-      final Set<String> userSet = userKeywords.toSet();
 
-      final intersection = userSet.intersection(placeSet);
-      final union = userSet.union(placeSet);
+      // Map<String, int> 형태로 변환: {'가격': 20, '청결': 12, ...}
+      final Map<String, int> placeKeywordMap = {
+        for (var k in placeKeywords)
+          if (k is Map<String, dynamic> &&
+              k['name'] != null &&
+              k['sentiment'] != null &&
+              k['sentiment']['total'] != null)
+            k['name'].toString(): k['sentiment']['total'] ?? 0
+      };
 
-      final double similarity =
-          union.isEmpty ? 0.0 : intersection.length / union.length;
+      // 사용자 키워드 중 이 장소에 포함된 키워드의 total 점수를 합산
+      double score = 0.0;
 
-      if (similarity > 0.0) {
-        final fullPlace = {
+      for (String keyword in userKeywords) {
+        if (placeKeywordMap.containsKey(keyword)) {
+          score += placeKeywordMap[keyword]!.toDouble();
+        }
+      }
+
+      if (score > 0) {
+        scoredPlaces.add({
           '_id': place['_id'],
           'name': place['name'],
-          'score': similarity.toStringAsFixed(2),
-        };
-        //debugPrint("✅ 추천된 장소 전체 정보: $fullPlace");
-        scoredPlaces.add(fullPlace);
+          'score': score.toStringAsFixed(2),
+        });
       }
     }
 
     scoredPlaces.sort(
-        (a, b) => double.parse(b['score']).compareTo(double.parse(a['score'])));
+      (a, b) => double.parse(b['score']).compareTo(double.parse(a['score'])),
+    );
+
     return scoredPlaces;
   }
 
@@ -158,81 +168,102 @@ class RecommendationState extends State<RecommendationWidget> {
       return const Center(child: CircularProgressIndicator());
     }
 
-    // if (_recommendations.isEmpty) {
-    //   return const Center(child: Text("추천 결과가 없습니다."));
-    // }
-
     final places = _recommendations!.values.toList();
-    return SizedBox(
-      height: 320,
-      child: PageView.builder(
-        itemCount: _recommendations?.length,
-        controller: PageController(viewportFraction: 1),
-        itemBuilder: (context, index) {
-          final place = places[index];
+    if (places.isNotEmpty) {
+      return SizedBox(
+        height: 280,
+        width: MediaQuery.of(context).size.width,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: _recommendations?.length,
+          controller: PageController(viewportFraction: 0.85),
+          itemBuilder: (context, index) {
+            final place = places[index];
 
-          // debugPrint(
-          //     "✅ 추천 장소: ${place['name']} ${place['_id']} (유사도: ${place['score']})");
-          debugPrint(place['image']?.toString());
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 1, vertical: 1),
-            child: Card(
-              //elevation: 5,
-              color: AppColors.paleGray,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
+            debugPrint(place['image']?.toString());
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: Container(
+                height: 300,
+                width: 160,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.15),
+                      spreadRadius: 2,
+                      blurRadius: 6,
+                      offset: const Offset(0, 3),
+                    )
+                  ],
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // _buildImageSection(),
-                    if (place['image'] != null &&
-                        place['image'] is List &&
-                        place['image'].isNotEmpty) ...[
-                      SizedBox(
-                        height: 200,
-                        child: ListView.separated(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: place['image'].length,
-                          separatorBuilder: (context, index) =>
-                              const SizedBox(width: 8),
-                          itemBuilder: (context, index) {
-                            return ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                place['image'][index],
-                                width: 300,
-                                height: 200,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const Text("이미지 오류"),
+                    ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(16),
+                          bottom: Radius.circular(10)),
+                      child: Image.network(
+                        place['image'][0],
+                        height: 160,
+                        width: 160,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          height: 120,
+                          color: Colors.grey[300],
+                          child: const Center(child: Icon(Icons.broken_image)),
+                        ),
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                            GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetailPage(
+                                place: place['name'],
+                                ),
                               ),
-                            );
-                          },
-                        ),
+                              );
+                            },
+                            child: Text(
+                              place['name'] ?? '정보 없음',
+                              style: const TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              softWrap: true,
+                            ),
+                            ),
+                          const SizedBox(height: 2),
+                          // Text(
+                          //   place['address'] ?? '',
+                          //   style: const TextStyle(
+                          //     fontSize: 12,
+                          //     color: Colors.grey,
+                          //   ),
+                          // ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        place['name'] ?? '정보 오류',
-                        style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        "유사도: ${place['score']}",
-                        style: const TextStyle(),
-                      ),
-                    ],
+                    ),
                   ],
                 ),
               ),
-            ),
-          );
-        },
-      ),
-    );
+            );
+          },
+        ),
+      );
+    } else {
+      return const SizedBox(child: Text("추천 항목이 없어요🥲"));
+    }
   }
 }

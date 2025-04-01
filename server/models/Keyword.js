@@ -1,8 +1,23 @@
 const mongoose = require("mongoose");
 
-const KeywordSchema = new mongoose.Schema({
-  //id: { type: String, required: false, unique: true }, // 키워드 id
-  text: { type: String, required: true , unique : true}, // 키워드 텍스트
-});
+const sentimentSchema = new mongoose.Schema(
+  {
+    none: { type: Number, default: 0 },
+    pos: { type: Number, default: 0 },
+    neg: { type: Number, default: 0 },
+    neu: { type: Number, default: 0 },
+    total: { type: Number, default: 0 },
+  },
+  { _id: false }
+);
 
-module.exports = mongoose.model("Keyword", KeywordSchema);
+const KeywordSchema = new mongoose.Schema(
+  {
+    name: { type: String, unique: true }, // 키워드 텍스트
+    sentiment: sentimentSchema,
+  },
+  { _id: false }
+);
+
+module.exports =
+  mongoose.models.Keyword || mongoose.model("Keyword", KeywordSchema);

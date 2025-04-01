@@ -1,40 +1,3 @@
-// const mongoose = require("mongoose");
-// const connectDB = require("./database"); // DB 연결 코드
-// const Location = require("./models/Location");
-
-// async function insertLocation() {
-//   await connectDB(); // MongoDB 연결
-//   const path = "./json/location.json";
-
-//     // ✅ map의 모든 비동기 작업이 완료될 때까지 기다리기 위해 Promise.all 사용
-//     await Promise.all(
-//       sampleLocation.map(async (location) => {
-//         try {
-//           const updatedLocation = await Location.findOneAndUpdate(
-//             // 검색 조건: id가 동일한 경우
-//             location, // 업데이트할 데이터
-//             { new: true, upsert: true } // `new: true`는 업데이트 후 결과 반환, `upsert: true`는 없으면 새로 추가
-//           );
-
-//           if (updatedLocation) {
-//             console.log(
-//               `✅ 장소 저장 완료 (업데이트 또는 추가됨): ${location.name}`
-//             );
-//           }
-//         } catch (error) {
-//           console.error("❌ 장소 저장 실패:", error);
-//         }
-//       })
-//     );
-//   } catch (error) {
-//     console.error("❌ 전체 과정 중 오류 발생:", error);
-//   } finally {
-//     mongoose.connection.close(); // 연결 종료
-//     console.log("✅ MongoDB 연결 종료");
-//   }
-
-// insertLocation();
-
 const mongoose = require("mongoose");
 const fs = require("fs");
 const path = require("path");
@@ -59,7 +22,7 @@ async function insertLocation() {
           const updatedLocation = await Location.findOneAndUpdate(
             { name: location.name }, // 🔹 검색 조건 (ID 기준)
             location, // 업데이트할 데이터
-            { new: true, upsert: true } // ✅ 없으면 삽입 (upsert), 있으면 업데이트
+            { new: true, upsert: true, runValidators: true } // ✅ 없으면 삽입 (upsert), 있으면 업데이트
           );
 
           if (updatedLocation) {

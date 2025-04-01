@@ -7,7 +7,144 @@
       "longitude": 126.943828
     },
     "tell": "064-710-7923",
-    "keywords": ["자연", "산", "리뷰를", "추가함", "데이터", "없어요"],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 5,
+          "neu": 0,
+          "total": 3,
+          "neg": 1,
+          "pos": 2
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 175,
+          "neu": 13,
+          "total": 40,
+          "pos": 22,
+          "neg": 5
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 169,
+          "total": 200,
+          "neg": 19,
+          "neu": 12,
+          "none": 15
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 186,
+          "neg": 16,
+          "total": 29,
+          "neu": 11,
+          "pos": 2
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 178,
+          "pos": 31,
+          "total": 37,
+          "neu": 3,
+          "neg": 3
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 179,
+          "neg": 11,
+          "total": 36,
+          "neu": 3,
+          "pos": 22
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 183,
+          "neu": 8,
+          "total": 32,
+          "neg": 5,
+          "pos": 19
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 179,
+          "pos": 12,
+          "total": 36,
+          "neg": 16,
+          "neu": 8
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 208,
+          "pos": 4,
+          "total": 7,
+          "neg": 3
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 113,
+          "pos": 79,
+          "total": 102,
+          "neu": 7,
+          "neg": 16
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 84,
+          "total": 95,
+          "none": 120,
+          "neg": 7,
+          "neu": 4
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 209,
+          "neg": 5,
+          "total": 6,
+          "pos": 1
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 96,
+          "total": 106,
+          "none": 109,
+          "neg": 7,
+          "neu": 3
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 212,
+          "pos": 3,
+          "total": 3
+        }
+      }
+    ],
     "review": ["성산일출봉 리뷰1", "성산일출봉 리뷰2", "성산일출봉 리뷰3"],
     "image": [
       "https://encrypted-tbn1.gstatic.com/licensed-image?q=tbn:ANd9GcRM3zWKXQfX-6vd3wKpn-yTPoj0oWIuAVgg7TQi6T-AzbYMe0quwmnB8PDPryYMnwKMdEdatbiCoGWUpz7DiXfIqSX0pl2culQjx9xu5ck",
@@ -26,21 +163,142 @@
     },
     "tell": "043-257-5080",
     "keywords": [
-      "단풍",
-      "조경",
-      "경치",
-      "국화",
-      "산책로",
-      "호수",
-      "역사",
-      "풍경",
-      "숲",
-      "정취",
-      "볼거리",
-      "정원",
-      "전망대",
-      "경관",
-      "둘레길"
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 212,
+          "neg": 16,
+          "total": 19,
+          "neu": 1,
+          "pos": 2
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 174,
+          "pos": 37,
+          "total": 57,
+          "neu": 19,
+          "neg": 1
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 210,
+          "total": 222,
+          "neg": 2,
+          "none": 9,
+          "neu": 10
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 188,
+          "neu": 13,
+          "total": 43,
+          "pos": 25,
+          "neg": 5
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 135,
+          "pos": 90,
+          "total": 96,
+          "neg": 6
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 176,
+          "neg": 11,
+          "total": 55,
+          "pos": 36,
+          "neu": 8
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 170,
+          "pos": 53,
+          "total": 61,
+          "neg": 2,
+          "neu": 6
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 180,
+          "neu": 11,
+          "total": 51,
+          "pos": 20,
+          "neg": 20
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 207,
+          "neg": 10,
+          "total": 24,
+          "pos": 14
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 74,
+          "pos": 143,
+          "total": 157,
+          "neg": 6,
+          "neu": 8
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 80,
+          "total": 97,
+          "none": 134,
+          "neg": 5,
+          "neu": 12
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 220,
+          "pos": 10,
+          "total": 11,
+          "neg": 1
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 145,
+          "total": 149,
+          "none": 82,
+          "neg": 3,
+          "neu": 1
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 194,
+          "pos": 32,
+          "total": 37,
+          "neu": 5
+        }
+      }
     ],
     "review": [
       "1980년 대청댐 준공식에 참석한 전두환 대통령이 대청호 일대의 경관에 매료되어 중부권에 별장의 필요성이 논의되었고 주변 환경과 지리적 요건이 잘 맞아 경호실장에 의해 1983년 6월 착공, 6개월만인 12월에 완공되었다. ‘청남대’는 충청북도 청주시 대청댐 부근 1,825,647㎡ 의 면적에 지어진 대통령 전용별장으로 ‘따뜻한 남쪽의 청와대’라는 의미이다.",
@@ -323,24 +581,138 @@
     },
     "tell": "043-200-2114",
     "keywords": [
-      "경치",
-      "성곽",
-      "성벽",
-      "풍경",
-      "산성",
-      "잔디밭",
-      "경사",
-      "벚꽃",
-      "전망",
-      "주차장",
-      "역사",
-      "잔디",
-      "기념물",
-      "그늘",
-      "단풍",
-      "피크닉",
-      "저수지",
-      "경관"
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 265,
+          "neg": 3,
+          "total": 4,
+          "pos": 1
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 210,
+          "pos": 39,
+          "total": 59,
+          "neg": 3,
+          "neu": 17
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 249,
+          "total": 261,
+          "neu": 8,
+          "neg": 4,
+          "none": 8
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 246,
+          "pos": 8,
+          "total": 23,
+          "neu": 14,
+          "neg": 1
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 214,
+          "pos": 52,
+          "total": 55,
+          "neu": 3
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 243,
+          "neg": 2,
+          "total": 26,
+          "neu": 9,
+          "pos": 15
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 151,
+          "pos": 105,
+          "total": 118,
+          "neu": 10,
+          "neg": 3
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 193,
+          "pos": 56,
+          "total": 76,
+          "neg": 15,
+          "neu": 5
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 269
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 78,
+          "pos": 176,
+          "total": 191,
+          "neg": 5,
+          "neu": 10
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 64,
+          "total": 73,
+          "none": 196,
+          "neu": 8,
+          "neg": 1
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 263,
+          "neg": 2,
+          "total": 6,
+          "pos": 4
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 176,
+          "total": 182,
+          "none": 87,
+          "neu": 4,
+          "neg": 2
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 255,
+          "pos": 11,
+          "total": 14,
+          "neu": 3
+        }
+      }
     ],
     "review": [
       "산성이 처음 축성된 것은 백제시대 때 토성으로 만들어진 것으로 추정되며 상당산성이라는 이름은 백제의 상당현에서 유래한 것으로 보는 견해도 있고, 통일신라 때 행정구역인 서원소경이 청주에 설치되는데 이때 김유신의 셋째 아들 김원정(원정공)이 서원술성을 쌓았다는 기록이 전하기도 한다. 이후 조선시대 선조 29년 임진왜란 당시 개축되었다가 숙종 때 석성으로 개축하였다.",
@@ -598,8 +970,8 @@
       "멋진 산책을 즐길 수 있습니다."
     ],
     "image": [
-      "https://i.namu.wiki/i/gGLNPqMjhhHosghyN8Qu_wnHrPRtJCJGCMp-bPGWN1lViqBlxaXWiit9_ewCEZIFoPlwO5EcxWEjQ9hxqsYRZFZ6LPnket3cXkFMevXukpJoNDiVlZB8-WwhSBoLvU6_PR9VK8kSTHEnjDxwyvUnLQ.webp",
-      "https://i.namu.wiki/i/kIQOuRTAhrw08ihznPgbgsQzu0UA2wKFtq66UlRsEJ9pv7O0ajHud6TjA5Hob9-sC18_72NsHI0tRvYMRYwAP18xG4vVk-vUliz43pReWRoKT5eqRHHrGM9qe3NmM40DvbkyOkzYUR4tc5hR8re9-g.webp"
+      "https://lh5.googleusercontent.com/p/AF1QipM_CZU4M4WcO79koVAKSrc819MkARVpKqRJa7nt=w408-h306-k-no",
+      "https://lh5.googleusercontent.com/p/AF1QipM_CZU4M4WcO79koVAKSrc819MkARVpKqRJa7nt=w408-h306-k-no"
     ]
   },
   {
@@ -611,14 +983,142 @@
     },
     "tell": "043-229-6500",
     "keywords": [
-      "단풍",
-      "조경",
-      "정원",
-      "건축",
-      "석상",
-      "경관",
-      "역사",
-      "국보"
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 190,
+          "pos": 18,
+          "total": 22,
+          "neg": 4
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 129,
+          "pos": 76,
+          "total": 83,
+          "neu": 6,
+          "neg": 1
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 143,
+          "total": 151,
+          "none": 61,
+          "neg": 2,
+          "neu": 6
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 179,
+          "neu": 14,
+          "total": 33,
+          "neg": 16,
+          "pos": 3
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 122,
+          "pos": 86,
+          "total": 90,
+          "neu": 2,
+          "neg": 2
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 147,
+          "neu": 8,
+          "total": 65,
+          "pos": 54,
+          "neg": 3
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 148,
+          "pos": 58,
+          "total": 64,
+          "neg": 3,
+          "neu": 3
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 192,
+          "pos": 9,
+          "total": 20,
+          "neu": 9,
+          "neg": 2
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 114,
+          "pos": 84,
+          "total": 98,
+          "neg": 10,
+          "neu": 4
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 101,
+          "pos": 106,
+          "total": 111,
+          "neu": 4,
+          "neg": 1
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 95,
+          "total": 100,
+          "none": 112,
+          "neg": 4,
+          "neu": 1
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 195,
+          "pos": 16,
+          "total": 17,
+          "neu": 1
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 70,
+          "total": 72,
+          "none": 140,
+          "neg": 2
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 204,
+          "pos": 6,
+          "total": 8,
+          "neu": 2
+        }
+      }
     ],
     "review": [
       "박물관 내 단풍이 아기자기하고 예쁩니다. 특히 전시관 뒤편 은행나무길이 예쁩니다. 전시품들은 청주에서 출토된 유물들인 거 같은데 규모가 크진 않지만 알찬 거 같네요. 전시 관람은 무료입니다.",
@@ -839,7 +1339,144 @@
       "longitude": 127.497455
     },
     "tell": "043-200-2232",
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 204,
+          "neu": 1,
+          "total": 11,
+          "neg": 9,
+          "pos": 1
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 175,
+          "neu": 13,
+          "total": 40,
+          "pos": 22,
+          "neg": 5
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 169,
+          "total": 200,
+          "neg": 19,
+          "neu": 12,
+          "none": 15
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 186,
+          "neg": 16,
+          "total": 29,
+          "neu": 11,
+          "pos": 2
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 178,
+          "pos": 31,
+          "total": 37,
+          "neu": 3,
+          "neg": 3
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 179,
+          "neg": 11,
+          "total": 36,
+          "neu": 3,
+          "pos": 22
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 183,
+          "neu": 8,
+          "total": 32,
+          "neg": 5,
+          "pos": 19
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 179,
+          "pos": 12,
+          "total": 36,
+          "neg": 16,
+          "neu": 8
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 208,
+          "pos": 4,
+          "total": 7,
+          "neg": 3
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 113,
+          "pos": 79,
+          "total": 102,
+          "neu": 7,
+          "neg": 16
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 84,
+          "total": 95,
+          "none": 120,
+          "neg": 7,
+          "neu": 4
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 209,
+          "neg": 5,
+          "total": 6,
+          "pos": 1
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 96,
+          "total": 106,
+          "none": 109,
+          "neg": 7,
+          "neu": 3
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 212,
+          "pos": 3,
+          "total": 3
+        }
+      }
+    ],
     "review": [
       "드라마 김탁구 영광의재인촬영지 라 좋았어요 아직 청주의 옛날 달동네 형태가 남아있어 좋아요",
       "청주시내가 한번에 볼수있는 대표적인 벽화마을입니다. 드라마 촬영장소로 유명한 동네입니다. 근처에는 청주대학교가 가깝습니다. 자동차로 이동하고 공영주차장에 무료로 주차하시면 됩니다.",
@@ -1069,7 +1706,106 @@
       "longitude": 127.490148
     },
     "tell": "043-261-1400",
-    "keywords": ["미술", "도예", "조각", "회화", "도자기"],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": { "none": 165, "pos": 23, "total": 34, "neg": 11 }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 149,
+          "neu": 14,
+          "total": 50,
+          "pos": 32,
+          "neg": 4
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 130,
+          "total": 156,
+          "neu": 20,
+          "none": 43,
+          "neg": 6
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 142,
+          "neu": 16,
+          "total": 57,
+          "neg": 13,
+          "pos": 28
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": { "none": 114, "pos": 81, "total": 85, "neg": 3, "neu": 1 }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 99,
+          "pos": 69,
+          "total": 100,
+          "neg": 24,
+          "neu": 7
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": { "none": 170, "pos": 21, "total": 29, "neu": 4, "neg": 4 }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 163,
+          "pos": 15,
+          "total": 36,
+          "neu": 9,
+          "neg": 12
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 60,
+          "pos": 121,
+          "total": 139,
+          "neg": 15,
+          "neu": 3
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 136,
+          "pos": 45,
+          "total": 63,
+          "neu": 15,
+          "neg": 3
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": { "pos": 94, "total": 102, "none": 97, "neu": 2, "neg": 6 }
+      },
+      {
+        "name": "청결",
+        "sentiment": { "none": 185, "pos": 13, "total": 14, "neu": 1 }
+      },
+      {
+        "name": "평화",
+        "sentiment": { "pos": 43, "total": 51, "none": 148, "neu": 6, "neg": 2 }
+      },
+      {
+        "name": "호수",
+        "sentiment": { "none": 198, "neu": 1, "total": 1 }
+      }
+    ],
     "review": [
       "주기적으로 방문할만할 가치가 있습니다. 주차 공간도 여유롭고 산책 공간도 넓습니다. 주말에 방문하면 수장고에도 차례로 입장 가능합니다.",
       "청주문화제조창에 청주 구도심을 복원한 조형물이 설치되어 있네요. 청주문화제조창 취지에 맞게 잘 복원이 된 것 같습니다.",
@@ -1283,7 +2019,124 @@
       "longitude": 127.523507
     },
     "tell": "043-201-4880",
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 121,
+          "neg": 14,
+          "total": 85,
+          "pos": 70,
+          "neu": 1
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 71,
+          "pos": 106,
+          "total": 135,
+          "neu": 15,
+          "neg": 14
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 96,
+          "total": 157,
+          "none": 49,
+          "neu": 50,
+          "neg": 11
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 150,
+          "neg": 26,
+          "total": 56,
+          "pos": 13,
+          "neu": 17
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": { "none": 203, "pos": 2, "total": 3, "neu": 1 }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 160,
+          "pos": 28,
+          "total": 46,
+          "neg": 15,
+          "neu": 3
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 130,
+          "pos": 62,
+          "total": 76,
+          "neg": 11,
+          "neu": 3
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 177,
+          "neg": 15,
+          "total": 29,
+          "pos": 11,
+          "neu": 3
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 169,
+          "pos": 25,
+          "total": 37,
+          "neg": 11,
+          "neu": 1
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 97,
+          "pos": 73,
+          "total": 109,
+          "neu": 13,
+          "neg": 23
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 100,
+          "total": 114,
+          "none": 92,
+          "neg": 11,
+          "neu": 3
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": { "none": 195, "pos": 8, "total": 11, "neg": 3 }
+      },
+      {
+        "name": "평화",
+        "sentiment": { "pos": 56, "total": 67, "none": 139, "neu": 6, "neg": 5 }
+      },
+      {
+        "name": "호수",
+        "sentiment": { "none": 202, "pos": 3, "total": 4, "neu": 1 }
+      }
+    ],
     "review": [
       "선선한 가을바람 즐기며 산책하듯 다녀오니 좋았습니다. 날씨가 좋아서인지 많은동물들이 밖에나와서 관중입장에서는 볼것도 많았습니다. 사육사 아저씨들도 친절하시고 가을단풍도 예뻤습니다. 4계절 다녀도 좋은곳 입니다.",
       "입장료 천원으로 이렇게 많은 동물들을 만나볼 수 있다니.. 동물원에 오게 된 동물들의 사연들도 같이 있어 뜻 깊었던 것 같아요. 애정으로 돌보시는 것이 느껴지는 장소였고 행복한 시간이었습니다♡",
@@ -1491,7 +2344,141 @@
       "longitude": 127.437774
     },
     "tell": "043-201-0732",
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 219,
+          "pos": 3,
+          "total": 3
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 86,
+          "pos": 123,
+          "total": 136,
+          "neg": 3,
+          "neu": 10
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 175,
+          "total": 190,
+          "neu": 12,
+          "none": 32,
+          "neg": 3
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 177,
+          "neu": 15,
+          "total": 45,
+          "pos": 22,
+          "neg": 8
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 220,
+          "pos": 2,
+          "total": 2
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 147,
+          "pos": 60,
+          "total": 75,
+          "neg": 8,
+          "neu": 7
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 100,
+          "pos": 115,
+          "total": 122,
+          "neg": 4,
+          "neu": 3
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 195,
+          "pos": 14,
+          "total": 27,
+          "neu": 6,
+          "neg": 7
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 221,
+          "neg": 1,
+          "total": 1
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 51,
+          "pos": 153,
+          "total": 171,
+          "neu": 9,
+          "neg": 9
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 51,
+          "total": 58,
+          "none": 164,
+          "neg": 3,
+          "neu": 4
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 192,
+          "pos": 23,
+          "total": 30,
+          "neg": 5,
+          "neu": 2
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 128,
+          "total": 133,
+          "none": 89,
+          "neg": 4,
+          "neu": 1
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 214,
+          "pos": 5,
+          "total": 8,
+          "neu": 3
+        }
+      }
+    ],
     "review": [
       "강아지가 킁킁 거리며  향기도  맡아보면서 꽃길을 걸었어요.  예쁘게 사진도 찍고 함께 가서 공놀이도 하면서 즐거운 시간을 보냈어요. 강아지가 손흥민 선수처럼 축구공을 잘 몰고 다니며 놀아서 보시는 분들이 즐거워했습니다.",
       "문암생태공원 만보걷기 하러 왔네요...햇볕은 더웠으나 나무그늘은 바람도 시원해서 좋았습니다. 날씨가 좋으면 가끔 걷기운동 좋아요...*^^*",
@@ -1715,7 +2702,144 @@
       "longitude": 127.456198
     },
     "tell": "043-220-6168",
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 185,
+          "pos": 1,
+          "total": 4,
+          "neg": 3
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 147,
+          "neu": 11,
+          "total": 42,
+          "neg": 5,
+          "pos": 26
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 173,
+          "total": 184,
+          "neu": 7,
+          "neg": 4,
+          "none": 5
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 150,
+          "neu": 12,
+          "total": 39,
+          "pos": 12,
+          "neg": 15
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 161,
+          "pos": 26,
+          "total": 28,
+          "neg": 2
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 166,
+          "pos": 5,
+          "total": 23,
+          "neg": 15,
+          "neu": 3
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 149,
+          "neu": 5,
+          "total": 40,
+          "pos": 31,
+          "neg": 4
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 165,
+          "pos": 7,
+          "total": 24,
+          "neg": 14,
+          "neu": 3
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 185,
+          "neg": 3,
+          "total": 4,
+          "pos": 1
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 84,
+          "pos": 79,
+          "total": 105,
+          "neu": 5,
+          "neg": 21
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 29,
+          "total": 37,
+          "none": 152,
+          "neu": 4,
+          "neg": 4
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 178,
+          "neg": 6,
+          "total": 11,
+          "pos": 5
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 105,
+          "total": 116,
+          "none": 73,
+          "neg": 10,
+          "neu": 1
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 184,
+          "neu": 2,
+          "total": 5,
+          "pos": 2,
+          "neg": 1
+        }
+      }
+    ],
     "review": [
       "처음으로 정붓공 토성에 가봤습니다. 특별한 곳은 아니었지만 그래도 한번은 가볼만 했습니다. 오전 10시쯤 사진 찍으면서 한바퀴 돌아봤는데 가을이라 그런지 시원스러워서 좋았고 차를 타니까 덥네요...한번은 가볼만 합니다...*^^*",
       "영조 20년(1744)에 상당산성의 승장(僧長)으로 있던 영휴(靈休)가 쓴 《상당산성고금사적기(上黨山城古今事蹟記)》에 다음과 같은 기록이 보인다. \"신라 말에 궁예(弓裔)가 양길(梁吉)의 부하로 있다가 군사를 나누어 동쪽을 공략할 때에 지금의 상당산성을 쌓고 근거지로 삼았다. 후에 후백제의…",
@@ -1969,7 +3093,141 @@
       "longitude": 127.48857
     },
     "tell": "043-223-6696",
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 157,
+          "pos": 54,
+          "total": 90,
+          "neg": 31,
+          "neu": 5
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 204,
+          "neu": 20,
+          "total": 43,
+          "pos": 22,
+          "neg": 1
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 120,
+          "total": 151,
+          "neu": 29,
+          "none": 96,
+          "neg": 2
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 173,
+          "pos": 61,
+          "total": 74,
+          "neu": 9,
+          "neg": 4
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 227,
+          "neu": 4,
+          "total": 20,
+          "pos": 15,
+          "neg": 1
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 185,
+          "pos": 44,
+          "total": 62,
+          "neg": 14,
+          "neu": 4
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 229,
+          "pos": 15,
+          "total": 18,
+          "neu": 3
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 209,
+          "neu": 5,
+          "total": 38,
+          "neg": 11,
+          "pos": 22
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 246,
+          "neu": 1,
+          "total": 1
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 184,
+          "pos": 52,
+          "total": 63,
+          "neg": 5,
+          "neu": 6
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 110,
+          "total": 121,
+          "none": 126,
+          "neg": 8,
+          "neu": 3
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 225,
+          "pos": 18,
+          "total": 22,
+          "neg": 3,
+          "neu": 1
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 18,
+          "total": 27,
+          "none": 220,
+          "neg": 4,
+          "neu": 5
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 247
+        }
+      }
+    ],
     "review": [
       "청주시 최대규모의 상설종합재래시장",
       "국수랑 만두 돈까스 다 너무 맛있게 잘 먹었습니다~",
@@ -2230,7 +3488,120 @@
       "longitude": 127.42648
     },
     "tell": "043-201-8622",
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 21
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 13,
+          "pos": 6,
+          "total": 8,
+          "neu": 2
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 21,
+          "total": 21
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 19,
+          "pos": 1,
+          "total": 2,
+          "neu": 1
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 21
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 17,
+          "pos": 4,
+          "total": 4
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 8,
+          "pos": 12,
+          "total": 13,
+          "neu": 1
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 17,
+          "pos": 4,
+          "total": 4
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 21
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 1,
+          "pos": 18,
+          "total": 20,
+          "neg": 2
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 9,
+          "total": 10,
+          "none": 11,
+          "neu": 1
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 20,
+          "neg": 1,
+          "total": 1
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 18,
+          "total": 19,
+          "none": 2,
+          "neg": 1
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 12,
+          "pos": 8,
+          "total": 9,
+          "neu": 1
+        }
+      }
+    ],
     "review": [
       "반려견과 산책하러 가끔 방문합니다. 넓어서 좋고 오리 구경도 할 수 있습니다. 소문에 의하면 오리알 훔쳐가는 새끼가 있다고 합니다.",
       "친구와 오창에 방문했을 때 오리도 구경하고 홈플러스에서 당당치킨을 사와서 버스킹하는 것도 들으면서 구경했습니다. 이 호수를 보면서 힐링했던 것 같습니다!",
@@ -2468,7 +3839,144 @@
       "longitude": 127.471904
     },
     "tell": null,
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 193,
+          "pos": 9,
+          "total": 15,
+          "neg": 6
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 155,
+          "pos": 44,
+          "total": 53,
+          "neu": 5,
+          "neg": 4
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 127,
+          "total": 152,
+          "none": 56,
+          "neu": 22,
+          "neg": 3
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 188,
+          "neu": 9,
+          "total": 20,
+          "neg": 10,
+          "pos": 1
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 102,
+          "pos": 103,
+          "total": 106,
+          "neu": 2,
+          "neg": 1
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 175,
+          "pos": 24,
+          "total": 33,
+          "neu": 3,
+          "neg": 6
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 167,
+          "pos": 36,
+          "total": 41,
+          "neg": 4,
+          "neu": 1
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 189,
+          "neu": 4,
+          "total": 19,
+          "pos": 10,
+          "neg": 5
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 134,
+          "pos": 70,
+          "total": 74,
+          "neg": 3,
+          "neu": 1
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 166,
+          "neg": 2,
+          "total": 42,
+          "neu": 7,
+          "pos": 33
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 103,
+          "total": 109,
+          "none": 99,
+          "neu": 2,
+          "neg": 4
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 196,
+          "pos": 12,
+          "total": 12
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 59,
+          "total": 62,
+          "none": 146,
+          "neu": 1,
+          "neg": 2
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 203,
+          "neu": 2,
+          "total": 5,
+          "pos": 3
+        }
+      }
+    ],
     "review": [
       "충청북도 청주시 흥덕구 직지대로 713…",
       "유네스코 등재된 우리의 금속활자 직지에 대해 잘 알 수 있다. 흥덕사 절터도 볼 수있다",
@@ -2684,7 +4192,133 @@
       "longitude": 127.482196
     },
     "tell": "043-274-2159",
-    "keywords": [],
+    "keywords": [
+      {
+        "name": "가격",
+        "sentiment": {
+          "none": 112,
+          "pos": 1,
+          "total": 1
+        }
+      },
+      {
+        "name": "가족친화",
+        "sentiment": {
+          "none": 104,
+          "pos": 8,
+          "total": 9,
+          "neu": 1
+        }
+      },
+      {
+        "name": "경관",
+        "sentiment": {
+          "pos": 96,
+          "total": 102,
+          "none": 11,
+          "neu": 4,
+          "neg": 2
+        }
+      },
+      {
+        "name": "규모",
+        "sentiment": {
+          "none": 104,
+          "pos": 3,
+          "total": 9,
+          "neu": 4,
+          "neg": 2
+        }
+      },
+      {
+        "name": "문화유산",
+        "sentiment": {
+          "none": 64,
+          "pos": 49,
+          "total": 49
+        }
+      },
+      {
+        "name": "시설",
+        "sentiment": {
+          "none": 110,
+          "pos": 3,
+          "total": 3
+        }
+      },
+      {
+        "name": "액티비티",
+        "sentiment": {
+          "none": 105,
+          "pos": 8,
+          "total": 8
+        }
+      },
+      {
+        "name": "접근성",
+        "sentiment": {
+          "none": 92,
+          "neu": 4,
+          "total": 21,
+          "pos": 15,
+          "neg": 2
+        }
+      },
+      {
+        "name": "전시",
+        "sentiment": {
+          "none": 110,
+          "pos": 3,
+          "total": 3
+        }
+      },
+      {
+        "name": "환경",
+        "sentiment": {
+          "none": 72,
+          "pos": 38,
+          "total": 41,
+          "neu": 2,
+          "neg": 1
+        }
+      },
+      {
+        "name": "체험",
+        "sentiment": {
+          "pos": 40,
+          "total": 41,
+          "none": 72,
+          "neu": 1
+        }
+      },
+      {
+        "name": "청결",
+        "sentiment": {
+          "none": 111,
+          "pos": 2,
+          "total": 2
+        }
+      },
+      {
+        "name": "평화",
+        "sentiment": {
+          "pos": 74,
+          "total": 77,
+          "none": 36,
+          "neu": 2,
+          "neg": 1
+        }
+      },
+      {
+        "name": "호수",
+        "sentiment": {
+          "none": 107,
+          "neu": 3,
+          "total": 6,
+          "pos": 3
+        }
+      }
+    ],
     "review": [
       "템플스테이를 도심에서!! 속세를 떠나온 느낌을 받긴 쪼~끔 어렵지만 그렇기때문에 더 신선한 사찰경험이 가능했어요.",
       "도심에서 멋진 석불을 보고싶다면 꼭 들러볼만 합니다. 특히 벚꽃이 흩날리는 계절엔 최고의 명소입니다.",

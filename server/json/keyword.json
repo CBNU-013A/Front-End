@@ -1,0 +1,142 @@
+[
+  {
+    "name": "가족친화",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "가격",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "경관",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "규모",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "문화유산",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "시설",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "액티비티",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "접근성",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "전시",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "환경",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "체험",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "청결",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "평화",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  },
+  {
+    "name": "호수",
+    "sentiment": {
+      "none": 0,
+      "pos": 0,
+      "neg": 0,
+      "neu": 0,
+      "total": 0
+    }
+  }
+]

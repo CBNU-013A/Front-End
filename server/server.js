@@ -134,7 +134,7 @@ app.get("/users/:userId/keywords", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId).populate(
       "keywords",
-      "text"
+      "name"
     );
 
     if (!user) {
@@ -209,7 +209,7 @@ app.delete("/users/:userId/keywords/:keywordId", async (req, res) => {
 //  모든 키워드 반환하는 API (text & id 포함)
 app.get("/keywords/all", async (req, res) => {
   try {
-    const keywords = await Keyword.find({}, { text: 1 }); // ✅ _id는 기본 포함됨
+    const keywords = await Keyword.find({}, { name: 1 }); // ✅ _id는 기본 포함됨
 
     res.json(keywords); // ✅ 전체 키워드 리스트 반환 (text, _id 포함)
   } catch (error) {

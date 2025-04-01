@@ -55,7 +55,8 @@ class TextFiledStyles {
 class ButtonStyles {
   /// ElevatedButton의 기본 스타일 정의
   static ButtonStyle smallButtonStyle({
-    double width = 50,
+    required BuildContext context,
+    double widthFactor = 0.45,
     double height = 40,
     Color foregroundColor = Colors.black, // Colors.grey[700]
     Color backgroundColor = Colors.white, // Colors.grey[200]
@@ -64,6 +65,33 @@ class ButtonStyles {
     EdgeInsetsGeometry padding =
         const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
   }) {
+    final double width = MediaQuery.of(context).size.width * widthFactor;
+
+    return ElevatedButton.styleFrom(
+      minimumSize: Size(width, height), // 최소 크기
+      foregroundColor: foregroundColor, // 글자색
+      backgroundColor: backgroundColor,
+      // 배경색
+      padding: padding, // 내부 여백
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(borderRadius), // 모서리 둥글기
+          side: BorderSide(color: borderColor, width: 0.5)),
+    );
+  }
+
+  static ButtonStyle miniButtonStyle({
+    required BuildContext context,
+    double widthFactor = 0.2,
+    double height = 20,
+    Color foregroundColor = Colors.black, // Colors.grey[700]
+    Color backgroundColor = Colors.white, // Colors.grey[200]
+    Color borderColor = Colors.black,
+    double borderRadius = 5,
+    EdgeInsetsGeometry padding =
+        const EdgeInsets.symmetric(horizontal: 16, vertical: 3),
+  }) {
+    final double width = MediaQuery.of(context).size.width * widthFactor;
+
     return ElevatedButton.styleFrom(
       minimumSize: Size(width, height), // 최소 크기
       foregroundColor: foregroundColor, // 글자색
@@ -77,8 +105,9 @@ class ButtonStyles {
   }
 
   static ButtonStyle bigButtonStyle({
-    double width = 180,
-    double height = 35,
+    required BuildContext context,
+    double widthFactor = 0.8,
+    double height = 50,
     Color foregroundColor = Colors.black, // Colors.grey[700]
     Color backgroundColor = Colors.white, // Colors.grey[200]
     Color borderColor = Colors.black,
@@ -86,15 +115,17 @@ class ButtonStyles {
     EdgeInsetsGeometry padding =
         const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
   }) {
+    final double width = MediaQuery.of(context).size.width * widthFactor;
+
     return ElevatedButton.styleFrom(
       minimumSize: Size(width, height), // 최소 크기
       foregroundColor: foregroundColor, // 글자색
-      backgroundColor: backgroundColor,
-      // 배경색
+      backgroundColor: backgroundColor, // 배경색
       padding: padding, // 내부 여백
       shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius), // 모서리 둥글기
-          side: BorderSide(color: borderColor, width: 0.5)),
+        borderRadius: BorderRadius.circular(borderRadius), // 모서리 둥글기
+        side: BorderSide(color: borderColor, width: 0.5),
+      ),
     );
   }
 }
@@ -126,7 +157,7 @@ class SnackBarStyles {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10), // ✅ 둥근 모서리
       ),
-      duration: const Duration(seconds: 3), // ✅ 기본 표시 시간
+      duration: const Duration(seconds: 1), // ✅ 기본 표시 시간
     );
   }
 
