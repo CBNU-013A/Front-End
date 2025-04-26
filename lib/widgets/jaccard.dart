@@ -88,7 +88,7 @@ class RecommendationState extends State<RecommendationWidget> {
 
   Future<List<Map<String, dynamic>>> fetchAllPlaces() async {
     final response =
-        await http.get(Uri.parse("http://localhost:5001/location/all"));
+        await http.get(Uri.parse("http://localhost:8001/api/location/all"));
     if (response.statusCode == 200) {
       debugPrint("장소 로드");
       return List<Map<String, dynamic>>.from(json.decode(response.body));
@@ -98,8 +98,8 @@ class RecommendationState extends State<RecommendationWidget> {
   }
 
   Future<List<String>> fetchUserKeywords(String userId) async {
-    final response = await http
-        .get(Uri.parse("http://localhost:5001/users/$userId/keywords"));
+    final response = await http.get(
+        Uri.parse("http://localhost:8001/api/users/$userId/keywords"));
     if (response.statusCode == 200) {
       final List<dynamic> rawKeywords = json.decode(response.body);
       return rawKeywords.map((e) => e['name'].toString()).toList();
@@ -109,8 +109,8 @@ class RecommendationState extends State<RecommendationWidget> {
   }
 
   Future<Map<String, dynamic>> fetchPlaceDetail(String placeName) async {
-    final response =
-        await http.get(Uri.parse('http://localhost:5001/location/$placeName'));
+    final response = await http
+        .get(Uri.parse('http://localhost:8001/api/location/$placeName'));
 
     if (response.statusCode == 200) {
       return Map<String, dynamic>.from(json.decode(response.body));
@@ -167,7 +167,9 @@ class RecommendationState extends State<RecommendationWidget> {
       debugPrint("⏳ 추천 로딩 중...");
       return const Center(child: CircularProgressIndicator());
     }
-
+    if (_recommendations == null || _recommendations!.isEmpty) {
+      return const Center(child: Text("추천 항목이 없어요 🥲"));
+    }
     final places = _recommendations!.values.toList();
     if (places.isNotEmpty) {
       return SizedBox(
@@ -222,28 +224,28 @@ class RecommendationState extends State<RecommendationWidget> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                            GestureDetector(
+                          GestureDetector(
                             onTap: () {
                               Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailPage(
-                                place: place['name'],
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailPage(
+                                    place: place['name'],
+                                  ),
                                 ),
-                              ),
                               );
                             },
                             child: Text(
                               place['name'] ?? '정보 없음',
                               style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
+                                fontSize: 20,
+                                fontWeight: FontWeight.w600,
                               ),
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               softWrap: true,
                             ),
-                            ),
+                          ),
                           const SizedBox(height: 2),
                           // Text(
                           //   place['address'] ?? '',

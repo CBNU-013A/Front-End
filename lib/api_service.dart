@@ -7,7 +7,7 @@ import 'package:intl/intl.dart';
 class ApiService {
   Future<Map<String, dynamic>?> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('http://localhost:5001/api/auth/login'),
+      Uri.parse('http://localhost:8001/api/auth/login'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email, "password": password}),
     );
@@ -22,7 +22,7 @@ class ApiService {
     }
   }
 
-  final String baseUrl = "http://localhost:5001/api/auth"; // 서버 포트 확인
+  final String baseUrl = "http://localhost:8001/api/auth"; // 서버 포트 확인
 
   // 회원가입 API
   Future<bool> register(

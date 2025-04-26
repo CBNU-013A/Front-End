@@ -29,7 +29,7 @@ class _ReviewPageState extends State<ReviewPage> {
     try {
       final String placeName = Uri.encodeComponent(widget.place);
       final response = await http.get(
-        Uri.parse('http://localhost:5001/location/$placeName'), // ✅ 서버 API로 요청
+        Uri.parse('http://localhost:8001/api/location/$placeName'), // ✅ 서버 API로 요청
       );
 
       if (response.statusCode == 200) {

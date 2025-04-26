@@ -6,9 +6,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.final_project"
+    compileSdkVersion 34
+    namespace 'com.kakao.kakaomapplugin'
+    //namespace = "com.example.final_project"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -16,7 +19,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
+        jvmTarget = '1.8'
     }
 
     defaultConfig {
@@ -24,10 +27,12 @@ android {
         applicationId = "com.example.final_project"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
-        versionCode = flutter.versionCode
-        versionName = flutter.versionName
+        minSdkVersion 21
+        targetSdkVersion 33
+        versionCode 1         // ← 여기를 직접 숫자로!
+        versionName "1.0.0"
+//        versionCode flutterVersionCode.toInteger()
+//        versionName flutterVersionName
     }
 
     buildTypes {
