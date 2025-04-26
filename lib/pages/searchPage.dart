@@ -48,7 +48,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _loadRecentSearch() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5001/users/$_userId/recentsearch'),
+        Uri.parse('http://localhost:8001/api/users/$_userId/recentsearch'),
       );
       if (response.statusCode == 200) {
         final List<dynamic> recentsearch =
@@ -71,7 +71,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _addRecentSearch(String query) async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:5001/users/$_userId/recentsearch'),
+        Uri.parse('http://localhost:8001/api/users/$_userId/recentsearch'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'query': query}),
       );
@@ -96,7 +96,7 @@ class _SearchPageState extends State<SearchPage> {
 
     try {
       final response = await http.delete(
-        Uri.parse('http://localhost:5001/users/$_userId/recentsearch/$value'),
+        Uri.parse('http://localhost:8001/api/users/$_userId/recentsearch/$value'),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -120,7 +120,7 @@ class _SearchPageState extends State<SearchPage> {
 
     try {
       final response = await http.delete(
-        Uri.parse('http://localhost:5001/users/$_userId/recentsearch'),
+        Uri.parse('http://localhost:8001/api/users/$_userId/recentsearch'),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -142,7 +142,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _loadPlaces() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5001/location/all'),
+        Uri.parse('http://localhost:8001/api/location/all'),
       );
 
       if (response.statusCode == 200) {

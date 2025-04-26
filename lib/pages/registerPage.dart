@@ -125,7 +125,7 @@ class _RegisterPageState extends State<RegisterPage> {
     debugPrint("이메일 체크: ${emailController.text}\n");
 
     final response = await http.get(Uri.parse(
-        'http://localhost:5001/check-email?email=${emailController.text}'));
+        'http://localhost:8001/check-email?email=${emailController.text}'));
 
     if (response.statusCode == 200) {
       rootScaffoldMessengerKey.currentState!.showSnackBar(

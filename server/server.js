@@ -382,6 +382,8 @@ app.get("/location/:placeName", async (req, res) => {
   }
 });
 
+// MongoDB URI 구성
+const uri = `mongodb://${process.env.MONGO_USER}:${process.env.MONGO_PASS}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_DB}?authSource=admin`;
 const MONGODB_URI = process.env.MONGO_URI;
 if (!MONGODB_URI) {
   console.error(
@@ -390,8 +392,11 @@ if (!MONGODB_URI) {
   process.exit(1);
 }
 mongoose
-  .connect(MONGODB_URI)
-  .then(() => console.log("MongoDB 연결 성공"))
+  .connect(uri)
+  .then(() => {
+    console.log("✅ MongoDB 연결 성공");
+    run();
+  })
   .catch((err) => {
     console.error("MongoDB 연결 실패:", err.message);
     process.exit(1);

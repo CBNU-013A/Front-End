@@ -325,7 +325,7 @@ class ShowKeywordsState extends State<ShowKeywords> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:5001/users/$userId/keywords'),
+        Uri.parse('http://localhost:8001/api/users/$userId/keywords'),
       );
 
       if (response.statusCode == 200) {

@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
     final response =
         await ApiService().login(emailController.text, passwordController.text);
 
-    if (response != null && response["success"] == true) {
+    if (response != null && response["message"] == "로그인 성공") {
       String userId = response["user"]["id"];
       String userName = response["user"]["name"];
 
