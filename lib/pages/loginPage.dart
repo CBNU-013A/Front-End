@@ -66,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         await prefs.remove('savedEmail');
       }
+      await Future.delayed(const Duration(milliseconds: 100));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
@@ -84,61 +85,104 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //appBar: AppBar(title: const Text("로그인")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+        //appBar: AppBar(title: const Text("로그인")),
+        body: Container(
+      decoration: const BoxDecoration(color: AppColors.mainGreen),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(30, 30, 30, 60),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            TextField(
-              style: TextFiledStyles.textStlye,
-              cursorColor: const Color(0xFF4738D7),
-              controller: emailController,
-              decoration: const InputDecoration(
-                  border: TextFiledStyles.borderStyle,
-                  focusedBorder: TextFiledStyles.borderStyle,
-                  labelText: "아이디",
-                  labelStyle: TextFiledStyles.labelStyle),
-            ),
-            const SizedBox(
-              height: 16,
-            ),
-            TextField(
-                style: TextFiledStyles.textStlye,
-                cursorColor: const Color(0xFF4738D7),
-                controller: passwordController,
-                decoration: const InputDecoration(
-                  border: TextFiledStyles.borderStyle,
-                  focusedBorder: TextFiledStyles.borderStyle,
-                  labelText: "비밀번호",
-                  labelStyle: TextFiledStyles.labelStyle,
-                ),
-                obscureText: true),
-            //const SizedBox(height: 10),
-
-            //crossAxisAlignment: CrossAxisAlignment.start,
-
-            CheckboxListTile(
-              controlAffinity: ListTileControlAffinity.leading,
-              contentPadding: EdgeInsets.zero,
-              value: _saveId,
-              onChanged: (bool? value) {
-                setState(() {
-                  _saveId = value ?? false;
-                });
-              },
-              activeColor: const Color(0xFF4738D7),
-              title: const Text(
-                "아이디 저장",
-                style: TextFiledStyles.labelStyle,
+            const Expanded(
+              // 여기에 로고를 넣어요
+              child: Center(
+                child: Text("로고를 넣어용"),
               ),
             ),
+            //이메일 필드
+            TextField(
+              style: TextFiledStyles.textStlye,
+              cursorColor: AppColors.deepGrean,
+              controller: emailController,
+              decoration: const InputDecoration(
+                filled: true,
+                fillColor: TextFiledStyles.fillColor, // 배경 색상 설정
+                border: TextFiledStyles.borderStyle,
+                enabledBorder: TextFiledStyles.borderStyle,
+                focusedBorder: TextFiledStyles.focusBorderStyle,
+                hintText: '이메일을 입력하세요',
+                hintStyle: TextFiledStyles.hintStyle,
+              ),
+              textAlignVertical: TextAlignVertical.center, // 텍스트 정렬
+              minLines: 1, // 최소 줄 수
+              maxLines: 1, // 최대 줄 수 // 높이 조정
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            // 비밀번호 필드
+            TextField(
+                style: TextFiledStyles.textStlye,
+                cursorColor: AppColors.deepGrean,
+                controller: passwordController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: TextFiledStyles.fillColor,
+                  border: TextFiledStyles.borderStyle,
+                  enabledBorder: TextFiledStyles.borderStyle,
+                  focusedBorder: TextFiledStyles.focusBorderStyle,
+                  hintText: '비밀번호를 입력하세요',
+                  hintStyle: TextFiledStyles.hintStyle,
+                ),
+                textAlignVertical: TextAlignVertical.center, // 텍스트 정렬
+                minLines: 1, // 최소 줄 수
+                maxLines: 1, // 최대 줄 수 // 높이 조정
+                obscureText: true),
+
+            // 아이디 저장 체크 박스
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _saveId,
+                      onChanged: (bool? value) {
+                        setState(() {
+                          _saveId = value ?? false;
+                        });
+                      },
+                      activeColor: AppColors.lighterGreen,
+                      visualDensity: VisualDensity.compact,
+                    ),
+                    const Text(
+                      "아이디 저장",
+                      style: TextStyles.smallTextStyle,
+                    ),
+                  ],
+                ),
+                TextButton(
+                  onPressed: () {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("아직 페이지 구현을 못했어요 ㅠ.ㅠ")),
+                    );
+                  },
+                  child: const Text(
+                    "비밀번호가 기억이 안나요",
+                    style: TextStyles.smallTextStyle,
+                  ),
+                ),
+              ],
+            ),
+
+            // 회원가입 버튼, 로그인 버튼
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  style: ButtonStyles.smallButtonStyle(context: context),
+                  style: ButtonStyles.smallTransparentButtonStyle(
+                      context: context),
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -148,18 +192,12 @@ class _LoginPageState extends State<LoginPage> {
                   },
                   child: const Text(
                     "회원가입",
-                    style: TextFiledStyles.textStlye,
                   ),
                 ),
                 ElevatedButton(
-                  style: ButtonStyles.smallButtonStyle(
-                      context: context, backgroundColor: Colors.black),
+                  style: ButtonStyles.smallColoredButtonStyle(context: context),
                   onPressed: _login,
-                  child: Text(
-                    "로그인",
-                    style:
-                        TextFiledStyles.textStlye.copyWith(color: Colors.white),
-                  ),
+                  child: const Text("로그인"),
                 ),
               ],
             )
@@ -168,6 +206,6 @@ class _LoginPageState extends State<LoginPage> {
           ],
         ),
       ),
-    );
+    ));
   }
 }

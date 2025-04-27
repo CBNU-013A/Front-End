@@ -38,12 +38,13 @@ class MyApp extends StatefulWidget {
   MyAppState createState() => MyAppState();
 }
 
-class MyAppState extends State<MyApp> {
+class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   Widget _startScreen = const CircularProgressIndicator(); // 로딩 UI
 
   @override
   void initState() {
     super.initState();
+
     _checkLoginStatus(); // 로그인 상태 확인
     _printCurrentLocation(); //현재 위치 가져오기
   }
@@ -114,10 +115,13 @@ class MyAppState extends State<MyApp> {
       debugPrint("❗ 위치 가져오기 실패: $e");
     }
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/homepage': (context) => const HomePage(), // 🔥 홈 라우트 등록
+      },
       scaffoldMessengerKey: rootScaffoldMessengerKey,
       // ✅ 로컬라이제이션 추가
       localizationsDelegates: const [

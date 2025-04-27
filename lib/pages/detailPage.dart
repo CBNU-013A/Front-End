@@ -8,6 +8,7 @@ import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'dart:async';
 import '../styles/styles.dart';
 import '../pages/reviewPage.dart';
+import '../widgets/BottomNavi.dart';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.place});
@@ -83,7 +84,8 @@ class _DetailPageState extends State<DetailPage> {
     try {
       final String placeName = Uri.encodeComponent(widget.place);
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/location/$placeName'), // ✅ 서버 API로 요청
+        Uri.parse(
+            'http://localhost:8001/api/location/$placeName'), // ✅ 서버 API로 요청
       );
 
       if (response.statusCode == 200) {
@@ -321,7 +323,7 @@ class _DetailPageState extends State<DetailPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TextButton.icon(
-            style: ButtonStyles.smallButtonStyle(context: context),
+            style: ButtonStyles.smallColoredButtonStyle(context: context),
             onPressed: () {
               Navigator.push(
                 context,
@@ -336,7 +338,7 @@ class _DetailPageState extends State<DetailPage> {
             icon: const Icon(Icons.analytics_outlined),
           ),
           TextButton.icon(
-            style: ButtonStyles.smallButtonStyle(context: context),
+            style: ButtonStyles.smallColoredButtonStyle(context: context),
             onPressed: () {
               Navigator.push(
                 context,
@@ -563,6 +565,7 @@ class _DetailPageState extends State<DetailPage> {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomNavi(),
     );
   }
 }

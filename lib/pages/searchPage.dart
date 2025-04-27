@@ -6,8 +6,10 @@ import 'package:final_project/pages/detailPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
-import '../widgets/recent_searches.dart';
+
 import 'package:http/http.dart' as http;
+
+import '../widgets/BottomNavi.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -75,18 +77,22 @@ class _SearchPageState extends State<SearchPage> {
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'query': query}),
       );
+
       if (response.statusCode == 201) {
         debugPrint("✅ 검색어 추가 성공");
-
-        setState(() {
-          _recentsearch.remove(query); // 중복 검색어 제거
-          _recentsearch.insert(0, query); // 최근 검색어 맨 위에 추가
-        });
       } else {
         debugPrint("❗ 검색어 추가 실패: ${response.statusCode}");
       }
     } catch (e) {
       debugPrint("❗ 검색어 추가 중 에러 발생: $e");
+    } finally {
+      // 검색 성공 여부와 상관없이 항상 최근 검색어 갱신
+      if (mounted) {
+        setState(() {
+          _recentsearch.remove(query); // 기존에 있으면 삭제
+          _recentsearch.insert(0, query); // 맨 위에 추가
+        });
+      }
     }
   }
 
@@ -96,7 +102,8 @@ class _SearchPageState extends State<SearchPage> {
 
     try {
       final response = await http.delete(
-        Uri.parse('http://localhost:8001/api/users/$_userId/recentsearch/$value'),
+        Uri.parse(
+            'http://localhost:8001/api/users/$_userId/recentsearch/$value'),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -226,8 +233,13 @@ class _SearchPageState extends State<SearchPage> {
                   icon: const Icon(Icons.close_outlined, color: Colors.grey),
                   onPressed: () => _deleteRecentSearch(placeName),
                 ),
-                onTap: () {
-                  _addRecentSearch(placeName);
+                onTap: () async {
+                  await _deleteRecentSearch(placeName);
+                  await _addRecentSearch(placeName);
+                  setState(() {
+                    _recentsearch.remove(placeName); // 🔥 중복 제거
+                    _recentsearch.insert(0, placeName); // 🔥 맨 위로 추가
+                  });
 
                   Navigator.push(
                     context,
@@ -252,6 +264,7 @@ class _SearchPageState extends State<SearchPage> {
           '검색 페이지',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
+        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -261,6 +274,7 @@ class _SearchPageState extends State<SearchPage> {
             // 검색 바
             custom.SearchBar(
                 controller: _controller,
+                //initialValue: widget.keyword, // 🔥 추가
                 onChanged: _filterPlaces,
                 onClear: () {
                   setState(() {
@@ -286,13 +300,16 @@ class _SearchPageState extends State<SearchPage> {
                     ? SearchResults(
                         query: _controller.text,
                         places: _filteredPlaces,
-                        onTap: (place) {
-                          _addRecentSearch(place['name']);
+                        onTap: (place) async {
+                          await _deleteRecentSearch(place['name']);
+                          await _addRecentSearch(place['name']);
 
                           setState(() {
-                            _controller.clear();
-                            _filteredPlaces = [];
+                            _recentsearch.remove(place['name']); // 🔥 중복 제거
+                            _recentsearch.insert(
+                                0, place['name']); // 🔥 맨 위로 추가
                           });
+
                           // DetailPage로 이동
                           Navigator.push(
                             context,
@@ -322,6 +339,7 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomNavi(),
     );
   }
 }

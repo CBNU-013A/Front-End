@@ -24,6 +24,9 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController passwordCheckController = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
+  int _selectedGenderIndex = 0; // 0: 선택없음, 1: 남성, 2: 여성
+  final List<String> _genderOptions = ['선택없음', '남성', '여성'];
+
   bool _isDatePickerOpen = false;
   bool _isIDCheck = true;
   bool _isPasswordVisible = false;
@@ -81,6 +84,44 @@ class _RegisterPageState extends State<RegisterPage> {
 
   // 회원가입 요청
   void _register() async {
+    // 이메일 입력 확인
+    if (emailController.text.isEmpty) {
+      rootScaffoldMessengerKey.currentState!.showSnackBar(
+        SnackBarStyles.info("이메일을 입력하세요."),
+      );
+      return; // 이메일이 비어있으면 회원가입 진행하지 않음
+    }
+    // 비밀번호 입력 확인
+    if (passwordController.text.isEmpty) {
+      rootScaffoldMessengerKey.currentState!.showSnackBar(
+        SnackBarStyles.info("비밀번호를 입력하세요."),
+      );
+      return; // 비밀번호가 비어있으면 회원가입 진행하지 않음
+    }
+    // 비밀번호 일치 확인
+    if (passwordController.text != passwordCheckController.text) {
+      rootScaffoldMessengerKey.currentState!.showSnackBar(
+        SnackBarStyles.info("비밀번호가 일치하지 않습니다."),
+      );
+      setState(() {
+        _isPasswordCheck = false;
+      });
+      Timer(const Duration(seconds: 2), () {
+        setState(() {
+          _isPasswordCheck = true;
+        });
+      });
+      return; // 비밀번호 일치하지 않으면 회원가입 진행하지 않음
+    }
+
+    // 이름 입력 확인
+    if (nameController.text.isEmpty) {
+      rootScaffoldMessengerKey.currentState!.showSnackBar(
+        SnackBarStyles.info("이름을 입력하세요."),
+      );
+      return; // 이름이 비어있으면 회원가입 진행하지 않음
+    }
+
     debugPrint("📌registerPage.dart : 회원가입 요청 데이터:");
     debugPrint("이름: ${nameController.text}");
     debugPrint("이메일: ${emailController.text}");
@@ -149,88 +190,91 @@ class _RegisterPageState extends State<RegisterPage> {
     }
   }
 
-// 비밀번호 확인
-  void _passwordCheck() {
-    if (passwordController.text != passwordCheckController.text) {
-      rootScaffoldMessengerKey.currentState!.showSnackBar(
-        SnackBarStyles.info("비밀번호가 일치하지 않습니다."),
-      );
-      setState(() {
-        _isPasswordCheck = false;
-      });
-      Timer(const Duration(seconds: 2), () {
-        setState(() {
-          _isPasswordCheck = true;
-        });
-      });
-    } else {
-      rootScaffoldMessengerKey.currentState!.showSnackBar(
-        SnackBarStyles.info("비밀번호가 일치합니다."),
-      );
-      setState(() {
-        _isPasswordCheck = true;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       //appBar: AppBar(title:,),
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.mainGreen,
       body: Padding(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.fromLTRB(30, 30, 30, 60),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            //아이디 입력
+            //이메일 입력
+            const Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "이메일",
+                  style: TextStyles.mediumTextStyle,
+                ),
+              ),
+            ),
             TextField(
                 style: TextFiledStyles.textStlye,
-                cursorColor: const Color(0xFF4738D7),
+                cursorColor: AppColors.deepGrean,
                 controller: emailController,
                 decoration: InputDecoration(
-                    contentPadding: const EdgeInsets.fromLTRB(20, 12, 12, 10),
-                    border: TextFiledStyles.borderStyle,
-                    focusedBorder: _isIDCheck
-                        ? TextFiledStyles.borderStyle
-                        : TextFiledStyles.errBorderStyle,
-                    labelText: "아이디",
-                    labelStyle: TextFiledStyles.labelStyle,
-                    suffixIconConstraints: const BoxConstraints(
-                      minHeight: 30, // 버튼의 최소 너비
-                      // 버튼의 최소 높이
-                    ),
-                    suffixIcon: Container(
-                      margin: const EdgeInsets.only(
-                        right: 8,
-                      ),
-                      height: 30,
-                      child: ElevatedButton(
-                        style: ButtonStyles.miniButtonStyle(context: context),
-                        onPressed: () {
-                          _idcheck();
-                        },
-                        child: const Text(
-                          "중복확인",
-                          style: TextStyle(
-                              fontWeight: FontWeight.w800, fontSize: 15),
-                        ),
-                      ),
-                    ))),
+                  filled: true,
+                  fillColor: TextFiledStyles.fillColor,
+                  contentPadding: const EdgeInsets.fromLTRB(20, 12, 12, 10),
+                  border: TextFiledStyles.borderStyle,
+                  enabledBorder: TextFiledStyles.borderStyle,
+                  focusedBorder: _isIDCheck
+                      ? TextFiledStyles.focusBorderStyle
+                      : TextFiledStyles.errBorderStyle,
+                  hintText: "이메일을 입력하세요",
+                  hintStyle: TextFiledStyles.hintStyle,
+                  suffixIconConstraints: const BoxConstraints(
+                    minHeight: 30, // 버튼의 최소 너비
+                    // 버튼의 최소 높이
+                  ),
+                  // suffixIcon: Container(
+                  //   margin: const EdgeInsets.only(
+                  //     right: 8,
+                  //   ),
+                  //   height: 30,
+                  //   child: ElevatedButton(
+                  //     style: ButtonStyles.miniButtonStyle(context: context),
+                  //     onPressed: () {
+                  //       _idcheck();
+                  //     },
+                  //     child: const Text(
+                  //       "중복확인",
+                  //       style: TextStyle(
+                  //           fontWeight: FontWeight.w800, fontSize: 15),
+                  //     ),
+                  //   ),
+                  // )
+                )),
 
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 5.0),
             //비밀번호 입력
+            const Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "비밀번호",
+                  style: TextStyles.mediumTextStyle,
+                ),
+              ),
+            ),
             TextField(
               style: TextFiledStyles.textStlye,
-              cursorColor: const Color(0xFF4738D7),
+              cursorColor: AppColors.deepGrean,
               controller: passwordController,
               decoration: InputDecoration(
+                filled: true,
+                fillColor: TextFiledStyles.fillColor,
                 contentPadding: const EdgeInsets.fromLTRB(20, 12, 12, 10),
                 border: TextFiledStyles.borderStyle,
-                focusedBorder: TextFiledStyles.borderStyle,
-                labelText: "비밀번호",
-                labelStyle: TextFiledStyles.labelStyle,
+                enabledBorder: TextFiledStyles.borderStyle,
+                focusedBorder: TextFiledStyles.focusBorderStyle,
+                hintText: "비밀번호를 입력하세요",
+                hintStyle: TextFiledStyles.hintStyle,
                 suffixIcon: IconButton(
                   icon: Icon(
                     _isPasswordVisible
@@ -249,114 +293,215 @@ class _RegisterPageState extends State<RegisterPage> {
               obscureText: !_isPasswordVisible,
             ),
 
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 5.0),
+            //비밀번호 확인
+            const Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "비밀번호 확인",
+                  style: TextStyles.mediumTextStyle,
+                ),
+              ),
+            ),
             TextField(
               style: TextFiledStyles.textStlye,
-              cursorColor: const Color(0xFF4738D7),
+              cursorColor: AppColors.deepGrean,
               controller: passwordCheckController,
               decoration: InputDecoration(
+                filled: true,
+                fillColor: TextFiledStyles.fillColor,
                 contentPadding: const EdgeInsets.fromLTRB(20, 12, 12, 10),
                 border: TextFiledStyles.borderStyle,
+                enabledBorder: TextFiledStyles.borderStyle,
                 focusedBorder: _isPasswordCheck
-                    ? TextFiledStyles.borderStyle
+                    ? TextFiledStyles.focusBorderStyle
                     : TextFiledStyles.errBorderStyle,
-                labelText: "비밀번호 확인",
-                labelStyle: TextFiledStyles.labelStyle,
-                suffixIconConstraints: const BoxConstraints(
-                  minHeight: 30, // 버튼의 최소 너비
-                  // 버튼의 최소 높이
-                ),
-                suffixIcon: Container(
-                  margin: const EdgeInsets.only(
-                    right: 8,
+                hintText: "비밀번호를 입력하세요",
+                hintStyle: TextFiledStyles.hintStyle,
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _isPasswordVisible
+                        ? Icons.visibility
+                        : Icons.visibility_off,
+                    color: Colors.grey[800],
+                    size: 15,
                   ),
-                  height: 30,
-                  child: ElevatedButton(
-                    style: ButtonStyles.miniButtonStyle(context: context),
-                    onPressed: () {
-                      _passwordCheck();
-                    },
-                    child: const Text(
-                      "확인",
-                      style:
-                          TextStyle(fontWeight: FontWeight.w800, fontSize: 15),
-                    ),
-                  ),
+                  onPressed: () {
+                    setState(() {
+                      _isPasswordVisible = !_isPasswordVisible;
+                    });
+                  },
                 ),
               ),
               obscureText: !_isPasswordVisible,
             ),
 
-            const SizedBox(height: 16.0),
+            const SizedBox(height: 5.0),
 
             //이름 입력
-            TextField(
-                style: TextFiledStyles.textStlye,
-                cursorColor: const Color(0xFF4738D7),
-                controller: nameController,
-                decoration: const InputDecoration(
-                  contentPadding: EdgeInsets.fromLTRB(20, 12, 12, 10),
-                  border: TextFiledStyles.borderStyle,
-                  focusedBorder: TextFiledStyles.borderStyle,
-                  labelText: "이름",
-                  labelStyle: TextFiledStyles.labelStyle,
-                )),
-            const SizedBox(height: 16.0),
-            //생년월일 입력
-            Container(
-              height: 50,
-              padding: const EdgeInsets.fromLTRB(20, 10, 8, 10),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(
-                  color: _isDatePickerOpen
-                      ? const Color(0xFF4738D7) // ✅ DatePicker가 열리면 보라색 테두리
-                      : Colors.grey[600]!,
-                  width: _isDatePickerOpen ? 2.0 : 1.0,
+            const Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "이름",
+                  style: TextStyles.mediumTextStyle,
                 ),
               ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  // Text('생년월일',
-                  // style: TextFiledStyles.labelStyle,),
-                  const Text(
-                    "생년월일",
-                    style: TextFiledStyles.labelStyle,
-                  ),
-                  Text(
-                    !DateUtils.isSameDay(
-                            selectedDate, DateTime.now()) // ✅ 날짜가 같으면
-                        ? ' ${selectedDate!.year}년\t${selectedDate!.month}월\t${selectedDate!.day}일'
-                        : ' ', // ✅ 기본값
-                    style: TextFiledStyles.textStlye,
-                  ),
-                  SizedBox(
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ButtonStyles.miniButtonStyle(context: context),
-                      onPressed: () => _showDatePicker(context),
-                      child: const Text(
-                        "선택하기",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w800, fontSize: 15),
-                      ),
-                    ),
-                  ),
-                ],
+            ),
+            TextField(
+                style: TextFiledStyles.textStlye,
+                cursorColor: AppColors.deepGrean,
+                controller: nameController,
+                decoration: const InputDecoration(
+                  filled: true,
+                  fillColor: TextFiledStyles.fillColor,
+                  contentPadding: EdgeInsets.fromLTRB(20, 12, 12, 10),
+                  border: TextFiledStyles.borderStyle,
+                  focusedBorder: TextFiledStyles.focusBorderStyle,
+                  enabledBorder: TextFiledStyles.borderStyle,
+                  hintText: "이름을 입력하세요",
+                  hintStyle: TextFiledStyles.hintStyle,
+                )),
+            const SizedBox(height: 5.0),
+            //생년월일 (선택)
+            const Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "생년월일 (선택)",
+                  style: TextStyles.mediumTextStyle,
+                ),
               ),
             ),
+            InputDecorator(
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: TextFiledStyles.fillColor,
+                contentPadding: const EdgeInsets.fromLTRB(20, 12, 12, 10),
+                border: TextFiledStyles.borderStyle,
+                hintText: "생년월일을 입력하세요",
+                hintStyle: TextFiledStyles.hintStyle,
+                enabledBorder: TextFiledStyles.borderStyle,
+                focusedBorder: _isDatePickerOpen
+                    ? TextFiledStyles.focusBorderStyle
+                    : TextFiledStyles.borderStyle,
+              ),
+              child: GestureDetector(
+                onTap: () => _showDatePicker(context),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      !DateUtils.isSameDay(selectedDate, DateTime.now())
+                          ? '${selectedDate.year}년 ${selectedDate.month}월 ${selectedDate.day}일'
+                          : '생년월일을 입력하세요',
+                      style: !DateUtils.isSameDay(selectedDate, DateTime.now())
+                          ? TextFiledStyles.textStlye
+                          : TextFiledStyles.hintStyle,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 5.0),
+            // 성별 선택
+            const Padding(
+              padding: EdgeInsets.all(4.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  "성별",
+                  style: TextStyles.mediumTextStyle,
+                ),
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // const Text(
+                //   "성별",
+                //   style: TextStyle(
+                //     fontSize: 16,
+                //     fontWeight: FontWeight.bold,
+                //     color: Color(0xFF777777),
+                //   ),
+                // ),
 
-            const SizedBox(height: 16),
+                Container(
+                  height: 47,
+                  decoration: BoxDecoration(
+                    color: TextFiledStyles.fillColor,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Stack(
+                    children: [
+                      AnimatedAlign(
+                        alignment:
+                            Alignment(-1 + (_selectedGenderIndex * 1.0), 0),
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOut,
+                        child: Container(
+                          width: (MediaQuery.of(context).size.width - 64) / 3,
+                          height: 40,
+                          margin: const EdgeInsets.symmetric(
+                              vertical: 5, horizontal: 4),
+                          decoration: BoxDecoration(
+                            color: AppColors.deepGrean,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: List.generate(_genderOptions.length, (index) {
+                          return Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedGenderIndex = index;
+                                });
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text("아직 디비 업데이트 안돼요"),
+                                  ),
+                                );
+                              },
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Text(
+                                  _genderOptions[index],
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: _selectedGenderIndex == index
+                                        ? Colors.white
+                                        : AppColors.deepGrean,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 30.0),
+
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  style: ButtonStyles.smallButtonStyle(context: context),
+                  style: ButtonStyles.smallTransparentButtonStyle(
+                      context: context),
                   child: const Text(
                     "뒤로가기",
-                    style: TextFiledStyles.textStlye,
                   ),
                   onPressed: () {
                     Navigator.pushReplacement(
@@ -367,15 +512,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   },
                 ),
                 ElevatedButton(
-                  style: ButtonStyles.smallButtonStyle(
-                      context: context, backgroundColor: Colors.grey[900]!),
+                  style: ButtonStyles.smallColoredButtonStyle(context: context),
                   onPressed: () {
                     _register();
                   },
-                  child: Text(
+                  child: const Text(
                     "회원가입",
-                    style:
-                        TextFiledStyles.textStlye.copyWith(color: Colors.white),
                   ),
                 ),
               ],
