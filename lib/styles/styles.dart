@@ -5,8 +5,9 @@ class AppColors {
   static const Color deepGrean = Color(0xFF3C7157);
   static const Color lightGreen = Color(0xFFD4EEE2);
   static const Color lighterGreen = Color(0xFFEDF7F2);
-  static const Color lighterGreenBackground = Color.fromRGBO(245, 248, 246, 1);
+  static const Color lightWhite = Color(0xFFF9FAFB);
   static const Color lightGray = Color(0xFF9CA3AF);
+  // 이 밑으로 안쓸건데 일단 둘게용
   static const Color marineBlue = Color(0xFF2B5288);
   static const Color lightTaube = Color(0xFFE5E0D9);
   static const Color richBlue = Color(0xFF191265);
@@ -27,7 +28,7 @@ class AppStyles {
 
   // ✅ Keyword Chip Padding
   static const keywordChipPadding = EdgeInsets.symmetric(
-    horizontal:4,
+    horizontal: 4,
     vertical: 2,
   );
   static final OutlinedBorder keywordChipShape = RoundedRectangleBorder(
