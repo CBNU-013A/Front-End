@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_template.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:final_project/styles/styles.dart';
 import 'package:final_project/styles/search.dart';
 import 'searchPage.dart';
@@ -65,186 +66,193 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.lighterGreenBackground,
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(50.0),
-        child: AppBar(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        statusBarColor: AppColors.lighterGreen, // 🔥 여기가 핵심!! 상태바 색 고정
+        statusBarIconBrightness:
+            Brightness.dark, // 상태바 아이콘 색 (흰색이면 Brightness.light)
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.lighterGreen, // ✅ Scaffold 배경색 고정
+        extendBodyBehindAppBar: false, // ✅ false로 해야 이상한 투명효과 없음
+        appBar: AppBar(
+          backgroundColor: AppColors.lighterGreen, // ✅ AppBar 배경 고정
+          elevation: 0,
           automaticallyImplyLeading: false,
-          backgroundColor: AppColors.lighterGreenBackground,
-          title: const Align(
-            alignment: Alignment.bottomLeft,
-            child: Padding(
-              padding: EdgeInsets.all(12.0),
+          flexibleSpace: Container(
+            decoration: const BoxDecoration(
+              color: AppColors.lighterGreen, // 💥 AppBar 밑에도 완전 고정
+            ),
+          ),
+          title: const Padding(
+            padding: EdgeInsets.fromLTRB(12.0, 12, 12, 12),
+            child: Align(
+              alignment: Alignment.centerLeft, // 글자 왼쪽 정렬
               child: Text(
-                '여행지 추천 시스템',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          '여행지 추천 시스템',
+          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
             ),
           ),
-          // actions: [
-          //   IconButton(
-          //     icon: const Icon(Icons.logout),
-          //     onPressed: _logout, // 로그아웃 버튼 클릭 시
-          //     tooltip: "로그아웃",
-          //   ),
-          // ],
-          // leading: IconButton(
-          //   icon: const Icon(Icons.search),
-          //   onPressed: () {
-          //     Navigator.push(
-          //       context,
-          //       MaterialPageRoute(builder: (context) => const SearchPage()),
-          //     );
-          //   },
-          //   tooltip: "검색",
-          // ),
         ),
-      ),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    //검색바
-                    SearchBar(
-                      controller: _controller,
-                    ),
-                    const SizedBox(height: 20.0),
-                    // 사용자 키워드 보여줌
-                    Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(10),
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [
+                AppColors.lighterGreen,
+                Colors.white,
+              ],
+            ),
+          ),
+          child: SafeArea(
+            child: CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //검색바
+                        // SearchBar(
+                        //   controller: _controller,
+                        // ),
+                        const SizedBox(height: 20.0),
+                        // 사용자 키워드 보여줌
+                        Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      '$userName 님의 주요 여행 취향',
+                                      style: const TextStyle(
+                                          fontSize: 20,
+                                          fontFamily: 'Pretendard',
+                                          fontWeight: FontWeight.w600),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    TextButton(
+                                        onPressed: () {
+                                          Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const SetKeywordsPage()),
+                                          );
+                                        },
+                                        child: Text("설정",
+                                            textAlign: TextAlign.start,
+                                            style: TextStyles.smallTextStyle
+                                                .copyWith(
+                                                    color:
+                                                        AppColors.deepGrean)))
+                                  ],
+                                ),
+                                const ShowKeywords(),
+                              ],
+                            )),
+                        const SizedBox(height: 20),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.rectangle,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20.0, vertical: 10.0),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    "어디로 떠날까요?",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontFamily: 'Pretendard',
+                                        //letterSpacing: 0.9,
+                                        fontWeight: FontWeight.w600),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 5),
+                                  ElevatedButton(
+                                    onPressed: () {},
+                                    style: ButtonStyles.bigButtonStyle(
+                                        context: context), // ✅ 정상 작동
+                                    child: const Text(
+                                      "추천 받으러 가기",
+                                      style: TextStyles.mediumTextStyle,
+                                    ),
+                                  ),
+                                ]),
+                          ),
                         ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
+                        const SizedBox(height: 20),
+                        Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 10),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  '$userName 님의 주요 여행 취향',
+                                  '$userName 님을 위한 추천 여행지',
                                   style: const TextStyle(
                                       fontSize: 20,
                                       fontFamily: 'Pretendard',
+                                      //letterSpacing: 0.9,
                                       fontWeight: FontWeight.w600),
                                   textAlign: TextAlign.center,
                                 ),
-                                TextButton(
-                                    onPressed: () {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const SetKeywordsPage()),
-                                      );
-                                    },
-                                    child: Text("설정",
-                                        textAlign: TextAlign.start,
-                                        style: TextStyles.smallTextStyle
-                                            .copyWith(
-                                                color: AppColors.deepGrean)))
+                                const RecommendationWidget(),
                               ],
+                            )),
+                        const SizedBox(height: 20),
+                        Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.rectangle,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            const ShowKeywords(),
-                          ],
-                        )),
-                    const SizedBox(height: 20),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.rectangle,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 10.0),
-                        child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                "어디로 떠날까요?",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontFamily: 'Pretendard',
-                                    //letterSpacing: 0.9,
-                                    fontWeight: FontWeight.w600),
-                                textAlign: TextAlign.center,
-                              ),
-                              const SizedBox(height: 5),
-                              ElevatedButton(
-                                onPressed: () {},
-                                style: ButtonStyles.bigButtonStyle(
-                                    context: context), // ✅ 정상 작동
-                                child: const Text(
-                                  "추천 받으러 가기",
-                                  style: TextStyles.mediumTextStyle,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16.0, vertical: 10),
+                            child: const Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  '최근 검색한 여행지',
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: 'Pretendard',
+                                      //letterSpacing: 0.9,
+                                      fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.center,
                                 ),
-                              ),
-                            ]),
-                      ),
+                                RecentSearchWidget()
+                              ],
+                            )),
+                      ],
                     ),
-                    const SizedBox(height: 20),
-                    Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 10),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '$userName 님을 위한 추천 여행지',
-                              style: const TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'Pretendard',
-                                  //letterSpacing: 0.9,
-                                  fontWeight: FontWeight.w600),
-                              textAlign: TextAlign.center,
-                            ),
-                            const RecommendationWidget(),
-                          ],
-                        )),
-                    const SizedBox(height: 20),
-                    Container(
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.rectangle,
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0, vertical: 10),
-                        child: const Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              '최근 검색한 여행지',
-                              style: TextStyle(
-                                  fontSize: 20,
-                                  fontFamily: 'Pretendard',
-                                  //letterSpacing: 0.9,
-                                  fontWeight: FontWeight.w600),
-                              textAlign: TextAlign.center,
-                            ),
-                            RecentSearchWidget()
-                          ],
-                        )),
-                  ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
