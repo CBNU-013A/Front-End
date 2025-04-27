@@ -89,8 +89,8 @@ class HomePageState extends State<HomePage> {
             child: Align(
               alignment: Alignment.centerLeft, // 글자 왼쪽 정렬
               child: Text(
-          '여행지 추천 시스템',
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                '여행지 추천 시스템',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -98,11 +98,17 @@ class HomePageState extends State<HomePage> {
         body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
               colors: [
                 AppColors.lighterGreen,
-                Colors.white,
+                AppColors.lighterGreen,
+                Color(0xFFF9FAFB),
+                Color(0xFFF9FAFB),
+                Color(0xFFF9FAFB),
+                Color(0xFFF9FAFB),
+                Color(0xFFF9FAFB),
+                Color(0xFFF9FAFB),
               ],
             ),
           ),
