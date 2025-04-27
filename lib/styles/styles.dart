@@ -27,8 +27,8 @@ class AppStyles {
 
   // ✅ Keyword Chip Padding
   static const keywordChipPadding = EdgeInsets.symmetric(
-    horizontal: 8,
-    vertical: 5,
+    horizontal:4,
+    vertical: 2,
   );
   static final OutlinedBorder keywordChipShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(10),

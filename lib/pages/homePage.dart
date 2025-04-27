@@ -73,12 +73,12 @@ class HomePageState extends State<HomePage> {
           automaticallyImplyLeading: false,
           backgroundColor: AppColors.lighterGreenBackground,
           title: const Align(
-            alignment: Alignment.centerLeft,
+            alignment: Alignment.bottomLeft,
             child: Padding(
-              padding: EdgeInsets.all(16.0),
+              padding: EdgeInsets.all(12.0),
               child: Text(
                 '여행지 추천 시스템',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -368,24 +368,31 @@ class ShowKeywordsState extends State<ShowKeywords> {
           )
         else
           SizedBox(
-              // ✅ Chip 높이에 맞게 사이즈 조정
-              child: Wrap(
-            spacing: 10, // ✅ Chip 간의 가로 간격
-            runSpacing: 0, // ✅ Chip 간의 세로 간격
-            // ✅ 줄 정렬 방식
-
-            children: keywords.map((keyword) {
-              return Chip(
-                label: Text(
-                  keyword,
-                  style: AppStyles.keywordChipTextStyle,
-                ),
-                backgroundColor: AppStyles.keywordChipBackgroundColor,
-                shape: AppStyles.keywordChipShape,
-                padding: AppStyles.keywordChipPadding,
-              );
-            }).toList(),
-          )),
+            child: Wrap(
+              spacing: 10, // ✅ Chip 간의 가로 간격
+              runSpacing: 0, // ✅ Chip 간의 세로 간격
+              children: [
+                ...keywords.take(3).map((keyword) {
+                  return Chip(
+                    label: Text(
+                      keyword,
+                      style: AppStyles.keywordChipTextStyle,
+                    ),
+                    backgroundColor: AppStyles.keywordChipBackgroundColor,
+                    shape: AppStyles.keywordChipShape,
+                    padding: AppStyles.keywordChipPadding,
+                  );
+                }).toList(),
+                if (keywords.length > 3)
+                  const Text(
+                    "  ...",
+                    textAlign: TextAlign.end,
+                    style: TextStyle(
+                        height: 3.0, color: AppColors.deepGrean), // y축 아래로 내리기
+                  )
+              ],
+            ),
+          ),
       ],
     );
   }
