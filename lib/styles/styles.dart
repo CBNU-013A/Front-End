@@ -5,6 +5,8 @@ class AppColors {
   static const Color deepGrean = Color(0xFF3C7157);
   static const Color lightGreen = Color(0xFFD4EEE2);
   static const Color lighterGreen = Color(0xFFEDF7F2);
+  static const Color lighterGreenBackground = Color.fromRGBO(245, 248, 246, 1);
+  static const Color lightGray = Color(0xFF9CA3AF);
   static const Color marineBlue = Color(0xFF2B5288);
   static const Color lightTaube = Color(0xFFE5E0D9);
   static const Color richBlue = Color(0xFF191265);
@@ -14,13 +16,13 @@ class AppColors {
 }
 
 class AppStyles {
-  static const Color keywordChipBackgroundColor = AppColors.paleGray;
+  static const Color keywordChipBackgroundColor = AppColors.lightGreen;
   static const keywordChipTextStyle = TextStyle(
-    fontSize: 17,
+    fontSize: 16,
     fontFamily: 'Pretendard',
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w400,
     letterSpacing: 0.2,
-    color: AppColors.marineBlue, // 칩의 글자색
+    color: AppColors.deepGrean, // 칩의 글자색
   );
 
   // ✅ Keyword Chip Padding
@@ -29,8 +31,8 @@ class AppStyles {
     vertical: 5,
   );
   static final OutlinedBorder keywordChipShape = RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(15),
-    side: const BorderSide(color: AppColors.lightTaube, width: 0.5),
+    borderRadius: BorderRadius.circular(10),
+    side: const BorderSide(color: AppColors.lightGreen, width: 1.0),
   );
 }
 
@@ -62,7 +64,7 @@ class TextFiledStyles {
     fontSize: 16,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
-    color: Color(0xFF9CA3AF),
+    color: AppColors.lightGray,
   );
 
   static const fillColor = AppColors.lightGreen;
@@ -176,11 +178,11 @@ class ButtonStyles {
 
   static ButtonStyle bigButtonStyle({
     required BuildContext context,
-    double widthFactor = 0.8,
-    double height = 50,
-    Color foregroundColor = Colors.black, // Colors.grey[700]
-    Color backgroundColor = Colors.white, // Colors.grey[200]
-    Color borderColor = Colors.black,
+    double widthFactor = 0.9,
+    double height = 40,
+    Color foregroundColor = Colors.white,
+    Color backgroundColor = AppColors.mainGreen,
+    Color borderColor = AppColors.mainGreen,
     double borderRadius = 10,
     EdgeInsetsGeometry padding =
         const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -190,7 +192,7 @@ class ButtonStyles {
     return ElevatedButton.styleFrom(
       minimumSize: Size(width, height), // 최소 크기
       foregroundColor: foregroundColor, // 글자색
-      backgroundColor: backgroundColor, // 배경색
+      backgroundColor: backgroundColor,
       padding: padding, // 내부 여백
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(borderRadius), // 모서리 둥글기

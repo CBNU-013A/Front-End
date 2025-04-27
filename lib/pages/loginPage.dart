@@ -66,6 +66,7 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         await prefs.remove('savedEmail');
       }
+      await Future.delayed(const Duration(milliseconds: 100));
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),

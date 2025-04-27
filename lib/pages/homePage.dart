@@ -1,15 +1,19 @@
+import 'package:final_project/widgets/recent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:kakao_flutter_sdk/kakao_flutter_sdk_template.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:final_project/styles/styles.dart';
+import 'package:final_project/styles/search.dart';
 import 'searchPage.dart';
 import 'loginPage.dart'; // 로그아웃 후 로그인 페이지 이동
 import 'package:http/http.dart' as http;
 import 'package:final_project/widgets/gps.dart';
+import './recommendPage.dart';
 import 'setKeywordsPage.dart';
 import 'package:final_project/widgets/jaccard.dart';
-import 'package:final_project/widgets/recent_searches.dart';
+import 'package:final_project/widgets/search_bar.dart' as custom;
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,9 +23,11 @@ class HomePage extends StatefulWidget {
 }
 
 class HomePageState extends State<HomePage> {
-  String userName = '';
   String userId = '';
+  String userName = '';
   List<String> userPreferences = [];
+
+  final TextEditingController _controller = TextEditingController();
 
   @override
   void initState() {
@@ -60,32 +66,39 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.lighterGreenBackground,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(60.0),
+        preferredSize: const Size.fromHeight(50.0),
         child: AppBar(
           automaticallyImplyLeading: false,
-          backgroundColor: const Color.fromRGBO(195, 191, 216, 0),
-          title: const Text(
-            '여행지 추천 시스템',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.logout),
-              onPressed: _logout, // 로그아웃 버튼 클릭 시
-              tooltip: "로그아웃",
+          backgroundColor: AppColors.lighterGreenBackground,
+          title: const Align(
+            alignment: Alignment.centerLeft,
+            child: Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Text(
+                '여행지 추천 시스템',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
-          ],
-          leading: IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const SearchPage()),
-              );
-            },
-            tooltip: "검색",
           ),
+          // actions: [
+          //   IconButton(
+          //     icon: const Icon(Icons.logout),
+          //     onPressed: _logout, // 로그아웃 버튼 클릭 시
+          //     tooltip: "로그아웃",
+          //   ),
+          // ],
+          // leading: IconButton(
+          //   icon: const Icon(Icons.search),
+          //   onPressed: () {
+          //     Navigator.push(
+          //       context,
+          //       MaterialPageRoute(builder: (context) => const SearchPage()),
+          //     );
+          //   },
+          //   tooltip: "검색",
+          // ),
         ),
       ),
       body: SafeArea(
@@ -97,47 +110,35 @@ class HomePageState extends State<HomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    //const SizedBox(height: 3),
+                    //검색바
+                    SearchBar(
+                      controller: _controller,
+                    ),
+                    const SizedBox(height: 20.0),
+                    // 사용자 키워드 보여줌
                     Container(
                         decoration: BoxDecoration(
                           color: Colors.white,
                           shape: BoxShape.rectangle,
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: Colors.grey[300]!,
-                            width: 1,
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey
-                                  .withOpacity(0.2), // 그림자 색상 (불투명도 조절 가능)
-                              spreadRadius: 0.3, // 그림자 확산 정도
-                              blurRadius: 0.3, // 그림자 흐림 정도
-                              offset: const Offset(
-                                  0, 0.1), // x, y축으로 그림자 위치 (0, 3 = 아래쪽 그림자)
-                            ),
-                          ],
                         ),
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 16),
+                            horizontal: 16.0, vertical: 10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[100], // 배경색
-                                    shape: BoxShape.rectangle,
-                                    borderRadius: BorderRadius.circular(50),
-                                    // border: Border.all(
-                                    //     color: Colors.black,
-                                    //     width: 0.1), // 테두리 추가
-                                  ),
-                                  child: IconButton(
-                                    icon: const Icon(Icons.person_rounded),
-                                    iconSize: 30,
+                                Text(
+                                  '$userName 님의 주요 여행 취향',
+                                  style: const TextStyle(
+                                      fontSize: 20,
+                                      fontFamily: 'Pretendard',
+                                      fontWeight: FontWeight.w600),
+                                  textAlign: TextAlign.center,
+                                ),
+                                TextButton(
                                     onPressed: () {
                                       Navigator.pushReplacement(
                                         context,
@@ -146,94 +147,97 @@ class HomePageState extends State<HomePage> {
                                                 const SetKeywordsPage()),
                                       );
                                     },
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  '$userName',
-                                  style: const TextStyle(
-                                      fontSize: 20,
-                                      fontFamily: 'Pretendard',
-                                      //letterSpacing: 0.9,
-                                      fontWeight: FontWeight.w700),
-                                  textAlign: TextAlign.center,
-                                ),
+                                    child: Text("설정",
+                                        textAlign: TextAlign.start,
+                                        style: TextStyles.smallTextStyle
+                                            .copyWith(
+                                                color: AppColors.deepGrean)))
                               ],
-                            ),
-                            const SizedBox(
-                              height: 11,
-                            ),
-                            const CurrentAddressWidget(),
-                            const SizedBox(
-                              height: 11,
                             ),
                             const ShowKeywords(),
                           ],
                         )),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 20),
                     Container(
-                        // decoration: BoxDecoration(
-                        //   color: Colors.white,
-                        //   shape: BoxShape.rectangle,
-                        //   borderRadius: BorderRadius.circular(10),
-                        //   border: Border(
-                        //     top: BorderSide(
-                        //       color: Colors.grey[500]!,
-                        //       width: 1,
-                        //     ),
-                        //     left: BorderSide(
-                        //       color: Colors.grey[500]!,
-                        //       width: 1,
-                        //     ),
-                        //     right: BorderSide(
-                        //       color: Colors.grey[500]!,
-                        //       width: 1,
-                        //     ),
-                        //   ),
-                        // ),
-                        padding: const EdgeInsets.symmetric(vertical: 16.0),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.rectangle,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 10.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                "어디로 떠날까요?",
+                                style: TextStyle(
+                                    fontSize: 20,
+                                    fontFamily: 'Pretendard',
+                                    //letterSpacing: 0.9,
+                                    fontWeight: FontWeight.w600),
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 5),
+                              ElevatedButton(
+                                onPressed: () {},
+                                style: ButtonStyles.bigButtonStyle(
+                                    context: context), // ✅ 정상 작동
+                                child: const Text(
+                                  "추천 받으러 가기",
+                                  style: TextStyles.mediumTextStyle,
+                                ),
+                              ),
+                            ]),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 10),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      left: 16.0, right: 16.0),
-                                  child: Text(
-                                    '$userName 님을 위한 추천 여행지',
-                                    style: const TextStyle(
-                                        fontSize: 20,
-                                        fontFamily: 'Pretendard',
-                                        //letterSpacing: 0.9,
-                                        fontWeight: FontWeight.w700),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(
-                              height: 10,
+                            Text(
+                              '$userName 님을 위한 추천 여행지',
+                              style: const TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Pretendard',
+                                  //letterSpacing: 0.9,
+                                  fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
                             ),
                             const RecommendationWidget(),
-                            const Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.all(16.0),
-                                  child: Text(
-                                    '최근 본 여행지',
-                                    style: TextStyle(
-                                        fontSize: 20,
-                                        fontFamily: 'Pretendard',
-                                        //letterSpacing: 0.9,
-                                        fontWeight: FontWeight.w700),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ),
-                              ],
+                          ],
+                        )),
+                    const SizedBox(height: 20),
+                    Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.rectangle,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0, vertical: 10),
+                        child: const Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '최근 검색한 여행지',
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontFamily: 'Pretendard',
+                                  //letterSpacing: 0.9,
+                                  fontWeight: FontWeight.w600),
+                              textAlign: TextAlign.center,
                             ),
+                            RecentSearchWidget()
                           ],
                         )),
                   ],
@@ -249,35 +253,36 @@ class HomePageState extends State<HomePage> {
 
 // 검색바 위젯
 class SearchBar extends StatelessWidget {
-  const SearchBar({super.key});
+  const SearchBar({super.key, required this.controller});
+
+  final TextEditingController controller;
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => SearchPage(),
-          ),
-        );
-      },
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(8),
+    return Container(
+      padding: SearcherStyles.containerPadding,
+      decoration: SearcherStyles.containerDecoration,
+      height: 40,
+      child: TextField(
+        textAlign: TextAlign.start,
+        cursorColor: SearcherStyles.cursorColor,
+        controller: controller,
+        decoration: const InputDecoration(
+          hintText: '여행지를 검색하세요',
+          border: InputBorder.none,
         ),
-        child: const Row(
-          children: [
-            Icon(CupertinoIcons.search, color: Colors.grey),
-            SizedBox(width: 10, height: 35),
-            Text(
-              '여행지를 검색하세요',
-              style: TextStyle(color: Colors.grey, fontSize: 18),
-            ),
-          ],
-        ),
+        onSubmitted: (value) {
+          if (value.isNotEmpty) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => SearchPage(keyword: value),
+              ),
+            ).then((_) {
+              controller.clear();
+            });
+          }
+        },
       ),
     );
   }
@@ -365,7 +370,7 @@ class ShowKeywordsState extends State<ShowKeywords> {
           SizedBox(
               // ✅ Chip 높이에 맞게 사이즈 조정
               child: Wrap(
-            spacing: 6, // ✅ Chip 간의 가로 간격
+            spacing: 10, // ✅ Chip 간의 가로 간격
             runSpacing: 0, // ✅ Chip 간의 세로 간격
             // ✅ 줄 정렬 방식
 
@@ -378,7 +383,6 @@ class ShowKeywordsState extends State<ShowKeywords> {
                 backgroundColor: AppStyles.keywordChipBackgroundColor,
                 shape: AppStyles.keywordChipShape,
                 padding: AppStyles.keywordChipPadding,
-                //visualDensity: const VisualDensity(vertical: -1),
               );
             }).toList(),
           )),
