@@ -15,6 +15,7 @@ import './recommendPage.dart';
 import 'setKeywordsPage.dart';
 import 'package:final_project/widgets/jaccard.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
+import 'package:final_project/widgets/BottomNavi.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -260,6 +261,7 @@ class HomePageState extends State<HomePage> {
             ),
           ),
         ),
+        bottomNavigationBar: const BottomNavi(),
       ),
     );
   }
@@ -290,7 +292,7 @@ class SearchBar extends StatelessWidget {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => SearchPage(keyword: value),
+                builder: (context) => SearchPage(),
               ),
             ).then((_) {
               controller.clear();

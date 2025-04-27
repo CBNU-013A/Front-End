@@ -9,9 +9,10 @@ import 'package:flutter/foundation.dart';
 
 import 'package:http/http.dart' as http;
 
+import '../widgets/BottomNavi.dart';
+
 class SearchPage extends StatefulWidget {
-  final String keyword;
-  const SearchPage({super.key, required this.keyword});
+  const SearchPage({super.key});
 
   @override
   _SearchPageState createState() => _SearchPageState();
@@ -263,13 +264,7 @@ class _SearchPageState extends State<SearchPage> {
           '검색 페이지',
           style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
         ),
-        leading: IconButton(
-          icon: const Icon(Icons.home),
-          onPressed: () {
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/homepage', (route) => false);
-          },
-        ),
+        
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -279,7 +274,7 @@ class _SearchPageState extends State<SearchPage> {
             // 검색 바
             custom.SearchBar(
                 controller: _controller,
-                initialValue: widget.keyword, // 🔥 추가
+                //initialValue: widget.keyword, // 🔥 추가
                 onChanged: _filterPlaces,
                 onClear: () {
                   setState(() {
@@ -344,6 +339,7 @@ class _SearchPageState extends State<SearchPage> {
           ],
         ),
       ),
+      bottomNavigationBar: const BottomNavi(),
     );
   }
 }
