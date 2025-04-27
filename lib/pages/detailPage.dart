@@ -321,7 +321,7 @@ class _DetailPageState extends State<DetailPage> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           TextButton.icon(
-            style: ButtonStyles.smallButtonStyle(context: context),
+            style: ButtonStyles.smallTransparentButtonStyle(context: context),
             onPressed: () {
               Navigator.push(
                 context,
@@ -336,7 +336,7 @@ class _DetailPageState extends State<DetailPage> {
             icon: const Icon(Icons.analytics_outlined),
           ),
           TextButton.icon(
-            style: ButtonStyles.smallButtonStyle(context: context),
+            style: ButtonStyles.smallTransparentButtonStyle(context: context),
             onPressed: () {
               Navigator.push(
                 context,
