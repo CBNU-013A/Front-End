@@ -1,3 +1,6 @@
+import 'dart:ffi';
+
+import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
 import 'package:final_project/widgets/recent_searches.dart';
@@ -213,7 +216,8 @@ class _SearchPageState extends State<SearchPage> {
                   child: const Text(
                     '모두 삭제',
                     style: TextStyle(
-                        color: Colors.red, fontWeight: FontWeight.bold),
+                        color: AppColors.deepGrean,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
@@ -258,87 +262,116 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(195, 191, 216, 0),
-        title: const Text(
-          '검색 페이지',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // 검색 바
-            custom.SearchBar(
-                controller: _controller,
-                //initialValue: widget.keyword, // 🔥 추가
-                onChanged: _filterPlaces,
-                onClear: () {
-                  setState(() {
-                    _controller.clear();
-                    _filteredPlaces = [];
-                  });
-                },
-                onSubmitted: (query) {
-                  if (query.isNotEmpty) {
-                    Future.microtask(() {
-                      setState(() {
-                        _controller.clear();
-                        _filteredPlaces = [];
-                      });
-                    });
-                  }
-                }),
+      body: _allPlaces.isEmpty
+          ? const Center(child: CircularProgressIndicator()) // ✅ 서버 데이터 오기 전
+          : SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 70, 16, 16),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(children: [
+                    Expanded(
+                      // 검색바
+                      child: custom.SearchBar(
+                          controller: _controller,
+                          onChanged: (value) {
+                            _filterPlaces(value);
+                            setState(() {}); // 🔥 검색창 입력 바뀔 때마다 강제 리빌드
+                          },
+                          onClear: () {
+                            setState(() {
+                              _controller.clear();
+                              _filteredPlaces = [];
+                            });
+                          },
+                          onSubmitted: (query) async {
+                            if (query.isNotEmpty) {
+                              setState(() {
+                                _controller.clear();
+                                _filterPlaces(query);
+                                _addRecentSearch(_filteredPlaces[0]['name']);
+                              });
+                              await Future.delayed(
+                                  Duration.zero); // Flutter event loop에 양보
+                              if (!mounted) return;
 
-            // 검색 결과
-            if (_controller.text.isNotEmpty)
-              Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-                _filteredPlaces.isNotEmpty
-                    ? SearchResults(
-                        query: _controller.text,
-                        places: _filteredPlaces,
-                        onTap: (place) async {
-                          await _deleteRecentSearch(place['name']);
-                          await _addRecentSearch(place['name']);
-
+                              if (_filteredPlaces.isNotEmpty) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => DetailPage(
+                                        place: _filteredPlaces[0]['name']),
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('해당 장소가 없어요 😢'),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              }
+                            }
+                          }),
+                    ),
+                    if (_controller.text.isNotEmpty)
+                      TextButton(
+                        onPressed: () {
                           setState(() {
-                            _recentsearch.remove(place['name']); // 🔥 중복 제거
-                            _recentsearch.insert(
-                                0, place['name']); // 🔥 맨 위로 추가
+                            _controller.clear();
+                            _filteredPlaces = [];
                           });
-
-                          // DetailPage로 이동
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  DetailPage(place: place['name']),
-                            ),
-                          );
                         },
-                      )
-                    : const Padding(
-                        padding: EdgeInsets.all(0.0),
                         child: Text(
-                          ' ',
-                          style: TextStyle(fontSize: 16, color: Colors.grey),
+                          '취소',
+                          style: TextStyles.mediumTextStyle
+                              .copyWith(color: AppColors.deepGrean),
                         ),
                       ),
-              ]),
+                  ]),
+                  // 검색 연관 내용(?)
+                  if (_controller.text.isNotEmpty && _filteredPlaces.isNotEmpty)
+                    ListView.builder(
+                      padding: const EdgeInsets.all(0),
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _filteredPlaces.length,
+                      itemBuilder: (context, index) {
+                        final place = _filteredPlaces[index];
+                        return ListTile(
+                          title: Text(place['name']),
+                          onTap: () async {
+                            final placeName = place['name'];
 
-            const SizedBox(height: 16),
-            _buildRecentSearches(),
-            // 최근 검색 기록
-            // RecentSearches(
-            //     searches: _recentsearch,
-            //     onTap: _deleteRecentSearch,
-            //     onSearches: _addRecentSearch),
-          ],
-        ),
-      ),
+                            if (!mounted) return;
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    DetailPage(place: placeName),
+                              ),
+                            );
+
+                            // 🔥 화면 전환하고 나서 백그라운드로 저장
+                            await _deleteRecentSearch(placeName);
+                            await _addRecentSearch(placeName);
+                            _controller.clear();
+                          },
+                        );
+                      },
+                    ),
+
+                  const SizedBox(height: 16),
+                  _buildRecentSearches(),
+                  // 최근 검색 기록
+                  // RecentSearches(
+                  //     searches: _recentsearch,
+                  //     onTap: _deleteRecentSearch,
+                  //     onSearches: _addRecentSearch),
+                ],
+              ),
+            ),
       bottomNavigationBar: const BottomNavi(),
     );
   }
