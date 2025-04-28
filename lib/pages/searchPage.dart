@@ -1,10 +1,6 @@
-import 'dart:ffi';
-
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
-import 'package:final_project/widgets/recent_searches.dart';
-import 'package:final_project/widgets/search_results.dart';
 import 'package:final_project/pages/detailPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
