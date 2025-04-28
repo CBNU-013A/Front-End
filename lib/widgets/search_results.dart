@@ -36,8 +36,7 @@ class SearchResults extends StatelessWidget {
     final double calculatedHeight =
         (places.length * itemHeight).clamp(0, maxHeight);
 
-    return SizedBox(
-      height: calculatedHeight,
+    return Expanded(
       child: ListView.builder(
         itemCount: places.length,
         itemBuilder: (context, index) {
@@ -74,5 +73,4 @@ class SearchResults extends StatelessWidget {
       ),
     );
   }
-  
 }

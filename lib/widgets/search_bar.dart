@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import '../styles/search.dart';
+import '../styles/styles.dart';
 import 'package:final_project/pages/detailPage.dart';
 import 'package:final_project/pages/searchPage.dart';
 
@@ -23,30 +25,21 @@ class SearchBar extends StatelessWidget {
   Widget build(BuildContext context) {
     if (initialValue != null) {
       controller.text = initialValue!;
-      controller.selection = TextSelection.collapsed(offset: controller.text.length);
+      controller.selection =
+          TextSelection.collapsed(offset: controller.text.length);
     }
 
     return Container(
-      height: 50,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: BorderRadius.circular(8),
-      ),
+      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      decoration: SearcherStyles.containerDecoration,
       child: TextField(
         controller: controller,
         onChanged: onChanged,
         onSubmitted: onSubmitted,
-        decoration: InputDecoration(
-          icon: const Icon(CupertinoIcons.search, color: Colors.grey),
+        decoration: const InputDecoration(
           hintText: '여행지를 검색하세요',
           border: InputBorder.none,
-          suffixIcon: controller.text.isNotEmpty
-              ? IconButton(
-                  icon: const Icon(Icons.clear),
-                  onPressed: onClear,
-                )
-              : null,
         ),
       ),
     );

@@ -7,7 +7,7 @@ class SearcherStyles {
   static const Color cursorColor =
       Colors.black54; // Replace with your desired color
   static BoxDecoration get containerDecoration => BoxDecoration(
-        color: AppColors.lightGray, // You can replace this with your app color
+        color: AppColors.lightGreen, // You can replace this with your app color
         borderRadius: BorderRadius.circular(15),
       );
 
