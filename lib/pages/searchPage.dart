@@ -1,3 +1,4 @@
+// pages/searchPage.dart
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;

@@ -213,4 +213,101 @@ class _ReviewWidgetState extends State<ReviewWidget> {
       ),
     );
   }
+
+  Widget _buildSummarySection(Map<String, dynamic> data) {
+    final List<dynamic> keywords = data['keywords'] ?? [];
+    final List<dynamic> reviews = data['review'] ?? [];
+    keywords.sort((a, b) =>
+        (b['sentiment']['total'] ?? 0).compareTo(a['sentiment']['total'] ?? 0));
+    if (keywords.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text('관련 키워드가 없습니다.', style: TextStyle(color: Colors.grey)),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ...keywords.map((keyword) {
+          final String name = keyword['name'].toString();
+          final int total = keyword['sentiment']['total'] ?? 0;
+          final int pos = keyword['sentiment']['pos'] ?? 0;
+          final int neg = keyword['sentiment']['neg'] ?? 0;
+          final int neu = keyword['sentiment']['neu'] ?? 0;
+
+          return Padding(
+            padding: const EdgeInsets.only(
+              top: 15.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  textAlign: TextAlign.center,
+                  '$name  ($total 개)',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                //const SizedBox(height: 4),
+                LayoutBuilder(builder: (context, constraints) {
+                  double maxBarWidth = constraints.maxWidth;
+                  double barFactor = total > 0 ? maxBarWidth / total : 0;
+                  return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${(((neg + neu) / total) * 100).toStringAsFixed(1)}%',
+                          style: const TextStyle(
+                              color: AppColors.errorRed, fontSize: 12),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Container(
+                          width: (neg + neu) * barFactor * 0.75,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: AppColors.errorRed,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomLeft: Radius.circular(5),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: pos * barFactor * 0.75,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: AppColors.successGreen,
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(5),
+                              bottomRight: Radius.circular(5),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          '${((pos / total) * 100).toStringAsFixed(1)}%',
+                          style: const TextStyle(
+                              color: AppColors.successGreen, fontSize: 12),
+                        ),
+                        // Container(
+                        //   width: neu * barFactor,
+                        //   height: 20,
+                        //   color: Colors.grey,
+                        // ),
+                      ]);
+                }),
+                const SizedBox(height: 4),
+              ],
+            ),
+          );
+        }).toList(),
+        const SizedBox(height: 20),
+      ]),
+    );
+  }
 }

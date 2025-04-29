@@ -283,6 +283,7 @@ class SearchBar extends StatelessWidget {
         textAlign: TextAlign.start,
         cursorColor: SearcherStyles.cursorColor,
         controller: controller,
+        //InputDecoration 오류나요 (?)
         decoration: const InputDecoration(
           hintText: '여행지를 검색하세요',
           border: InputBorder.none,

@@ -1,6 +1,9 @@
+// pages/detailPage.dart
 import 'dart:convert';
 import 'package:final_project/main.dart';
+import 'package:final_project/pages/writeReviewPage.dart';
 import 'package:final_project/widgets/TabBar.dart';
+import 'package:final_project/widgets/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
@@ -23,16 +26,20 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage>
     with SingleTickerProviderStateMixin {
   int _currentPage = 0;
+
   bool _isLoading = true;
   bool _isPlaceFound = false;
   KakaoMapController? _mapController;
   Map<String, dynamic>? _matchedPlace;
   late PageController _pageController;
   late TabController _tabController;
+
   Timer? _timer;
 
   int _selectedAnalysisIndex = 0; //
   final List<String> _AnalysisOptions = ['전체', '내 취향'];
+
+  String? myReview; // 🔥 Add this at the top of _DetailPageState
 
   @override
   void dispose() {
@@ -314,9 +321,16 @@ class _DetailPageState extends State<DetailPage>
     return SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Expanded(
-          child: ReviewWidget(
-            place: data['name'],
-          ),
+          child: Column(children: [
+            Padding(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+              child: toggleAnalysis(),
+            ),
+            ReviewWidget(
+              place: data['name'],
+            ),
+          ]),
         ));
   }
 
@@ -392,54 +406,10 @@ class _DetailPageState extends State<DetailPage>
     }
   }
 
-  //키워드 섹션
-  Widget _buildKeywordsSection(Map<String, dynamic> data) {
-    final List<dynamic> keywords = data['keywords'] ?? [];
-
-    keywords.sort((a, b) =>
-        (b['sentiment']['total'] ?? 0).compareTo(a['sentiment']['total'] ?? 0));
-    if (keywords.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text('관련 키워드가 없습니다.', style: TextStyle(color: Colors.grey)),
-      );
-    }
-
-    debugPrint('Keywords: ${data['keywords']}');
-
-    return Padding(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),
-      child: SingleChildScrollView(
-        //controller: _pageController,
-        scrollDirection: Axis.horizontal,
-        child: Row(
-            children: keywords.map((keywords) {
-          final String text = keywords['name'].toString();
-          return Padding(
-            padding: const EdgeInsets.only(right: 5),
-            child: Chip(
-              labelPadding: const EdgeInsets.only(left: 8, right: 8),
-
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-                side: const BorderSide(color: AppColors.lightTaube),
-              ),
-              backgroundColor: AppColors.lightTaube,
-
-              //padding: AppStyles.keywordChipPadding.copyWith(left: 8, right: 8),
-              label: Text(text,
-                  style: AppStyles.keywordChipTextStyle
-                      .copyWith(fontSize: 14)), // ✅ `text` 반환
-            ),
-          );
-        }).toList()),
-      ),
-    );
-  }
-
   //리뷰탭으로 이동
   Widget _buildReviewsSection(Map<String, dynamic> data) {
     final List<dynamic> reviews = data['review'] ?? [];
+
     if (reviews.isEmpty) {
       return const Padding(
         padding: EdgeInsets.all(16.0),
@@ -448,32 +418,135 @@ class _DetailPageState extends State<DetailPage>
     }
 
     debugPrint('✅ Review 불러오기 성공');
-
+    //debugPrint("내가 쓴 리뷰 ", myReview);
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(12.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
-          children: reviews.map((review) {
-            return Container(
-              alignment: Alignment.centerLeft,
-              padding: const EdgeInsets.all(8),
-              margin: const EdgeInsets.only(bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: BorderRadius.circular(8),
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.lightWhite,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                    Text(
+                      "내가 쓴 리뷰",
+                      style: TextStyles.mediumTextStyle
+                        .copyWith(color: Colors.black),
+                    ),
+                    const SizedBox(
+                      height: 5,
+                    ),
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                      color: Colors.grey[200],
+                      borderRadius: BorderRadius.circular(8),
+                      ),
+                     child: (myReview == null || myReview!.isEmpty)
+                         ? TextButton(
+                             onPressed: () async {
+                               final result = await Navigator.push(
+                                 context,
+                                 MaterialPageRoute(
+                                   builder: (context) => WriteReviewPage(
+                                     initialText: "", // Empty for new review
+                                     place: widget.place,
+                                   ),
+                                 ),
+                               );
+                               if (result != null && result is String) {
+                                 setState(() {
+                                   myReview = result;
+                                 });
+                               }
+                             },
+                             child: const Text(
+                               "리뷰 작성하기",
+                               style: TextStyle(color: AppColors.deepGrean),
+                             ),
+                           )
+                         : TextButton(
+                             onPressed: () async {
+                               final result = await Navigator.push(
+                                 context,
+                                 MaterialPageRoute(
+                                   builder: (context) => WriteReviewPage(
+                                     initialText: myReview!,
+                                     place: widget.place,
+                                   ),
+                                 ),
+                               );
+                               if (result != null && result is String) {
+                                 setState(() {
+                                   myReview = result;
+                                 });
+                               }
+                             },
+                             child: Text(
+                               myReview!,
+                               style: const TextStyle(fontSize: 14, color: AppColors.deepGrean),
+                             ),
+                           ),
+                    ),
+                  ],
+                ),
               ),
-              child: Text(
-                review ?? '알 수 없음',
-                style: const TextStyle(fontSize: 14),
+              const SizedBox(
+                height: 10,
               ),
-            );
-          }).toList(),
-        ),
+              Container(
+                decoration: BoxDecoration(
+                  color: AppColors.lightWhite,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Column(
+                  children: reviews.map((review) {
+                    return Container(
+                      alignment: Alignment.centerLeft,
+                      padding: const EdgeInsets.all(8),
+                      margin: const EdgeInsets.only(
+                        left: 20,
+                        right: 20,
+                        top: 13,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            review ?? '리뷰 내용 없음',
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(height: 4),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ]),
       ),
     );
   }
 
+  //요약탭으로 이동
   Widget _buildSummarySection(Map<String, dynamic> data) {
     debugPrint("⭐️_buildSummarySection");
     return SingleChildScrollView(
@@ -481,8 +554,6 @@ class _DetailPageState extends State<DetailPage>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          //_buildImageSection(_matchedPlace!),
-          //_buildNameSection(_matchedPlace!),
           Container(
             decoration: BoxDecoration(
               color: AppColors.lightWhite,
@@ -521,77 +592,106 @@ class _DetailPageState extends State<DetailPage>
                     style: TextStyles.mediumTextStyle
                         .copyWith(color: Colors.black),
                   ),
-                  Container(
-                    height: 35,
-                    margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-                    decoration: BoxDecoration(
-                      color: TextFiledStyles.fillColor,
-                      borderRadius: BorderRadius.circular(20),
+                  toggleAnalysis(),
+                  SummaryWidget(
+                    place: data['name'],
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                    child: SizedBox(
+                      child: Divider(
+                        color: Colors.grey,
+                        thickness: 1,
+                      ),
                     ),
-                    child: Stack(
-                      children: [
-                        AnimatedAlign(
-                          alignment: _selectedAnalysisIndex == 0
-                              ? Alignment.centerLeft
-                              : Alignment.centerRight,
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.easeInOut,
-                          child: Container(
-                            width: (MediaQuery.of(context).size.width - 80) / 2,
-                            height: 38,
-                            alignment: Alignment.center,
-                            // margin: const EdgeInsets.symmetric(
-                            //     vertical: 5, horizontal: 2),
-                            decoration: BoxDecoration(
-                              color: AppColors.deepGrean,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children:
-                              List.generate(_AnalysisOptions.length, (index) {
-                            return GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  _selectedAnalysisIndex = index;
-                                });
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("아직 디비 업데이트 안돼요"),
-                                  ),
-                                );
-                              },
-                              child: Container(
-                                width:
-                                    (MediaQuery.of(context).size.width - 80) /
-                                        2, // 버튼 크기 통일
-                                height: 38,
-                                alignment: Alignment.center,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 6), // 🔥 텍스트 주변 여백
-                                child: Text(
-                                  _AnalysisOptions[index],
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: _selectedAnalysisIndex == index
-                                        ? Colors.white
-                                        : AppColors.deepGrean,
-                                  ),
-                                ),
-                              ),
-                            );
-                          }),
-                        ),
-                      ],
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _tabController.index = 1; // 리뷰 탭으로 변경
+                      });
+                    },
+                    child: Text(
+                      textAlign: TextAlign.right,
+                      "자세히 보기",
+                      style: TextStyles.mediumTextStyle
+                          .copyWith(color: Colors.grey),
                     ),
                   ),
                 ]),
           ),
-          _buildKeywordsSection(_matchedPlace!),
+          //_buildKeywordsSection(_matchedPlace!),
+        ],
+      ),
+    );
+  }
+
+  Container toggleAnalysis() {
+    return Container(
+      height: 35,
+      margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
+      decoration: BoxDecoration(
+        color: TextFiledStyles.fillColor,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Stack(
+        children: [
+          AnimatedAlign(
+            alignment: _selectedAnalysisIndex == 0
+                ? Alignment.centerLeft
+                : Alignment.centerRight,
+            duration: const Duration(milliseconds: 200),
+            curve: Curves.easeInOut,
+            child: Container(
+              width: (MediaQuery.of(context).size.width - 80) / 2,
+              height: 38,
+              alignment: Alignment.center,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+              // margin: const EdgeInsets.symmetric(
+              //     vertical: 5, horizontal: 2),
+              decoration: BoxDecoration(
+                color: AppColors.deepGrean,
+                borderRadius: BorderRadius.circular(20),
+              ),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: List.generate(_AnalysisOptions.length, (index) {
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _selectedAnalysisIndex = index;
+                  });
+                  if (index == 1) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("사용자 취향이 없어요 😢"),
+                      ),
+                    );
+                  }
+                },
+                child: Container(
+                  width:
+                      (MediaQuery.of(context).size.width - 80) / 2, // 버튼 크기 통일
+                  height: 38,
+                  alignment: Alignment.center,
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 20, vertical: 6), // 🔥 텍스트 주변 여백
+                  child: Text(
+                    _AnalysisOptions[index],
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: _selectedAnalysisIndex == index
+                          ? Colors.white
+                          : AppColors.deepGrean,
+                    ),
+                  ),
+                ),
+              );
+            }),
+          ),
         ],
       ),
     );
@@ -619,24 +719,6 @@ class _DetailPageState extends State<DetailPage>
             });
           },
         ),
-      ),
-    );
-  }
-
-  Widget _buildTabContent(Map<String, dynamic> data) {
-    if (_matchedPlace == null) {
-      return const Center(child: CircularProgressIndicator());
-    }
-    return Padding(
-      padding: const EdgeInsets.only(top: 48.0), // 🔥 탭바 높이만큼 여백 추가
-      child: IndexedStack(
-        index: _tabController.index,
-        children: [
-          _buildSummarySection(data),
-          _buildGoReview(data),
-          _buildReviewsSection(data),
-          _buildMapSection(data),
-        ],
       ),
     );
   }
@@ -677,14 +759,6 @@ class _DetailPageState extends State<DetailPage>
     }
 
     return Scaffold(
-      // appBar: AppBar(
-      //   toolbarHeight: 60,
-      //   title: Text(
-      //     '${widget.place}',
-      //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-      //   ),
-      //   backgroundColor: Colors.transparent,
-      // ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
