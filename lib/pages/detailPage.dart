@@ -129,7 +129,7 @@ class _DetailPageState extends State<DetailPage>
 
   Widget _buildImageSection(Map<String, dynamic> place) {
     List<String> imageUrls = List<String>.from(place['image'] ?? []);
-    debugPrint("Image URLs: $imageUrls");
+    //debugPrint("Image URLs: $imageUrls");
     // 🔹 이미지가 없으면 기본 이미지 추가 (예방)
     if (imageUrls.isEmpty) {
       imageUrls = ['https://via.placeholder.com/300x200.png?text=No+Image'];
@@ -308,47 +308,19 @@ class _DetailPageState extends State<DetailPage>
     );
   }
 
+  //분석탭으로 이동
   Widget _buildGoReview(Map<String, dynamic> data) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 16.0, left: 16.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          TextButton.icon(
-            style: ButtonStyles.smallColoredButtonStyle(context: context),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ReviewPage(
-                    place: data['name'],
-                  ),
-                ),
-              );
-            },
-            label: const Text("리뷰 분석 보러가기"),
-            icon: const Icon(Icons.analytics_outlined),
+    debugPrint("분석 탭 이동");
+    return SingleChildScrollView(
+        padding: const EdgeInsets.all(16.0),
+        child: Expanded(
+          child: ReviewWidget(
+            place: data['name'],
           ),
-          TextButton.icon(
-            style: ButtonStyles.smallColoredButtonStyle(context: context),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => ReviewPage(
-                    place: data['name'],
-                  ),
-                ),
-              );
-            },
-            label: const Text("리뷰 작성하러가기"),
-            icon: const Icon(Icons.analytics_outlined),
-          ),
-        ],
-      ),
-    );
+        ));
   }
 
+  //정보탭으로 이동
   Widget _buildMapSection(Map<String, dynamic> data) {
     // 1. location이 null인지 확인 (에러 방지)
     if (data['location'] == null) {
@@ -420,6 +392,7 @@ class _DetailPageState extends State<DetailPage>
     }
   }
 
+  //키워드 섹션
   Widget _buildKeywordsSection(Map<String, dynamic> data) {
     final List<dynamic> keywords = data['keywords'] ?? [];
 
@@ -464,6 +437,7 @@ class _DetailPageState extends State<DetailPage>
     );
   }
 
+  //리뷰탭으로 이동
   Widget _buildReviewsSection(Map<String, dynamic> data) {
     final List<dynamic> reviews = data['review'] ?? [];
     if (reviews.isEmpty) {
@@ -476,7 +450,7 @@ class _DetailPageState extends State<DetailPage>
     debugPrint('✅ Review 불러오기 성공');
 
     return Padding(
-      padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),
+      padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.vertical,
         child: Column(
@@ -511,19 +485,29 @@ class _DetailPageState extends State<DetailPage>
           //_buildNameSection(_matchedPlace!),
           Container(
             decoration: BoxDecoration(
-              color: AppColors.lighterGreen,
+              color: AppColors.lightWhite,
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(10),
             ),
             padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
-            child: Text(
-              "지피티 한줄 요약",
-              style: TextStyles.mediumTextStyle.copyWith(color: Colors.black),
-            ),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "지피티 한줄 요약",
+                    style: TextStyles.mediumTextStyle
+                        .copyWith(color: Colors.black),
+                  ),
+                  const Text("여기에 요약글을 적을게용"),
+                ]),
+          ),
+          const SizedBox(
+            height: 10,
           ),
           Container(
             decoration: BoxDecoration(
-              color: AppColors.lighterGreen,
+              color: AppColors.lightWhite,
               shape: BoxShape.rectangle,
               borderRadius: BorderRadius.circular(10),
             ),
@@ -539,6 +523,7 @@ class _DetailPageState extends State<DetailPage>
                   ),
                   Container(
                     height: 35,
+                    margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
                     decoration: BoxDecoration(
                       color: TextFiledStyles.fillColor,
                       borderRadius: BorderRadius.circular(20),
@@ -642,27 +627,18 @@ class _DetailPageState extends State<DetailPage>
     if (_matchedPlace == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    switch (_tabController.index) {
-      case 0:
-        return _buildSummarySection(data);
-      case 1: //분석
-        return _buildGoReview(data);
-      // Column(
-      //   crossAxisAlignment: CrossAxisAlignment.start,
-      //   children: [
-      //     _buildGoReview(data),
-      //     _buildKeywordsSection(data),
-      //     _buildReviewsSection(data),
-      //   ],
-      // );
-      case 2:
-        return _buildReviewsSection(_matchedPlace!);
-      case 3:
-        return _buildMapSection(_matchedPlace!);
-
-      default:
-        return const Center(child: Text('No content'));
-    }
+    return Padding(
+      padding: const EdgeInsets.only(top: 48.0), // 🔥 탭바 높이만큼 여백 추가
+      child: IndexedStack(
+        index: _tabController.index,
+        children: [
+          _buildSummarySection(data),
+          _buildGoReview(data),
+          _buildReviewsSection(data),
+          _buildMapSection(data),
+        ],
+      ),
+    );
   }
 
   @override
@@ -701,38 +677,57 @@ class _DetailPageState extends State<DetailPage>
     }
 
     return Scaffold(
-      appBar: AppBar(
-        toolbarHeight: 60,
-        title: Text(
-          '${widget.place}',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
-        backgroundColor: Colors.transparent,
-      ),
+      // appBar: AppBar(
+      //   toolbarHeight: 60,
+      //   title: Text(
+      //     '${widget.place}',
+      //     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      //   ),
+      //   backgroundColor: Colors.transparent,
+      // ),
       body: NestedScrollView(
         headerSliverBuilder: (context, innerBoxIsScrolled) {
           return [
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildImageSection(_matchedPlace!),
-                  _buildInfoSection(_matchedPlace!),
-                ],
+            SliverAppBar(
+              // 🔥 AppBar도 NestedScrollView 안으로
+              title: Text(
+                '${widget.place}',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              floating: true,
+              pinned: true,
+              backgroundColor: AppColors.lightGreen,
+            ),
+            SliverOverlapAbsorber(
+              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+              sliver: SliverToBoxAdapter(
+                child: Container(
+                  decoration: BoxStyles.backgroundBox(),
+                  child: Column(
+                    children: [
+                      _buildImageSection(_matchedPlace!),
+                      _buildInfoSection(_matchedPlace!),
+                    ],
+                  ),
+                ),
               ),
             ),
             SliverPersistentHeader(
-              pinned: true, // 🔥 탭바 고정
+              pinned: true,
               delegate: _SliverTabBarDelegate(child: _buildTap()),
             ),
           ];
         },
         body: _matchedPlace == null
             ? const Center(child: CircularProgressIndicator())
-            : Padding(
-                padding:
-                    const EdgeInsets.only(top: 56.0), // 🔥 TabBar 높이 + 여유 공간
-                child: _buildTabContent(_matchedPlace!),
+            : TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildSummarySection(_matchedPlace!),
+                  _buildGoReview(_matchedPlace!),
+                  _buildReviewsSection(_matchedPlace!),
+                  _buildMapSection(_matchedPlace!),
+                ],
               ),
       ),
       bottomNavigationBar: const BottomNavi(),
