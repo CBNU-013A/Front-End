@@ -1,9 +1,14 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/pages/detailPage.dart';
+
+
+final String baseUrl =
+Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
 class RecommendationWidget extends StatefulWidget {
   const RecommendationWidget({super.key});
@@ -88,7 +93,7 @@ class RecommendationState extends State<RecommendationWidget> {
 
   Future<List<Map<String, dynamic>>> fetchAllPlaces() async {
     final response =
-        await http.get(Uri.parse("http://localhost:8001/api/location/all"));
+        await http.get(Uri.parse("$baseUrl/api/location/all"));
     if (response.statusCode == 200) {
       //debugPrint("장소 로드");
       return List<Map<String, dynamic>>.from(json.decode(response.body));
@@ -99,7 +104,7 @@ class RecommendationState extends State<RecommendationWidget> {
 
   Future<List<String>> fetchUserKeywords(String userId) async {
     final response = await http
-        .get(Uri.parse("http://localhost:8001/api/users/$userId/keywords"));
+        .get(Uri.parse("$baseUrl/api/users/$userId/keywords"));
     if (response.statusCode == 200) {
       final List<dynamic> rawKeywords = json.decode(response.body);
       return rawKeywords.map((e) => e['name'].toString()).toList();
@@ -110,7 +115,7 @@ class RecommendationState extends State<RecommendationWidget> {
 
   Future<Map<String, dynamic>> fetchPlaceDetail(String placeName) async {
     final response = await http
-        .get(Uri.parse('http://localhost:8001/api/location/$placeName'));
+        .get(Uri.parse('$baseUrl/api/location/$placeName'));
 
     if (response.statusCode == 200) {
       return Map<String, dynamic>.from(json.decode(response.body));

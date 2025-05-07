@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:final_project/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -7,6 +8,9 @@ import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'dart:async';
 import '../styles/styles.dart';
+
+final String baseUrl =
+Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
 class ReviewPage extends StatefulWidget {
   final String place;
@@ -29,7 +33,7 @@ class _ReviewPageState extends State<ReviewPage> {
     try {
       final String placeName = Uri.encodeComponent(widget.place);
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/location/$placeName'), // ✅ 서버 API로 요청
+        Uri.parse('$baseUrl/api/location/$placeName'), // ✅ 서버 API로 요청
       );
 
       if (response.statusCode == 200) {

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import '../api_service.dart';
@@ -10,6 +11,8 @@ import '../main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
+final String baseUrl =
+Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -166,7 +169,7 @@ class _RegisterPageState extends State<RegisterPage> {
     debugPrint("이메일 체크: ${emailController.text}\n");
 
     final response = await http.get(Uri.parse(
-        'http://localhost:8001/check-email?email=${emailController.text}'));
+        '$baseUrl/check-email?email=${emailController.text}'));
 
     if (response.statusCode == 200) {
       rootScaffoldMessengerKey.currentState!.showSnackBar(

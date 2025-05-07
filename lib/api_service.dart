@@ -6,12 +6,12 @@ import 'dart:io';
 //import 'package:shared_preferences/shared_preferences.dart';
 
 final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001/api/auth' : 'http://localhost:8001/api/auth';
+Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
 class ApiService {
   Future<Map<String, dynamic>?> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse(baseUrl),
+      Uri.parse('$baseUrl/api/auth/login'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email, "password": password}),
     );
@@ -33,7 +33,7 @@ class ApiService {
     String formattedBirthdate =
         DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(birthdate);
     final response = await http.post(
-      Uri.parse('$baseUrl/register'),
+      Uri.parse('$baseUrl/api/auth/register'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "name": name,
@@ -61,7 +61,7 @@ class ApiService {
 
   //Location-keywords
   Future<Map<String, dynamic>> fetchLocationWithKeywords(String locationId) async {
-    final response = await http.get(Uri.parse('$baseUrl/location/$locationId'));
+    final response = await http.get(Uri.parse('$baseUrl/api/auth/location/$locationId'));
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

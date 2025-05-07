@@ -1,10 +1,15 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/pages/detailPage.dart';
 import 'dart:async';
+
+
+final String baseUrl =
+Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
 class RecentSearchWidget extends StatefulWidget {
   const RecentSearchWidget({super.key});
@@ -66,7 +71,7 @@ class RecentSearchState extends State<RecentSearchWidget> {
   Future<void> fetchUserRecentSearches(String userId) async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/users/$userId/recentsearch'),
+        Uri.parse('$baseUrl/api/users/$userId/recentsearch'),
       );
       if (response.statusCode == 200) {
         debugPrint("✅ 사용자 최근 검색 기록 로드 성공");
@@ -98,7 +103,7 @@ class RecentSearchState extends State<RecentSearchWidget> {
   Future<List<Map<String, dynamic>>> fetchAllPlaces() async {
     try {
       final response =
-          await http.get(Uri.parse('http://localhost:8001/api/location/all'));
+          await http.get(Uri.parse('$baseUrl/api/location/all'));
       if (response.statusCode == 200) {
         debugPrint("✅ 장소 데이터 로드 성공");
         return List<Map<String, dynamic>>.from(json.decode(response.body));

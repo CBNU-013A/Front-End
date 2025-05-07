@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:final_project/widgets/recent.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +19,8 @@ import 'package:final_project/widgets/jaccard.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
 import 'package:final_project/widgets/BottomNavi.dart';
 
+final String baseUrl =
+Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -346,7 +350,7 @@ class ShowKeywordsState extends State<ShowKeywords> {
 
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/users/$userId/keywords'),
+        Uri.parse('$baseUrl/api/users/$userId/keywords'),
       );
 
       if (response.statusCode == 200) {
