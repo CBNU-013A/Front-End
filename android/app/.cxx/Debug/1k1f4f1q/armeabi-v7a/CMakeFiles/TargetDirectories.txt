@@ -1,0 +1,2 @@
+/Users/jo-eunji/Desktop/CBNU/24-2/final_project/Front-End/android/app/.cxx/Debug/1k1f4f1q/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/jo-eunji/Desktop/CBNU/24-2/final_project/Front-End/android/app/.cxx/Debug/1k1f4f1q/armeabi-v7a/CMakeFiles/rebuild_cache.dir

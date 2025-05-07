@@ -1,5 +1,6 @@
 // pages/detailPage.dart
 import 'dart:convert';
+import 'dart:io';
 import 'package:final_project/main.dart';
 import 'package:final_project/pages/writeReviewPage.dart';
 import 'package:final_project/widgets/TabBar.dart';
@@ -13,6 +14,9 @@ import 'dart:async';
 import '../styles/styles.dart';
 import '../pages/reviewPage.dart';
 import '../widgets/BottomNavi.dart';
+
+final String baseUrl =
+Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.place});
@@ -105,7 +109,7 @@ class _DetailPageState extends State<DetailPage>
       final String placeName = Uri.encodeComponent(widget.place);
       final response = await http.get(
         Uri.parse(
-            'http://localhost:8001/api/location/$placeName'), // ✅ 서버 API로 요청
+            '$baseUrl/api/location/$placeName'), // ✅ 서버 API로 요청
       );
 
       if (response.statusCode == 200) {
