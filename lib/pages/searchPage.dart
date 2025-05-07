@@ -12,10 +12,9 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../widgets/BottomNavi.dart';
-
-final String baseUrl =
-    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
-
+final String baseUrl = (Platform.isAndroid || Platform.isIOS)
+    ? 'http://172.30.1.72:8001' // 안드로이드
+    : 'http://localhost:8001'; //ios
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 

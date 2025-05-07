@@ -18,9 +18,10 @@ import 'setKeywordsPage.dart';
 import 'package:final_project/widgets/jaccard.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
 import 'package:final_project/widgets/BottomNavi.dart';
+final String baseUrl = (Platform.isAndroid || Platform.isIOS)
+    ? 'http://172.30.1.72:8001' // 안드로이드
+    : 'http://localhost:8001'; //ios
 
-final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 

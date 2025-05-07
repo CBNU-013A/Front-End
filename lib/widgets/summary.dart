@@ -1,8 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../styles/styles.dart';
-
+final String baseUrl = (Platform.isAndroid || Platform.isIOS)
+    ? 'http://172.30.1.72:8001' // 안드로이드
+    : 'http://localhost:8001'; //ios
 class SummaryWidget extends StatefulWidget {
   const SummaryWidget({Key? key, required this.place}) : super(key: key);
 
@@ -25,7 +28,7 @@ class _SummaryWidgetState extends State<SummaryWidget> {
     try {
       final String placeName = Uri.encodeComponent(widget.place);
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/location/$placeName'),
+        Uri.parse('$baseUrl/api/location/$placeName'),
       );
 
       if (response.statusCode == 200) {

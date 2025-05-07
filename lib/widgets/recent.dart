@@ -7,10 +7,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/pages/detailPage.dart';
 import 'dart:async';
 
-
-final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
-
+final String baseUrl = (Platform.isAndroid || Platform.isIOS)
+    ? 'http://172.30.1.72:8001' // 안드로이드
+    : 'http://localhost:8001'; //ios
 class RecentSearchWidget extends StatefulWidget {
   const RecentSearchWidget({super.key});
 

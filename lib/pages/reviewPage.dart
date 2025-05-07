@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../styles/styles.dart';
 
-final String baseUrl =
-    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+final String baseUrl = (Platform.isAndroid || Platform.isIOS)
+    ? 'http://172.30.1.72:8001' // ✅ 실기기용
+    : 'http://localhost:8001';   // 웹용
 
 class ReviewWidget extends StatefulWidget {
   final String place;

@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 import 'dart:io';
 //import 'package:shared_preferences/shared_preferences.dart';
 
-final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+final String baseUrl = (Platform.isAndroid || Platform.isIOS)
+    ? 'http://172.30.1.72:8001' // 안드로이드
+    : 'http://localhost:8001'; //ios
 
 class ApiService {
   Future<Map<String, dynamic>?> login(String email, String password) async {

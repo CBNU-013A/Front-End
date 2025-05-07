@@ -7,8 +7,10 @@ import 'package:final_project/styles/styles.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-final String baseUrl =
-    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+final String baseUrl = (Platform.isAndroid || Platform.isIOS)
+    ? 'http://172.30.1.72:8001' // 안드로이드
+    : 'http://localhost:8001'; //ios
+
 
 class SetKeywordsPage extends StatefulWidget {
   const SetKeywordsPage({super.key});
@@ -84,7 +86,7 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/users/$_userId/keywords'),
+        Uri.parse('$baseUrl/api/users/$_userId/keywords'),
       );
 
       if (response.statusCode == 200) {
