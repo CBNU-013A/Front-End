@@ -1,11 +1,9 @@
-import 'dart:ffi';
+// pages/searchPage.dart
 import 'dart:io';
 
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
-import 'package:final_project/widgets/recent_searches.dart';
-import 'package:final_project/widgets/search_results.dart';
 import 'package:final_project/pages/detailPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -16,8 +14,8 @@ import 'package:http/http.dart' as http;
 import '../widgets/BottomNavi.dart';
 
 final String baseUrl =
+    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -109,8 +107,7 @@ class _SearchPageState extends State<SearchPage> {
 
     try {
       final response = await http.delete(
-        Uri.parse(
-            '$baseUrl/api/users/$_userId/recentsearch/$value'),
+        Uri.parse('$baseUrl/api/users/$_userId/recentsearch/$value'),
         headers: {"Content-Type": "application/json"},
       );
 

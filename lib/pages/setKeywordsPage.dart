@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
 class SetKeywordsPage extends StatefulWidget {
   const SetKeywordsPage({super.key});
@@ -84,7 +84,7 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/api/users/$_userId/keywords'),
+        Uri.parse('$baseUrl/users/$_userId/keywords'),
       );
 
       if (response.statusCode == 200) {
@@ -232,10 +232,13 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //backgroundColor: null,
+      extendBodyBehindAppBar: true,
+
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(60.0),
         child: AppBar(
-          backgroundColor: const Color.fromRGBO(195, 191, 216, 0),
+          backgroundColor: AppColors.lighterGreen,
           title: const Text(
             "키워드 설정",
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -251,83 +254,86 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
           ),
         ),
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  "관심 있는 키워드를 선택해주세요!",
-                  style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.black),
-                  textAlign: TextAlign.left,
-                ),
-                const SizedBox(height: 10),
-                Expanded(
-                    child: SingleChildScrollView(
-                  child: Wrap(
-                    spacing: 8.0, // ✅ 태그 간 가로 간격
-                    runSpacing: 3.0, // ✅ 줄 간 세로 간격
-                    children: _keywords.map((keyword) {
-                      final keywordId = keyword["_id"] ?? "";
-                      final text = keyword["name"] ?? "";
-                      //debugPrint(keyword["text"]);
-                      final bool isSelected =
-                          _selectedKeywords.contains(keywordId);
-                      return TextButton(
+      body: Container(
+        decoration: BoxStyles.backgroundBox(),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "관심 있는 키워드를 선택해주세요!",
+                    style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.black),
+                    textAlign: TextAlign.left,
+                  ),
+                  const SizedBox(height: 10),
+                  Expanded(
+                      child: SingleChildScrollView(
+                    child: Wrap(
+                      spacing: 8.0, // ✅ 태그 간 가로 간격
+                      runSpacing: 3.0, // ✅ 줄 간 세로 간격
+                      children: _keywords.map((keyword) {
+                        final keywordId = keyword["_id"] ?? "";
+                        final text = keyword["name"] ?? "";
+                        //debugPrint(keyword["text"]);
+                        final bool isSelected =
+                            _selectedKeywords.contains(keywordId);
+                        return TextButton(
+                          onPressed: () {
+                            // 키워드 토글
+                            if (keywordId.isNotEmpty) {
+                              _toggleKeyword(keywordId);
+                            }
+                          },
+                          style: TextButton.styleFrom(
+                            backgroundColor: isSelected
+                                ? AppColors.lightGreen // ✅ 선택된 경우 (파란색)
+                                : Colors.white, // ✅ 기본 배경색 (연한 회색)
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 8, vertical: 1),
+                            side: const BorderSide(
+                                color: AppColors.lightGreen, width: 1),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                              // ✅ 둥근 테두리
+                            ),
+                          ),
+                          child: Text(text,
+                              style: AppStyles.keywordChipTextStyle.copyWith(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: isSelected
+                                    ? AppColors.deepGrean // ✅ 선택된 경우 (흰색)
+                                    : AppColors.deepGrean, // ✅ 기본 글자색 (검정색)
+                              )),
+                        );
+                      }).toList(),
+                    ),
+                  )),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      TextButton(
                         onPressed: () {
-                          // 키워드 토글
-                          if (keywordId.isNotEmpty) {
-                            _toggleKeyword(keywordId);
-                          }
+                          _resetKeyword();
                         },
-                        style: TextButton.styleFrom(
-                          backgroundColor: isSelected
-                              ? AppColors.marineBlue // ✅ 선택된 경우 (파란색)
-                              : Colors.transparent, // ✅ 기본 배경색 (연한 회색)
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 1),
-                          side: const BorderSide(
-                              color: AppColors.marineBlue, width: 1),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(15),
-                            // ✅ 둥근 테두리
+                        child: const Text(
+                          "초기화",
+                          style: TextStyle(
+                            color: AppColors.deepGrean,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                        child: Text(text,
-                            style: AppStyles.keywordChipTextStyle.copyWith(
-                              fontSize: 15,
-                              fontWeight: FontWeight.w600,
-                              color: isSelected
-                                  ? Colors.white // ✅ 선택된 경우 (흰색)
-                                  : AppColors.marineBlue, // ✅ 기본 글자색 (검정색)
-                            )),
-                      );
-                    }).toList(),
-                  ),
-                )),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        _resetKeyword();
-                      },
-                      child: const Text(
-                        "초기화",
-                        style: TextStyle(
-                          color: AppColors.mustedBlush,
-                          fontWeight: FontWeight.bold,
-                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ]),
+                    ],
+                  ),
+                ]),
+          ),
         ),
       ),
     );

@@ -1,26 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
-import 'package:final_project/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
-import 'dart:async';
 import '../styles/styles.dart';
 
 final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
-class ReviewPage extends StatefulWidget {
+class ReviewWidget extends StatefulWidget {
   final String place;
-  const ReviewPage({Key? key, required this.place}) : super(key: key);
+
+  const ReviewWidget({Key? key, required this.place}) : super(key: key);
 
   @override
-  _ReviewPageState createState() => _ReviewPageState();
+  _ReviewWidgetState createState() => _ReviewWidgetState();
 }
 
-class _ReviewPageState extends State<ReviewPage> {
+class _ReviewWidgetState extends State<ReviewWidget> {
   Map<String, dynamic>? _matchedPlace;
 
   @override
@@ -33,58 +29,38 @@ class _ReviewPageState extends State<ReviewPage> {
     try {
       final String placeName = Uri.encodeComponent(widget.place);
       final response = await http.get(
-        Uri.parse('$baseUrl/api/location/$placeName'), // ✅ 서버 API로 요청
+        Uri.parse('$baseUrl/api/location/$placeName'),
       );
 
       if (response.statusCode == 200) {
         final Map<String, dynamic> data = json.decode(response.body);
 
         setState(() {
-          //_isPlaceFound = true;
           _matchedPlace = data;
-          //_isLoading = false;
-        });
-      } else if (response.statusCode == 404) {
-        // ✅ 장소를 찾을 수 없음
-        setState(() {
-          //_isLoading = false;
-          //_isPlaceFound = false;
         });
       } else {
         throw Exception('Failed to load place data');
       }
     } catch (e) {
       debugPrint("❗ 서버 통신 중 오류 발생: $e");
-      setState(() {
-        //_isLoading = false;
-        //_isPlaceFound = false;
-      });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text(
-            'Review',
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.transparent,
-        ),
-        body: _matchedPlace == null
-            ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildKeywordsSection(_matchedPlace!),
-                    const SizedBox(height: 24),
-                    //_buildReviewsSection(_matchedPlace!),
-                  ],
-                ),
-              ));
+    return _matchedPlace == null
+        ? const Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            padding: const EdgeInsets.all(0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildKeywordsSection(_matchedPlace!),
+                //const SizedBox(height: 24),
+                //_buildReviewsSection(_matchedPlace!),
+              ],
+            ),
+          );
   }
 
   Widget _buildKeywordsSection(Map<String, dynamic> data) {
@@ -100,19 +76,8 @@ class _ReviewPageState extends State<ReviewPage> {
     }
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Row(children: [
-          Text(
-            "${reviews.length}개의 리뷰를 분석했어요",
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w700),
-          ),
-
-          //IconButton(onPressed: {}, icon: Icon(Icons.smart_button))
-        ]),
-        const SizedBox(
-          height: 10,
-        ),
         ...keywords.map((keyword) {
           final String name = keyword['name'].toString();
           final int total = keyword['sentiment']['total'] ?? 0;
@@ -121,65 +86,100 @@ class _ReviewPageState extends State<ReviewPage> {
           final int neu = keyword['sentiment']['neu'] ?? 0;
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12.0),
+            padding: const EdgeInsets.only(
+              top: 15.0,
+            ),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                //Text("$total개의 리뷰를 분석했어요"),
                 Text(
-                  '$name  $total',
-                  style: const TextStyle(fontSize: 17),
+                  textAlign: TextAlign.center,
+                  '$name  ($total 개)',
+                  style: const TextStyle(fontSize: 12),
                 ),
-                const SizedBox(height: 4),
+                //const SizedBox(height: 4),
                 LayoutBuilder(builder: (context, constraints) {
                   double maxBarWidth = constraints.maxWidth;
                   double barFactor = total > 0 ? maxBarWidth / total : 0;
-                  return Row(children: [
-                    Container(
-                      width: pos * barFactor,
-                      height: 20,
-                      color: AppColors.lightPeriwinkle,
-                    ),
-                    Container(
-                      width: neg * barFactor,
-                      height: 20,
-                      color: AppColors.mustedBlush,
-                    ),
-                    Container(
-                      width: neu * barFactor,
-                      height: 20,
-                      color: Colors.grey,
-                    ),
-                  ]);
+                  return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${(((neg + neu) / total) * 100).toStringAsFixed(1)}%',
+                          style: const TextStyle(
+                              color: AppColors.errorRed, fontSize: 12),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Container(
+                          width: (neg + neu) * barFactor * 0.75,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: AppColors.errorRed,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomLeft: Radius.circular(5),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: pos * barFactor * 0.75,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: AppColors.successGreen,
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(5),
+                              bottomRight: Radius.circular(5),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          '${((pos / total) * 100).toStringAsFixed(1)}%',
+                          style: const TextStyle(
+                              color: AppColors.successGreen, fontSize: 12),
+                        ),
+                        // Container(
+                        //   width: neu * barFactor,
+                        //   height: 20,
+                        //   color: Colors.grey,
+                        // ),
+                      ]);
                 }),
                 const SizedBox(height: 4),
-                Row(
-                  children: [
-                    Text(
-                      '긍정 $pos개',
-                      style: TextStyle(color: Colors.green, fontSize: 12),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      '부정 $neg개',
-                      style: TextStyle(color: Colors.red, fontSize: 12),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      '중립 $neu개',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      '전체 $total개',
-                      style: TextStyle(color: Colors.black, fontSize: 12),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Text(
+                //       '긍정 $pos개',
+                //       style: TextStyle(
+                //           color: AppColors.successGreen, fontSize: 12),
+                //     ),
+                //     const SizedBox(width: 10),
+                //     Text(
+                //       '부정 $neg개',
+                //       style: TextStyle(color: AppColors.errorRed, fontSize: 12),
+                //     ),
+                //     const SizedBox(width: 10),
+                //     Text(
+                //       '중립 $neu개',
+                //       style: TextStyle(color: Colors.grey, fontSize: 12),
+                //     ),
+                //     const SizedBox(width: 10),
+                //     Text(
+                //       '전체 $total개',
+                //       style: TextStyle(color: Colors.black, fontSize: 12),
+                //     ),
+                //   ],
+                // ),
               ],
             ),
           );
         }).toList(),
+        const SizedBox(height: 20),
       ]),
     );
   }
@@ -192,8 +192,6 @@ class _ReviewPageState extends State<ReviewPage> {
         child: Text('관련 리뷰가 없습니다.', style: TextStyle(color: Colors.grey)),
       );
     }
-
-    debugPrint('✅ Review 불러오기 성공');
 
     return Padding(
       padding: const EdgeInsets.only(left: 16.0, right: 16.0, bottom: 10.0),
@@ -217,6 +215,103 @@ class _ReviewPageState extends State<ReviewPage> {
           }).toList(),
         ),
       ),
+    );
+  }
+
+  Widget _buildSummarySection(Map<String, dynamic> data) {
+    final List<dynamic> keywords = data['keywords'] ?? [];
+    final List<dynamic> reviews = data['review'] ?? [];
+    keywords.sort((a, b) =>
+        (b['sentiment']['total'] ?? 0).compareTo(a['sentiment']['total'] ?? 0));
+    if (keywords.isEmpty) {
+      return const Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Text('관련 키워드가 없습니다.', style: TextStyle(color: Colors.grey)),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 0),
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        ...keywords.map((keyword) {
+          final String name = keyword['name'].toString();
+          final int total = keyword['sentiment']['total'] ?? 0;
+          final int pos = keyword['sentiment']['pos'] ?? 0;
+          final int neg = keyword['sentiment']['neg'] ?? 0;
+          final int neu = keyword['sentiment']['neu'] ?? 0;
+
+          return Padding(
+            padding: const EdgeInsets.only(
+              top: 15.0,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  textAlign: TextAlign.center,
+                  '$name  ($total 개)',
+                  style: const TextStyle(fontSize: 12),
+                ),
+                //const SizedBox(height: 4),
+                LayoutBuilder(builder: (context, constraints) {
+                  double maxBarWidth = constraints.maxWidth;
+                  double barFactor = total > 0 ? maxBarWidth / total : 0;
+                  return Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          '${(((neg + neu) / total) * 100).toStringAsFixed(1)}%',
+                          style: const TextStyle(
+                              color: AppColors.errorRed, fontSize: 12),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Container(
+                          width: (neg + neu) * barFactor * 0.75,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: AppColors.errorRed,
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(5),
+                              bottomLeft: Radius.circular(5),
+                            ),
+                          ),
+                        ),
+                        Container(
+                          width: pos * barFactor * 0.75,
+                          height: 16,
+                          decoration: const BoxDecoration(
+                            color: AppColors.successGreen,
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(5),
+                              bottomRight: Radius.circular(5),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        Text(
+                          '${((pos / total) * 100).toStringAsFixed(1)}%',
+                          style: const TextStyle(
+                              color: AppColors.successGreen, fontSize: 12),
+                        ),
+                        // Container(
+                        //   width: neu * barFactor,
+                        //   height: 20,
+                        //   color: Colors.grey,
+                        // ),
+                      ]);
+                }),
+                const SizedBox(height: 4),
+              ],
+            ),
+          );
+        }).toList(),
+        const SizedBox(height: 20),
+      ]),
     );
   }
 }

@@ -7,6 +7,8 @@ class AppColors {
   static const Color lighterGreen = Color(0xFFEDF7F2);
   static const Color lightWhite = Color(0xFFF9FAFB);
   static const Color lightGray = Color(0xFF9CA3AF);
+  static const Color errorRed = Color(0xFFEF4444);
+  static const Color successGreen = Color(0xFF10B881);
   // 이 밑으로 안쓸건데 일단 둘게용
   static const Color marineBlue = Color(0xFF2B5288);
   static const Color lightTaube = Color(0xFFE5E0D9);
@@ -239,6 +241,27 @@ class SnackBarStyles {
       message: message,
       backgroundColor: AppColors.lighterGreen,
       textColor: AppColors.deepGrean,
+    );
+  }
+}
+
+class BoxStyles {
+  static BoxDecoration backgroundBox() {
+    return const BoxDecoration(
+      gradient: LinearGradient(
+        begin: Alignment.topCenter,
+        end: Alignment.bottomCenter,
+        colors: [
+          AppColors.lighterGreen,
+          AppColors.lighterGreen,
+          AppColors.lightWhite,
+          AppColors.lightWhite,
+          AppColors.lightWhite,
+          AppColors.lightWhite,
+          AppColors.lightWhite,
+          AppColors.lightWhite,
+        ],
+      ),
     );
   }
 }
