@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../styles/styles.dart';
+
+final String baseUrl =
+    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
 class ReviewWidget extends StatefulWidget {
   final String place;
@@ -25,7 +29,7 @@ class _ReviewWidgetState extends State<ReviewWidget> {
     try {
       final String placeName = Uri.encodeComponent(widget.place);
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/location/$placeName'),
+        Uri.parse('$baseUrl/api/location/$placeName'),
       );
 
       if (response.statusCode == 200) {

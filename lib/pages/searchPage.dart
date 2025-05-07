@@ -1,4 +1,6 @@
 // pages/searchPage.dart
+import 'dart:io';
+
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
@@ -10,6 +12,9 @@ import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../widgets/BottomNavi.dart';
+
+final String baseUrl =
+    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -50,7 +55,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _loadRecentSearch() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/users/$_userId/recentsearch'),
+        Uri.parse('$baseUrl/api/users/$_userId/recentsearch'),
       );
       if (response.statusCode == 200) {
         final List<dynamic> recentsearch =
@@ -73,7 +78,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _addRecentSearch(String query) async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8001/api/users/$_userId/recentsearch'),
+        Uri.parse('$baseUrl/api/users/$_userId/recentsearch'),
         headers: {'Content-Type': 'application/json'},
         body: json.encode({'query': query}),
       );
@@ -102,8 +107,7 @@ class _SearchPageState extends State<SearchPage> {
 
     try {
       final response = await http.delete(
-        Uri.parse(
-            'http://localhost:8001/api/users/$_userId/recentsearch/$value'),
+        Uri.parse('$baseUrl/api/users/$_userId/recentsearch/$value'),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -127,7 +131,7 @@ class _SearchPageState extends State<SearchPage> {
 
     try {
       final response = await http.delete(
-        Uri.parse('http://localhost:8001/api/users/$_userId/recentsearch'),
+        Uri.parse('$baseUrl/api/users/$_userId/recentsearch'),
         headers: {"Content-Type": "application/json"},
       );
 
@@ -149,7 +153,7 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _loadPlaces() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8001/api/location/all'),
+        Uri.parse('$baseUrl/api/location/all'),
       );
 
       if (response.statusCode == 200) {
