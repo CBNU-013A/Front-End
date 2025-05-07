@@ -7,7 +7,7 @@ plugins {
 
 android {
     compileSdkVersion 34
-    namespace 'com.kakao.kakaomapplugin'
+    namespace 'com.example.final_project'
     //namespace = "com.example.final_project"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion

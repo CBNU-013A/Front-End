@@ -2,12 +2,16 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'dart:io';
 //import 'package:shared_preferences/shared_preferences.dart';
+
+final String baseUrl =
+Platform.isAndroid ? 'http://10.0.2.2:8001/api/auth' : 'http://localhost:8001/api/auth';
 
 class ApiService {
   Future<Map<String, dynamic>?> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('http://localhost:8001/api/auth/login'),
+      Uri.parse(baseUrl),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email, "password": password}),
     );
@@ -22,7 +26,6 @@ class ApiService {
     }
   }
 
-  final String baseUrl = "http://localhost:8001/api/auth"; // 서버 포트 확인
 
   // 회원가입 API
   Future<bool> register(
