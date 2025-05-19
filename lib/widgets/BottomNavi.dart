@@ -1,7 +1,8 @@
+// widgets/BottomNavi.dart
 import 'package:flutter/material.dart';
-import '../pages/homePage.dart';
-
-import '../pages/searchPage.dart';
+import '../pages/home/homePage.dart';
+import '../pages/home/favoritePage.dart';
+import '../pages/home/searchPage.dart';
 
 class BottomNavi extends StatelessWidget {
   const BottomNavi({super.key});
@@ -15,6 +16,10 @@ class BottomNavi extends StatelessWidget {
         );
         break;
       case 1:
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const FavoritePage()),
+        );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('즐겨찾기 페이지로 이동해야함.')),
         );
@@ -26,9 +31,9 @@ class BottomNavi extends StatelessWidget {
         );
         break;
       case 3:
-       ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('마이페이지로 이동해야함.')),
-            );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('마이페이지로 이동해야함.')),
+        );
         break;
     }
   }

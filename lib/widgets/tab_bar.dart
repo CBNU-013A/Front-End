@@ -1,3 +1,4 @@
+// widgets/tab_bar.dart
 import 'package:flutter/material.dart';
 
 class MyTabbedPage extends StatelessWidget {
@@ -23,7 +24,7 @@ class MyTabbedPage extends StatelessWidget {
               ],
             ),
           ),
-          Expanded(
+          const Expanded(
             child: TabBarView(
               children: [
                 Center(child: Text('요약 페이지')),

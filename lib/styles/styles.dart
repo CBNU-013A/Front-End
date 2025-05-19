@@ -1,4 +1,8 @@
+// styles/styles.dart
 import 'package:flutter/material.dart';
+import 'dart:io';
+
+final double scale = Platform.isAndroid ? 0.7 : 1.0;
 
 class AppColors {
   static const Color mainGreen = Color(0xFF64AB85);
@@ -19,19 +23,19 @@ class AppColors {
 }
 
 class AppStyles {
-  static const Color keywordChipBackgroundColor = AppColors.lightGreen;
-  static const keywordChipTextStyle = TextStyle(
-    fontSize: 16,
+  static Color keywordChipBackgroundColor = AppColors.lightGreen;
+  static TextStyle keywordChipTextStyle = TextStyle(
+    fontSize: 16 * scale,
     fontFamily: 'Pretendard',
     fontWeight: FontWeight.w400,
-    letterSpacing: 0.2,
+    //letterSpacing: 0.2,
     color: AppColors.deepGrean, // 칩의 글자색
   );
 
   // ✅ Keyword Chip Padding
   static const keywordChipPadding = EdgeInsets.symmetric(
-    horizontal: 4,
-    vertical: 2,
+    horizontal: 6,
+    vertical: 4,
   );
   static final OutlinedBorder keywordChipShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(10),
@@ -40,40 +44,63 @@ class AppStyles {
 }
 
 class TextStyles {
-  static const smallTextStyle = TextStyle(
-      fontSize: 12,
+  static TextStyle get smallTextStyle {
+    final double scale = Platform.isAndroid ? 0.8 : 1.0;
+    return TextStyle(
+      fontSize: 12 * scale,
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w600,
       letterSpacing: 0.9,
-      color: Colors.white);
-  static const mediumTextStyle = TextStyle(
-      fontSize: 16,
+      color: Colors.white,
+    );
+  }
+
+  static TextStyle get mediumTextStyle {
+    final double scale = Platform.isAndroid ? 0.8 : 1.0;
+    return TextStyle(
+      fontSize: 16 * scale,
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w500,
       letterSpacing: 0.9,
-      color: Colors.white);
+      color: Colors.white,
+    );
+  }
 }
 
 // 로그인/회원가입 용 텍스트 필드
 class TextFiledStyles {
-  static const textStlye = TextStyle(
-      fontSize: 16,
+  final double scale = Platform.isAndroid ? 0.8 : 1.0;
+  static TextStyle get textStlye {
+    final double scale = Platform.isAndroid ? 0.8 : 1.0;
+    return TextStyle(
+      fontSize: 16 * scale,
       fontFamily: 'Pretendard',
       fontWeight: FontWeight.w600,
       letterSpacing: 0.9,
-      color: Colors.black);
+      color: Colors.black,
+    );
+  }
 
-  static const hintStyle = TextStyle(
-    fontSize: 16,
-    fontFamily: 'Pretendard',
-    fontWeight: FontWeight.w400,
-    color: AppColors.lightGray,
-  );
+  static TextStyle get hintStyle {
+    final double scale = Platform.isAndroid ? 0.8 : 1.0;
+    return TextStyle(
+      fontSize: 16 * scale,
+      fontFamily: 'Pretendard',
+      fontWeight: FontWeight.w400,
+      color: AppColors.lightGray,
+    );
+  }
 
   static const fillColor = AppColors.lightGreen;
 
-  static const labelStyle = TextStyle(
-      fontSize: 16, fontWeight: FontWeight.w600, color: Color(0xFF777777));
+  static TextStyle get labelStyle {
+    final double scale = Platform.isAndroid ? 0.8 : 1.0;
+    return TextStyle(
+      fontSize: 16 * scale,
+      fontWeight: FontWeight.w600,
+      color: Color(0xFF777777),
+    );
+  }
 
   static const borderStyle = OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.circular(12)),

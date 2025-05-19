@@ -1,14 +1,16 @@
+// services/auth_service.dart
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:io';
-//import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
 
-class ApiService {
+class AuthService {
   Future<Map<String, dynamic>?> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/login'),
@@ -25,7 +27,6 @@ class ApiService {
       return null; // 로그인 실패 시 null 반환
     }
   }
-
 
   // 회원가입 API
   Future<bool> register(
@@ -56,17 +57,6 @@ class ApiService {
     } else {
       debugPrint("서버 응답 본문: ${response.body}");
       return false;
-    }
-  }
-
-  //Location-keywords
-  Future<Map<String, dynamic>> fetchLocationWithKeywords(String locationId) async {
-    final response = await http.get(Uri.parse('$baseUrl/api/auth/location/$locationId'));
-
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
-      throw Exception('Failed to load location data');
     }
   }
 }

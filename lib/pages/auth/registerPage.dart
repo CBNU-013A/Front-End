@@ -1,18 +1,21 @@
+// pages/auth/registerPage.dart
 import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import '../api_service.dart';
+import '../../services/auth_service.dart';
 import 'loginPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
-import '../styles/styles.dart';
-import '../main.dart';
+import '../../styles/styles.dart';
+import '../../main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 
-final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+final String baseUrl = (Platform.isAndroid || Platform.isIOS)
+    ? 'http://172.30.1.72:8001' // 안드로이드
+    : 'http://localhost:8001'; //ios
+
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
 
@@ -132,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
     debugPrint("비밀번호 확인: ${passwordCheckController.text}");
     debugPrint("생년월일: $selectedDate\n");
 
-    bool success = await ApiService().register(
+    bool success = await AuthService().register(
       nameController.text,
       emailController.text,
       passwordController.text,
@@ -168,8 +171,8 @@ class _RegisterPageState extends State<RegisterPage> {
   void _idcheck() async {
     debugPrint("이메일 체크: ${emailController.text}\n");
 
-    final response = await http.get(Uri.parse(
-        '$baseUrl/check-email?email=${emailController.text}'));
+    final response = await http
+        .get(Uri.parse('$baseUrl/check-email?email=${emailController.text}'));
 
     if (response.statusCode == 200) {
       rootScaffoldMessengerKey.currentState!.showSnackBar(
@@ -205,7 +208,7 @@ class _RegisterPageState extends State<RegisterPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             //이메일 입력
-            const Padding(
+            Padding(
               padding: EdgeInsets.all(4.0),
               child: Align(
                 alignment: Alignment.centerLeft,
@@ -255,8 +258,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
             const SizedBox(height: 5.0),
             //비밀번호 입력
-            const Padding(
-              padding: EdgeInsets.all(4.0),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -298,8 +301,8 @@ class _RegisterPageState extends State<RegisterPage> {
 
             const SizedBox(height: 5.0),
             //비밀번호 확인
-            const Padding(
-              padding: EdgeInsets.all(4.0),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -344,8 +347,8 @@ class _RegisterPageState extends State<RegisterPage> {
             const SizedBox(height: 5.0),
 
             //이름 입력
-            const Padding(
-              padding: EdgeInsets.all(4.0),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -358,10 +361,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 style: TextFiledStyles.textStlye,
                 cursorColor: AppColors.deepGrean,
                 controller: nameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   filled: true,
                   fillColor: TextFiledStyles.fillColor,
-                  contentPadding: EdgeInsets.fromLTRB(20, 12, 12, 10),
+                  contentPadding: const EdgeInsets.fromLTRB(20, 12, 12, 10),
                   border: TextFiledStyles.borderStyle,
                   focusedBorder: TextFiledStyles.focusBorderStyle,
                   enabledBorder: TextFiledStyles.borderStyle,
@@ -370,8 +373,8 @@ class _RegisterPageState extends State<RegisterPage> {
                 )),
             const SizedBox(height: 5.0),
             //생년월일 (선택)
-            const Padding(
-              padding: EdgeInsets.all(4.0),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
@@ -412,8 +415,8 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             const SizedBox(height: 5.0),
             // 성별 선택
-            const Padding(
-              padding: EdgeInsets.all(4.0),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(

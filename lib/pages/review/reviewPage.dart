@@ -1,11 +1,15 @@
+// pages/review/reviewPage.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../styles/styles.dart';
+import '../../styles/styles.dart';
 
-final String baseUrl =
-    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
 
 class ReviewWidget extends StatefulWidget {
   final String place;

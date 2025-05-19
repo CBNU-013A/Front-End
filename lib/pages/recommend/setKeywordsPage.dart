@@ -1,15 +1,19 @@
+// pages/recommend/setKeywordsPage.dart
 import 'dart:io';
 
-import 'package:final_project/pages/homePage.dart';
+import 'package:final_project/pages/home/homePage.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:final_project/styles/styles.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-final String baseUrl =
-    Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
+    
 class SetKeywordsPage extends StatefulWidget {
   const SetKeywordsPage({super.key});
 
@@ -84,7 +88,7 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
 
     try {
       final response = await http.get(
-        Uri.parse('$baseUrl/users/$_userId/keywords'),
+        Uri.parse('$baseUrl/api/users/$_userId/keywords'),
       );
 
       if (response.statusCode == 200) {

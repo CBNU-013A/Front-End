@@ -1,22 +1,24 @@
-// pages/detailPage.dart
+// pages/location/detailPage.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:final_project/main.dart';
-import 'package:final_project/pages/writeReviewPage.dart';
-import 'package:final_project/widgets/TabBar.dart';
-import 'package:final_project/widgets/summary.dart';
+import 'package:final_project/pages/review/writeReviewPage.dart';
+import 'package:final_project/widgets/tab_bar.dart';
+import 'package:final_project/pages/review/summary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
 import 'dart:async';
-import '../styles/styles.dart';
-import '../pages/reviewPage.dart';
-import '../widgets/BottomNavi.dart';
+import '../../styles/styles.dart';
+import '../review/reviewPage.dart';
+import '../../widgets/BottomNavi.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
 
 class DetailPage extends StatefulWidget {
   const DetailPage({super.key, required this.place});
@@ -108,8 +110,7 @@ class _DetailPageState extends State<DetailPage>
     try {
       final String placeName = Uri.encodeComponent(widget.place);
       final response = await http.get(
-        Uri.parse(
-            '$baseUrl/api/location/$placeName'), // ✅ 서버 API로 요청
+        Uri.parse('$baseUrl/api/location/$placeName'), // ✅ 서버 API로 요청
       );
 
       if (response.statusCode == 200) {
@@ -442,11 +443,11 @@ class _DetailPageState extends State<DetailPage>
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                  children: [
                     Text(
                       "내가 쓴 리뷰",
                       style: TextStyles.mediumTextStyle
-                        .copyWith(color: Colors.black),
+                          .copyWith(color: Colors.black),
                     ),
                     const SizedBox(
                       height: 5,
@@ -456,54 +457,55 @@ class _DetailPageState extends State<DetailPage>
                       padding: const EdgeInsets.all(8),
                       margin: const EdgeInsets.all(2),
                       decoration: BoxDecoration(
-                      color: Colors.grey[200],
-                      borderRadius: BorderRadius.circular(8),
+                        color: Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                     child: (myReview == null || myReview!.isEmpty)
-                         ? TextButton(
-                             onPressed: () async {
-                               final result = await Navigator.push(
-                                 context,
-                                 MaterialPageRoute(
-                                   builder: (context) => WriteReviewPage(
-                                     initialText: "", // Empty for new review
-                                     place: widget.place,
-                                   ),
-                                 ),
-                               );
-                               if (result != null && result is String) {
-                                 setState(() {
-                                   myReview = result;
-                                 });
-                               }
-                             },
-                             child: const Text(
-                               "리뷰 작성하기",
-                               style: TextStyle(color: AppColors.deepGrean),
-                             ),
-                           )
-                         : TextButton(
-                             onPressed: () async {
-                               final result = await Navigator.push(
-                                 context,
-                                 MaterialPageRoute(
-                                   builder: (context) => WriteReviewPage(
-                                     initialText: myReview!,
-                                     place: widget.place,
-                                   ),
-                                 ),
-                               );
-                               if (result != null && result is String) {
-                                 setState(() {
-                                   myReview = result;
-                                 });
-                               }
-                             },
-                             child: Text(
-                               myReview!,
-                               style: const TextStyle(fontSize: 14, color: AppColors.deepGrean),
-                             ),
-                           ),
+                      child: (myReview == null || myReview!.isEmpty)
+                          ? TextButton(
+                              onPressed: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => WriteReviewPage(
+                                      initialText: "", // Empty for new review
+                                      place: widget.place,
+                                    ),
+                                  ),
+                                );
+                                if (result != null && result is String) {
+                                  setState(() {
+                                    myReview = result;
+                                  });
+                                }
+                              },
+                              child: const Text(
+                                "리뷰 작성하기",
+                                style: TextStyle(color: AppColors.deepGrean),
+                              ),
+                            )
+                          : TextButton(
+                              onPressed: () async {
+                                final result = await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => WriteReviewPage(
+                                      initialText: myReview!,
+                                      place: widget.place,
+                                    ),
+                                  ),
+                                );
+                                if (result != null && result is String) {
+                                  setState(() {
+                                    myReview = result;
+                                  });
+                                }
+                              },
+                              child: Text(
+                                myReview!,
+                                style: const TextStyle(
+                                    fontSize: 14, color: AppColors.deepGrean),
+                              ),
+                            ),
                     ),
                   ],
                 ),

@@ -1,15 +1,17 @@
+// widgets/jaccard.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:final_project/pages/detailPage.dart';
+import 'package:final_project/pages/location/detailPage.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
-final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
-
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
+    
 class RecommendationWidget extends StatefulWidget {
   const RecommendationWidget({super.key});
 

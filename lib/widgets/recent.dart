@@ -1,16 +1,18 @@
+// widgets/recent.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:final_project/pages/detailPage.dart';
+import 'package:final_project/pages/location/detailPage.dart';
 import 'dart:async';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-
-final String baseUrl =
-Platform.isAndroid ? 'http://10.0.2.2:8001' : 'http://localhost:8001';
-
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
+    
 class RecentSearchWidget extends StatefulWidget {
   const RecentSearchWidget({super.key});
 
@@ -79,12 +81,14 @@ class RecentSearchState extends State<RecentSearchWidget> {
 
         final List<String> names = List<String>.from(data);
 
+        if (!mounted) return;
         setState(() {
           _recentSearches = names;
           isLoading = false;
         });
       } else {
         debugPrint("❌ 사용자 최근 검색 기록 로드 실패: ${response.statusCode}");
+        if (!mounted) return;
         setState(() {
           _recentSearches = [];
           isLoading = false;
@@ -92,6 +96,7 @@ class RecentSearchState extends State<RecentSearchWidget> {
       }
     } catch (e) {
       debugPrint("❌ 사용자 최근 검색 기록 로드 중 오류 발생: $e");
+      if (!mounted) return;
       setState(() {
         _recentSearches = [];
         isLoading = false;

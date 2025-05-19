@@ -1,5 +1,6 @@
+// widgets/splashLogo.dart
 import 'package:final_project/styles/styles.dart';
-import '../pages/loginPage.dart';
+import '../pages/auth/loginPage.dart';
 import 'package:flutter/material.dart';
 
 class Splash extends StatefulWidget {

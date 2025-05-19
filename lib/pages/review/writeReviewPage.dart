@@ -1,12 +1,19 @@
-// pages/writeReviewPage.dart
+// pages/review/writeReviewPage.dart
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'dart:io';
+
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
 
 class WriteReviewPage extends StatefulWidget {
   final String place;
   final String? initialText;
 
-  const WriteReviewPage({Key? key, required this.place, this.initialText = ""}) : super(key: key);
+  const WriteReviewPage({Key? key, required this.place, this.initialText = ""})
+      : super(key: key);
 
   @override
   _WriteReviewPageState createState() => _WriteReviewPageState();
