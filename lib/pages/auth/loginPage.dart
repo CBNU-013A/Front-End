@@ -1,11 +1,12 @@
+// pages/auth/loginPage.dart
 import 'package:flutter/material.dart';
 //import 'package:http/http.dart';
-import '../main.dart';
+import '../../main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../api_service.dart';
-import 'homePage.dart'; // 로그인 성공 시 홈으로 이동
+import '../../services/auth_service.dart';
+import '../home/homePage.dart'; // 로그인 성공 시 홈으로 이동
 import 'registerPage.dart'; // 회원가입 페이지로 이동
-import '../styles/styles.dart';
+import '../../styles/styles.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -49,8 +50,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    final response =
-        await ApiService().login(emailController.text, passwordController.text);
+    final response = await AuthService()
+        .login(emailController.text, passwordController.text);
 
     if (response != null && response["message"] == "로그인 성공") {
       String userId = response["user"]["id"];
@@ -105,7 +106,7 @@ class _LoginPageState extends State<LoginPage> {
               style: TextFiledStyles.textStlye,
               cursorColor: AppColors.deepGrean,
               controller: emailController,
-              decoration: const InputDecoration(
+              decoration: InputDecoration(
                 filled: true,
                 fillColor: TextFiledStyles.fillColor, // 배경 색상 설정
                 border: TextFiledStyles.borderStyle,
@@ -126,7 +127,7 @@ class _LoginPageState extends State<LoginPage> {
                 style: TextFiledStyles.textStlye,
                 cursorColor: AppColors.deepGrean,
                 controller: passwordController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   filled: true,
                   fillColor: TextFiledStyles.fillColor,
                   border: TextFiledStyles.borderStyle,
@@ -156,7 +157,7 @@ class _LoginPageState extends State<LoginPage> {
                       activeColor: AppColors.lighterGreen,
                       visualDensity: VisualDensity.compact,
                     ),
-                    const Text(
+                    Text(
                       "아이디 저장",
                       style: TextStyles.smallTextStyle,
                     ),
@@ -168,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SnackBar(content: Text("아직 페이지 구현을 못했어요 ㅠ.ㅠ")),
                     );
                   },
-                  child: const Text(
+                  child: Text(
                     "비밀번호가 기억이 안나요",
                     style: TextStyles.smallTextStyle,
                   ),

@@ -1,18 +1,18 @@
+// main.dart
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_template.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/homePage.dart'; // 홈 페이지
-import 'pages/loginPage.dart';
+import 'pages/home/homePage.dart'; // 홈 페이지
+import 'pages/auth/loginPage.dart';
 import 'widgets/splashLogo.dart'; // 로그인 페이지
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
-//import 'package:kakao_map_sdk/kakao_map.dart';
-//import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kakao_map_plugin/kakao_map_plugin.dart';
 import 'package:geolocator/geolocator.dart'; //위도 경도 가져옴
 import 'package:geocoding/geocoding.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   AuthRepository.initialize(appKey: 'c4e1eb2e4df9471dd1f08410194cfd13');
@@ -24,6 +24,7 @@ void main() {
 
   // Kakao SDK 초기화 여부 확인
   debugPrint("✅ kakaoSdk 초기화 ");
+  await dotenv.load(); //비동기 로딩 (async)
 
   runApp(const MyApp());
 }

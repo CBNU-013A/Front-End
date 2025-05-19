@@ -1,20 +1,24 @@
-// pages/searchPage.dart
+// pages/home/searchPage.dart
 import 'dart:io';
 
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
-import 'package:final_project/pages/detailPage.dart';
+import 'package:final_project/pages/location/detailPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 
 import 'package:http/http.dart' as http;
 
-import '../widgets/BottomNavi.dart';
-final String baseUrl = (Platform.isAndroid || Platform.isIOS)
-    ? 'http://172.30.1.72:8001' // 안드로이드
-    : 'http://localhost:8001'; //ios
+import '../../widgets/BottomNavi.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
+
+
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 

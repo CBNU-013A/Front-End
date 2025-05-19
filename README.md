@@ -2,5 +2,6 @@
 
 ### 실행 방법
 ```
+flutter pub get
 flutter run
 ```

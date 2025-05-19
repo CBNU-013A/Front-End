@@ -1,11 +1,15 @@
+// pages/review/summary.dart
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import '../styles/styles.dart';
-final String baseUrl = (Platform.isAndroid || Platform.isIOS)
-    ? 'http://172.30.1.72:8001' // 안드로이드
-    : 'http://localhost:8001'; //ios
+import '../../styles/styles.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final String baseUrl = Platform.isAndroid
+    ? 'http://${dotenv.env['BASE_URL']}:8001'
+    : 'http://localhost:8001';
+    
 class SummaryWidget extends StatefulWidget {
   const SummaryWidget({Key? key, required this.place}) : super(key: key);
 
