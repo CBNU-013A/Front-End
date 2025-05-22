@@ -14,22 +14,29 @@ final String baseUrl = Platform.isAndroid
 class AuthService {
   Future<bool> login(String email, String password) async {
     final response = await http.post(
-      Uri.parse('$baseUrl/api/auth/login'),
+      Uri.parse('$baseUrl/api/login'),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": email, "password": password}),
+      body: jsonEncode({"email": email.trim(), "password": password.trim()}),
     );
-
+    debugPrint("응답 본문: ${response.body}");
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
       if (data["message"] == "로그인 성공") {
-        final prefs = await SharedPreferences.getInstance();
-        await prefs.setString("jwt_token", data["token"]);
-        await prefs.setString("userId", data["user"]["id"]);
-        await prefs.setString("userName", data["user"]["name"]);
-        return true; // 로그인 성공
+        final token = data["token"];
+        final user = data["user"];
+
+        if (token != null) {
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("jwt_token", token);
+          await prefs.setString("userId", user["_id"] ?? "");
+          await prefs.setString("userName", user["name"] ?? "");
+          debugPrint('${user['_id']}');
+          return true; // 로그인 성공
+        }
       }
     }
-    return false; //로그인 실패
+
+    return false; // 로그인 실패
   }
 
 // 회원가입 API

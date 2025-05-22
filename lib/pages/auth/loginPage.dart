@@ -23,16 +23,21 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _loadSavedId();
+    _loadSavedId(); //아이디 저장하기
   }
 
-  // SharedPreferences에서 저장된 이메일 불러오기
+  // 아이디 저장하기
   void _loadSavedId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getBool('saveId');
+    final email = prefs.getString('savedEmail') ?? "";
+    debugPrint("🔁 불러온 saveId: $saved");
+    debugPrint("🔁 불러온 savedEmail: $email");
+
     setState(() {
       _saveId = prefs.getBool('saveId') ?? false;
       if (_saveId) {
-        emailController.text = prefs.getString('savedEmail') ?? "";
+        emailController.text = email;
       }
     });
   }
@@ -138,10 +143,12 @@ class _LoginPageState extends State<LoginPage> {
                   children: [
                     Checkbox(
                       value: _saveId,
-                      onChanged: (bool? value) {
+                      onChanged: (bool? value) async {
+                        final prefs = await SharedPreferences.getInstance();
                         setState(() {
                           _saveId = value ?? false;
                         });
+                        await prefs.setBool('saveId', _saveId);
                       },
                       activeColor: AppColors.lighterGreen,
                       visualDensity: VisualDensity.compact,

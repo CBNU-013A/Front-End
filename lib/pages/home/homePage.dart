@@ -37,28 +37,43 @@ class HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _loadUserData(); // 사용자 데이터 로드
+    _loadUserData();
   }
 
   Future<void> _loadUserData() async {
-    final userService = UserService();
-    final userData = await userService.getUserData();
+    debugPrint("_loadUserData 호출됨");
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
 
-    if (userData != null) {
-      setState(() {
-        userName = userData['userName']!;
-        userId = userData['userId']!;
-      });
+    if (token == null || token.isEmpty) {
+      debugPrint("SharedPreferences에서 토큰을 찾을 수 없음");
+      return;
     }
+
+    setState(() {
+      userId = prefs.getString('userId')!;
+      userName = prefs.getString('userName')!;
+      // userName = userData['name'] ?? '';
+
+      debugPrint("_loadUserData(): userId=$userId, userName=$userName");
+    });
   }
 
   Future<void> _logout() async {
-    final userService = UserService();
-    await userService.logout();
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('savedEmail');
+    final saveId = prefs.getBool('saveId');
 
-    Navigator.pushReplacement(
+    await prefs.clear();
+
+    if (saveId != null && saveId) {
+      await prefs.setBool('saveId', saveId);
+      await prefs.setString('savedEmail', savedEmail!);
+    }
+    Navigator.pushAndRemoveUntil(
       context,
       MaterialPageRoute(builder: (context) => const LoginPage()),
+      (route) => false,
     );
   }
 
@@ -67,7 +82,18 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: AppColors.lighterGreen,
       extendBodyBehindAppBar: false,
-      appBar: const MainAppBar(title: '여행지 추천 시스템'),
+      appBar: MainAppBar(
+        title: '여행지 추천 시스템',
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            tooltip: '로그아웃',
+            onPressed: () async {
+              await _logout();
+            },
+          ),
+        ],
+      ),
       body: Container(
         decoration: BoxStyles.backgroundBox(),
         child: SafeArea(
