@@ -1,12 +1,11 @@
 // pages/auth/loginPage.dart
 import 'package:flutter/material.dart';
-//import 'package:http/http.dart';
-import '../../main.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../services/auth_service.dart';
-import '../home/homePage.dart'; // 로그인 성공 시 홈으로 이동
-import 'registerPage.dart'; // 회원가입 페이지로 이동
-import '../../styles/styles.dart';
+import 'package:final_project/main.dart';
+import 'package:final_project/services/auth_service.dart';
+import 'package:final_project/pages/home/homePage.dart';
+import 'package:final_project/pages/auth/registerPage.dart';
+import 'package:final_project/styles/styles.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -18,6 +17,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   bool _saveId = false;
 
   @override
@@ -41,33 +41,22 @@ class _LoginPageState extends State<LoginPage> {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();
 
-    // ✅ 디버깅 로그 추가 (입력 값 확인)
-    debugPrint("📌 로그인 요청: 이메일=$email, 비밀번호=$password");
     if (email.isEmpty || password.isEmpty) {
       rootScaffoldMessengerKey.currentState!.showSnackBar(
-        SnackBarStyles.info("🫤 아이디와 비밀번호를 입력하세요."),
+        SnackBarStyles.info("아이디와 비밀번호를 입력하세요!"),
       );
       return;
     }
+    bool success = await AuthService().login(email, password);
 
-    final response = await AuthService()
-        .login(emailController.text, passwordController.text);
-
-    if (response != null && response["message"] == "로그인 성공") {
-      String userId = response["user"]["id"];
-      String userName = response["user"]["name"];
-
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString("userId", userId); // 🔹 로그인된 유저 ID 저장
-      await prefs.setBool('saveId', _saveId);
-      await prefs.setString("userName", userName);
-
+    if (success) {
+      final prefs = await SharedPreferences.getInstance();
       if (_saveId) {
-        await prefs.setString('savedEmail', emailController.text);
+        await prefs.setString('savedEmail', email);
       } else {
         await prefs.remove('savedEmail');
       }
-      await Future.delayed(const Duration(milliseconds: 100));
+      if (!mounted) return;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const HomePage()),
@@ -75,8 +64,8 @@ class _LoginPageState extends State<LoginPage> {
       rootScaffoldMessengerKey.currentState!.showSnackBar(
         SnackBarStyles.info("😎 로그인 성공!"),
       );
+      debugPrint("loginpage : 로그인 성공 : $email");
     } else {
-      String errorMessage = response?["error"] ?? "로그인 실패! 이메일과 비밀번호를 확인하세요.";
       rootScaffoldMessengerKey.currentState!.showSnackBar(
         SnackBarStyles.info("🫤 아이디와 비밀번호를 확인하세요."),
       );

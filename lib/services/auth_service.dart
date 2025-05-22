@@ -5,30 +5,34 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 import 'dart:io';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final String baseUrl = Platform.isAndroid
     ? 'http://${dotenv.env['BASE_URL']}:8001'
     : 'http://localhost:8001';
 
 class AuthService {
-  Future<Map<String, dynamic>?> login(String email, String password) async {
+  Future<bool> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/auth/login'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({"email": email, "password": password}),
     );
 
-    debugPrint("📌 서버 응답 코드: ${response.statusCode}");
-    debugPrint("📌 서버 응답 본문: ${response.body}");
-
     if (response.statusCode == 200) {
-      return json.decode(response.body); // 🔹 JSON 데이터 반환
-    } else {
-      return null; // 로그인 실패 시 null 반환
+      final data = json.decode(response.body);
+      if (data["message"] == "로그인 성공") {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString("jwt_token", data["token"]);
+        await prefs.setString("userId", data["user"]["id"]);
+        await prefs.setString("userName", data["user"]["name"]);
+        return true; // 로그인 성공
+      }
     }
+    return false; //로그인 실패
   }
 
-  // 회원가입 API
+// 회원가입 API
   Future<bool> register(
       String name, String email, String password, DateTime birthdate) async {
     String formattedBirthdate =
