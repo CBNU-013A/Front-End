@@ -23,10 +23,10 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
-    _loadSavedId();
+    _loadSavedId(); //아이디 저장하기
   }
 
-  // SharedPreferences에서 저장된 이메일 불러오기
+  // 아이디 저장하기
   void _loadSavedId() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {

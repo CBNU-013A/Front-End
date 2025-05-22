@@ -45,23 +45,19 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-
-    _checkLoginStatus(); // 로그인 상태 확인
+    _checkAutoLogin(); // 자동 로그인 체크
     _printCurrentLocation(); //현재 위치 가져오기
   }
 
-  Future<void> _checkLoginStatus() async {
+  void _checkAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
-    final String? token = prefs.getString("token"); // 저장된 JWT 토큰 확인
+    final token = prefs.getString('jwt_token');
 
-    if (token != null) {
-      setState(() {
-        _startScreen = const HomePage(); // 로그인 상태면 홈 화면으로 이동
-      });
-    } else {
-      setState(() {
-        _startScreen = const LoginPage(); // 로그인 안 되어 있으면 로그인 페이지로 이동
-      });
+    if (token != null && token.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomePage()),
+      );
     }
   }
 
