@@ -12,13 +12,21 @@ class BottomNavi extends StatelessWidget {
       case 0:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const HomePage(),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          ),
         );
         break;
       case 1:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const FavoritePage()),
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const FavoritePage(),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          ),
         );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('즐겨찾기 페이지로 이동해야함.')),
@@ -27,7 +35,11 @@ class BottomNavi extends StatelessWidget {
       case 2:
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SearchPage()),
+         PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const SearchPage(),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          ),
         );
         break;
       case 3:
