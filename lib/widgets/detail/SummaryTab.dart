@@ -118,53 +118,59 @@ class _SummaryTabState extends State<SummaryTab> {
                     style: TextStyles.mediumTextStyle
                         .copyWith(color: Colors.black),
                   ),
-                  GestureDetector(
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                          backgroundColor: AppColors.lightWhite,
-                          content: SingleChildScrollView(
-                            padding: const EdgeInsets.all(10),
-                            child: Text(
-                              (widget.data['overview'] ?? ' ')
-                                .replaceAll('\n', '\n\n'),
-                              style: const TextStyle(
-                              color: Colors.black87,
-                              letterSpacing: 1,
-                              height: 1.6, // 문단간 간격 조정
+                  if ((widget.data['overview'] ?? '정보가 없습니다.')
+                      .toString()
+                      .isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        final overview = widget.data['overview'];
+                        if (overview != null && overview is String && overview.trim().isNotEmpty) {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              backgroundColor: AppColors.lightWhite,
+                              content: SingleChildScrollView(
+                                padding: const EdgeInsets.all(10),
+                                child: Text(
+                                  (widget.data['overview'] ?? ' ')
+                                      .replaceAll('\n', '\n\n'),
+                                  style: const TextStyle(
+                                    color: Colors.black87,
+                                    letterSpacing: 1,
+                                    height: 1.6, // 문단간 간격 조정
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
-                        ),
-                      );
-                    },
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.data['overview'] ?? '요약 없음',
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.black87),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        if ((widget.data['overview'] ?? '')
-                            .toString()
-                            .isNotEmpty)
-                          const Text(
-                            "더보기",
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                              fontStyle: FontStyle.italic,
+                          );
+                        }
+                      },
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              widget.data['overview'] ?? '정보가 없습니다.',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(
+                                  fontSize: 14, color: Colors.black87),
                             ),
-                          )
-                      ],
+                          ),
+                          const SizedBox(width: 4),
+                          if ((widget.data['overview'] ?? '')
+                              .toString()
+                              .isNotEmpty)
+                            const Text(
+                              "더보기",
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.grey,
+                                fontStyle: FontStyle.italic,
+                              ),
+                            )
+                        ],
+                      ),
                     ),
-                  ),
                 ]),
           ),
           const SizedBox(

@@ -18,7 +18,6 @@ final String baseUrl = Platform.isAndroid
     ? 'http://${dotenv.env['BASE_URL']}:8001'
     : 'http://localhost:8001';
 
-
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
 
@@ -184,8 +183,9 @@ class _SearchPageState extends State<SearchPage> {
       return;
     }
 
+
     final filtered = _allPlaces.where((place) {
-      final name = place['name'].toString().toLowerCase();
+      final name = place['title'].toString().toLowerCase();
       return name.contains(query.toLowerCase());
     }).toList();
 
@@ -294,7 +294,7 @@ class _SearchPageState extends State<SearchPage> {
                               setState(() {
                                 _controller.clear();
                                 _filterPlaces(query);
-                                _addRecentSearch(_filteredPlaces[0]['name']);
+                              _addRecentSearch(_filteredPlaces[0]['title']);
                               });
                               await Future.delayed(
                                   Duration.zero); // Flutter event loop에 양보
@@ -305,7 +305,7 @@ class _SearchPageState extends State<SearchPage> {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DetailPage(
-                                        place: _filteredPlaces[0]['name']),
+                                        place: _filteredPlaces[0]['title']),
                                   ),
                                 );
                               } else {
@@ -344,9 +344,9 @@ class _SearchPageState extends State<SearchPage> {
                       itemBuilder: (context, index) {
                         final place = _filteredPlaces[index];
                         return ListTile(
-                          title: Text(place['name']),
+                          title: Text(place['title']),
                           onTap: () async {
-                            final placeName = place['name'];
+                            final placeName = place['title'];
 
                             if (!mounted) return;
                             Navigator.push(

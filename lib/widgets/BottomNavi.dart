@@ -1,7 +1,6 @@
 // widgets/BottomNavi.dart
 import 'package:flutter/material.dart';
 import '../pages/home/homePage.dart';
-import '../pages/home/favoritePage.dart';
 import '../pages/home/searchPage.dart';
 
 class BottomNavi extends StatelessWidget {
@@ -20,14 +19,14 @@ class BottomNavi extends StatelessWidget {
         );
         break;
       case 1:
-        Navigator.pushReplacement(
-          context,
-          PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const FavoritePage(),
-            transitionDuration: Duration.zero,
-            reverseTransitionDuration: Duration.zero,
-          ),
-        );
+        // Navigator.pushReplacement(
+        //   context,
+        //   PageRouteBuilder(
+        //     pageBuilder: (_, __, ___) => {},
+        //     transitionDuration: Duration.zero,
+        //     reverseTransitionDuration: Duration.zero,
+        //   ),
+        // );
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('즐겨찾기 페이지로 이동해야함.')),
         );
@@ -35,7 +34,7 @@ class BottomNavi extends StatelessWidget {
       case 2:
         Navigator.pushReplacement(
           context,
-         PageRouteBuilder(
+          PageRouteBuilder(
             pageBuilder: (_, __, ___) => const SearchPage(),
             transitionDuration: Duration.zero,
             reverseTransitionDuration: Duration.zero,

@@ -23,6 +23,28 @@ class UserService {
     }
   }
 
+  // 사용자 정보 가져오기 (Shared Preference)
+  Future<Map<String, String?>> loadUserData() async {
+    debugPrint("loadUserData 호출됨");
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token');
+
+    if (token == null || token.isEmpty) {
+      debugPrint("SharedPreferences에서 토큰을 찾을 수 없음");
+      return {};
+    }
+
+    final userId = prefs.getString('userId');
+    final userName = prefs.getString('userName');
+
+    debugPrint("loadUserData(): userId=$userId, userName=$userName");
+
+    return {
+      'userId': userId,
+      'userName': userName,
+    };
+  }
+
   // 로그아웃: 모든 유저 관련 정보 제거
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
