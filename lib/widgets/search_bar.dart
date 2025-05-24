@@ -3,8 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../styles/search.dart';
 import '../styles/styles.dart';
-import 'package:final_project/pages/location/detailPage.dart';
-import 'package:final_project/pages/home/searchPage.dart';
+import 'package:final_project/pages/location/DetailPage.dart';
+import 'package:final_project/pages/home/SearchPage.dart';
 
 class SearchBar extends StatelessWidget {
   final TextEditingController controller;

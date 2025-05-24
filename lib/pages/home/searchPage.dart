@@ -1,6 +1,8 @@
 // pages/home/searchPage.dart
 import 'dart:io';
 
+import 'package:final_project/services/location_service.dart';
+import 'package:final_project/services/user_service.dart';
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
@@ -26,181 +28,77 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  String _userId = "";
-  List<dynamic> _allPlaces = []; // 모든 장소 데이터
+  List<dynamic> allPlaces = []; // 모든 장소 데이터
   final TextEditingController _controller = TextEditingController();
-  List<dynamic> _filteredPlaces = []; // 필터링된 검색 결과
-  List<String> _recentsearch = []; // 최근 검색 기록
+  List<Map<String, dynamic>> filteredPlaces = []; // 필터링된 검색 결과
+  List<Map<String, dynamic>> recentsearches = []; // 최근 검색 기록
+
+  String userId = '';
+  String userName = '';
+  final userService = UserService();
+  final locaitonService = LocationService();
 
   @override
   void initState() {
     super.initState();
-    _loadUserId();
+    loadUser();
+    loadPlace();
   }
 
-  // 🔹 로그인된 사용자 ID 불러오기
-  Future<void> _loadUserId() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    setState(() {
-      _userId = prefs.getString("userId") ?? "";
-      debugPrint("📌 저장된 userId: $_userId");
-    });
-    if (_userId.isEmpty) {
-      debugPrint("🚨 저장된 userId가 없음!");
+  void loadUser() async {
+    final userData = await userService.loadUserData();
+
+    if (userData.isNotEmpty) {
+      setState(() {
+        userId = userData['userId'] ?? '';
+        userName = userData['userName'] ?? '';
+
+        loadRecentPlace();
+      });
     } else {
-      _loadRecentSearch();
-      _loadPlaces(); // ✅ 유저 ID가 있을 경우 키워드 불러오기
+      debugPrint("사용자 정보 없음");
     }
   }
 
-  // 최근 검색어 가져오기
-  Future<void> _loadRecentSearch() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/users/$_userId/recentsearch'),
-      );
-      if (response.statusCode == 200) {
-        final List<dynamic> recentsearch =
-            json.decode(response.body); // ✅ JSON을 List로
-
-        debugPrint("최근 검색어 가져오기 성공");
-
-        setState(() {
-          _recentsearch = recentsearch.map((item) => item.toString()).toList();
-        });
-      } else {
-        debugPrint("최근 검색어 가져오기 실패: ${response.statusCode}");
-      }
-    } catch (e) {
-      debugPrint("❗ 에러 발생: $e");
-    }
-  }
-
-  // 최근 검색어 추가하기
-  Future<void> _addRecentSearch(String query) async {
-    try {
-      final response = await http.post(
-        Uri.parse('$baseUrl/api/users/$_userId/recentsearch'),
-        headers: {'Content-Type': 'application/json'},
-        body: json.encode({'query': query}),
-      );
-
-      if (response.statusCode == 201) {
-        debugPrint("✅ 검색어 추가 성공");
-      } else {
-        debugPrint("❗ 검색어 추가 실패: ${response.statusCode}");
-      }
-    } catch (e) {
-      debugPrint("❗ 검색어 추가 중 에러 발생: $e");
-    } finally {
-      // 검색 성공 여부와 상관없이 항상 최근 검색어 갱신
-      if (mounted) {
-        setState(() {
-          _recentsearch.remove(query); // 기존에 있으면 삭제
-          _recentsearch.insert(0, query); // 맨 위에 추가
-        });
-      }
-    }
-  }
-
-  // 최근 검색어 삭제하기
-  Future<void> _deleteRecentSearch(String value) async {
-    if (_userId.isEmpty) return;
-
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/api/users/$_userId/recentsearch/$value'),
-        headers: {"Content-Type": "application/json"},
-      );
-
+  void loadPlace() async {
+    final placeData = await locaitonService.fetchAllLocations();
+    if (placeData.isNotEmpty) {
       setState(() {
-        _recentsearch.remove(value); // 🗑️ 리스트에서 항목 삭제
+        allPlaces = placeData;
       });
-
-      if (response.statusCode == 200) {
-        debugPrint("✅ 키워드 삭제 성공: $value");
-      } else {
-        debugPrint("🚨 키워드 삭제 실패: ${response.body}");
-      }
-    } catch (e) {
-      debugPrint("🚨 키워드 삭제 오류: $e");
+    } else {
+      debugPrint("모든 장소 정보 없음");
     }
   }
 
-  // 최근 검색어 모두 삭제하기
-  Future<void> _clearAllRecentSearches() async {
-    if (_userId.isEmpty) return;
-
-    try {
-      final response = await http.delete(
-        Uri.parse('$baseUrl/api/users/$_userId/recentsearch'),
-        headers: {"Content-Type": "application/json"},
-      );
-
+  void loadRecentPlace() async {
+    final placeData = await userService.fetchRecentSearch(userId);
+    if (placeData.isNotEmpty) {
       setState(() {
-        _recentsearch.clear(); // 🗑️ 리스트 비우기
+        recentsearches = placeData;
       });
-
-      if (response.statusCode == 200) {
-        debugPrint("✅ 모든 키워드 삭제 성공");
-      } else {
-        debugPrint("🚨 모든 키워드 삭제 실패: ${response.body}");
-      }
-    } catch (e) {
-      debugPrint("🚨 모든 키워드 삭제 오류: $e");
+    } else {
+      ("최근 검색 기록 없음");
     }
   }
 
-  // 모든 장소 가져오기
-  Future<void> _loadPlaces() async {
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/location/all'),
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-
-        if (mounted) {
-          setState(() {
-            _allPlaces = data; // Store the response in `_allPlaces`
-          });
-        }
-        debugPrint("✅ 장소 정보 가져오기 성공: ${_allPlaces.length}개 로드됨");
-      } else {
-        debugPrint("❗ 장소 정보 가져오기 실패: ${response.statusCode}");
-      }
-    } catch (e) {
-      debugPrint("❗ 에러 발생: $e");
-    }
-  }
-
-  void _filterPlaces(String query) {
+  void filterPlaces(String query) {
     if (query.isEmpty) {
-      setState(() {
-        _filteredPlaces = [];
-      });
+      filteredPlaces = [];
       return;
     }
-
-
-    final filtered = _allPlaces.where((place) {
-      final name = place['title'].toString().toLowerCase();
-      return name.contains(query.toLowerCase());
-    }).toList();
-
-    // ✅ 중복 setState() 호출 방지
-    if (mounted && !listEquals(_filteredPlaces, filtered)) {
-      setState(() {
-        _filteredPlaces = filtered;
-      });
-    }
+    filteredPlaces = allPlaces
+        .where((place) =>
+            place['title'] != null &&
+            place['title']
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()))
+        .cast<Map<String, dynamic>>()
+        .toList();
   }
 
   Widget _buildRecentSearches() {
-    if (_recentsearch.isEmpty) {
-      return const SizedBox.shrink();
-    }
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
       child: Column(
@@ -216,12 +114,23 @@ class _SearchPageState extends State<SearchPage> {
                   style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 TextButton(
-                  onPressed: _clearAllRecentSearches,
+                  onPressed: () async {
+                    await userService.resetRecentSearch(userId);
+
+                    final recent = await userService.fetchRecentSearch(userId);
+
+                    if (mounted) {
+                      setState(() {
+                        recentsearches = recent;
+                      });
+                    }
+                  },
                   child: const Text(
                     '모두 삭제',
                     style: TextStyle(
-                        color: AppColors.deepGrean,
-                        fontWeight: FontWeight.bold),
+                      color: AppColors.deepGrean,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -229,31 +138,42 @@ class _SearchPageState extends State<SearchPage> {
           ),
           ListView.builder(
             shrinkWrap: true,
-            padding: const EdgeInsets.only(left: 16.0, bottom: 32.0),
             physics: const NeverScrollableScrollPhysics(),
-            itemCount: _recentsearch.length,
+            padding: const EdgeInsets.only(left: 16.0, bottom: 32.0),
+            itemCount: recentsearches.length,
             itemBuilder: (context, index) {
-              final placeName = _recentsearch[index];
+              final place = recentsearches[index];
+              final title = place['title'] ?? '이름 없는 장소';
+              final id = place['_id']?.toString() ?? '';
+
               return ListTile(
-                title: Text(placeName),
+                title: Text(title),
                 trailing: IconButton(
-                  padding: const EdgeInsets.only(left: 20.0),
                   icon: const Icon(Icons.close_outlined, color: Colors.grey),
-                  onPressed: () => _deleteRecentSearch(placeName),
+                  onPressed: () async {
+                    await userService.deleteRecentSearch(userId, id);
+                    final recent = await userService.fetchRecentSearch(userId);
+                    if (mounted) {
+                      setState(() {
+                        recentsearches = recent;
+                      });
+                    }
+                  },
                 ),
                 onTap: () async {
-                  await _deleteRecentSearch(placeName);
-                  await _addRecentSearch(placeName);
-                  setState(() {
-                    _recentsearch.remove(placeName); // 🔥 중복 제거
-                    _recentsearch.insert(0, placeName); // 🔥 맨 위로 추가
-                  });
-
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => DetailPage(place: placeName)),
+                      builder: (context) => DetailPage(
+                        placeName: title,
+                        placeId: id,
+                      ),
+                    ),
                   );
+                  //화면 전환하고 나서 백그라운드로 저장
+                  await userService.deleteRecentSearch(
+                      userId, place['_id'].toString());
+                  await userService.addRecentSearch(userId, place);
                 },
               );
             },
@@ -266,7 +186,7 @@ class _SearchPageState extends State<SearchPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _allPlaces.isEmpty
+      body: allPlaces.isEmpty
           ? const Center(child: CircularProgressIndicator()) // ✅ 서버 데이터 오기 전
           : SingleChildScrollView(
               padding: const EdgeInsets.fromLTRB(16, 70, 16, 16),
@@ -277,35 +197,47 @@ class _SearchPageState extends State<SearchPage> {
                   Row(children: [
                     Expanded(
                       // 검색바
+
                       child: custom.SearchBar(
                           controller: _controller,
                           onChanged: (value) {
-                            _filterPlaces(value);
+                            filterPlaces(value);
                             setState(() {}); // 🔥 검색창 입력 바뀔 때마다 강제 리빌드
                           },
                           onClear: () {
                             setState(() {
                               _controller.clear();
-                              _filteredPlaces = [];
+                              filteredPlaces = [];
                             });
                           },
                           onSubmitted: (query) async {
                             if (query.isNotEmpty) {
                               setState(() {
                                 _controller.clear();
-                                _filterPlaces(query);
-                              _addRecentSearch(_filteredPlaces[0]['title']);
+                                filterPlaces(query);
                               });
+                              await userService.addRecentSearch(
+                                  userId, filteredPlaces[0]['_id']);
+                              final recent =
+                                  await userService.fetchRecentSearch(userId);
+                              if (mounted) {
+                                setState(() {
+                                  recentsearches = recent;
+                                });
+                              }
                               await Future.delayed(
                                   Duration.zero); // Flutter event loop에 양보
                               if (!mounted) return;
 
-                              if (_filteredPlaces.isNotEmpty) {
+                              if (filteredPlaces.isNotEmpty) {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) => DetailPage(
-                                        place: _filteredPlaces[0]['title']),
+                                      placeName: filteredPlaces[0]['title'],
+                                      placeId:
+                                          filteredPlaces[0]['_id'].toString(),
+                                    ),
                                   ),
                                 );
                               } else {
@@ -324,7 +256,7 @@ class _SearchPageState extends State<SearchPage> {
                         onPressed: () {
                           setState(() {
                             _controller.clear();
-                            _filteredPlaces = [];
+                            filteredPlaces = [];
                           });
                         },
                         child: Text(
@@ -334,33 +266,32 @@ class _SearchPageState extends State<SearchPage> {
                         ),
                       ),
                   ]),
-                  // 검색 연관 내용(?)
-                  if (_controller.text.isNotEmpty && _filteredPlaces.isNotEmpty)
+                  // 검색 내용
+                  if (_controller.text.isNotEmpty && filteredPlaces.isNotEmpty)
                     ListView.builder(
                       padding: const EdgeInsets.all(0),
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
-                      itemCount: _filteredPlaces.length,
+                      itemCount: filteredPlaces.length,
                       itemBuilder: (context, index) {
-                        final place = _filteredPlaces[index];
+                        final place = filteredPlaces[index];
                         return ListTile(
                           title: Text(place['title']),
                           onTap: () async {
-                            final placeName = place['title'];
-
-                            if (!mounted) return;
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    DetailPage(place: placeName),
+                                builder: (context) => DetailPage(
+                                  placeName: place['title'],
+                                  placeId: place['_id'].toString(),
+                                ),
                               ),
                             );
-
-                            // 🔥 화면 전환하고 나서 백그라운드로 저장
-                            await _deleteRecentSearch(placeName);
-                            await _addRecentSearch(placeName);
-                            _controller.clear();
+                            //화면 전환하고 나서 백그라운드로 저장
+                            await userService.deleteRecentSearch(
+                                userId, place['_id'].toString());
+                            await userService.addRecentSearch(userId, place);
+                            //_controller.clear();
                           },
                         );
                       },
@@ -368,15 +299,10 @@ class _SearchPageState extends State<SearchPage> {
 
                   const SizedBox(height: 16),
                   _buildRecentSearches(),
-                  // 최근 검색 기록
-                  // RecentSearches(
-                  //     searches: _recentsearch,
-                  //     onTap: _deleteRecentSearch,
-                  //     onSearches: _addRecentSearch),
                 ],
               ),
             ),
-      bottomNavigationBar: const BottomNavi(),
+      bottomNavigationBar: const BottomNavi(currentIndex: 2),
     );
   }
 }

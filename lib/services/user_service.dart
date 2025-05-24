@@ -25,7 +25,6 @@ class UserService {
 
   // 사용자 정보 가져오기 (Shared Preference)
   Future<Map<String, String?>> loadUserData() async {
-    debugPrint("loadUserData 호출됨");
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token');
 
@@ -51,5 +50,86 @@ class UserService {
     await prefs.remove("token");
     await prefs.remove("userName");
     await prefs.remove("userPreferences");
+  }
+
+  //검색 관련
+  // 🔹 최근 검색 장소 추가 (location 객체 전체 전달)
+  Future<bool> addRecentSearch(
+      String userId, Map<String, dynamic> location) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseUrl/api/users/$userId/recentsearch'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'location': location}),
+      );
+
+      if (response.statusCode == 201) {
+        return true;
+      } else {
+        debugPrint("❗ 최근 장소 추가 실패: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("❗ 에러 발생 (addRecentSearch): $e");
+      return false;
+    }
+  }
+
+  // 🔹 최근 검색 장소 조회
+  Future<List<Map<String, dynamic>>> fetchRecentSearch(String userId) async {
+    try {
+      final response =
+          await http.get(Uri.parse('$baseUrl/api/users/$userId/recentsearch'));
+
+      if (response.statusCode == 200) {
+        return List<Map<String, dynamic>>.from(json.decode(response.body));
+      } else {
+        debugPrint("❗ 최근 검색어 조회 실패: ${response.statusCode}");
+        return [];
+      }
+    } catch (e) {
+      debugPrint("❗ 에러 발생 (fetchRecentSearch): $e");
+      return [];
+    }
+  }
+
+  // 🔹 최근 검색 장소 삭제
+  Future<bool> deleteRecentSearch(String userId, dynamic locationId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse(
+            '$baseUrl/api/users/$userId/recentsearch/${locationId.toString()}'),
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint("❗ 삭제 성공: ${response.statusCode}");
+        return true;
+      } else {
+        debugPrint("❗ 삭제 실패: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("❗ 에러 발생 (deleteRecentSearch): $e");
+      return false;
+    }
+  }
+
+  // 🔹 최근 검색 전체 초기화
+  Future<bool> resetRecentSearch(String userId) async {
+    try {
+      final response = await http.delete(
+        Uri.parse('$baseUrl/api/users/$userId/recentsearch'),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        debugPrint("❗ 전체 삭제 실패: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("❗ 에러 발생 (resetRecentSearch): $e");
+      return false;
+    }
   }
 }

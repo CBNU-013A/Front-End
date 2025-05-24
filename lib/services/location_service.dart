@@ -9,15 +9,33 @@ final String baseUrl = Platform.isAndroid
     : 'http://localhost:8001';
 
 class LocationService {
-  Future<Map<String, dynamic>> fetchLocationWithKeywords(
-      String locationId) async {
-    final response =
-        await http.get(Uri.parse('$baseUrl/api/auth/location/$locationId'));
+  Future<List<dynamic>> fetchAllLocations() async {
+    final response = await http.get(Uri.parse('$baseUrl/api/location/all'));
 
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
-      throw Exception('Failed to load location data');
+      throw Exception('Failed to load all locations');
+    }
+  }
+
+  Future<Map<String, dynamic>> fetchLocation(String placeId) async {
+    if (placeId.isEmpty) {
+      throw Exception('placeId is empty');
+    }
+
+    final response =
+        await http.get(Uri.parse('$baseUrl/api/location/id/$placeId'));
+
+    if (response.statusCode == 200) {
+      final body = response.body;
+      try {
+        return jsonDecode(body);
+      } catch (e) {
+        throw Exception('Failed to decode location data: $e');
+      }
+    } else {
+      throw Exception('Failed to load location data: ${response.statusCode}');
     }
   }
 }

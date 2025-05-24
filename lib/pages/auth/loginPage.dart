@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/main.dart';
 import 'package:final_project/services/auth_service.dart';
-import 'package:final_project/pages/home/homePage.dart';
-import 'package:final_project/pages/auth/registerPage.dart';
+import 'package:final_project/pages/home/HomePage.dart';
+import 'package:final_project/pages/auth/RegisterPage.dart';
 import 'package:final_project/styles/styles.dart';
 
 class LoginPage extends StatefulWidget {

@@ -124,7 +124,9 @@ class _SummaryTabState extends State<SummaryTab> {
                     GestureDetector(
                       onTap: () {
                         final overview = widget.data['overview'];
-                        if (overview != null && overview is String && overview.trim().isNotEmpty) {
+                        if (overview != null &&
+                            overview is String &&
+                            overview.trim().isNotEmpty) {
                           showDialog(
                             context: context,
                             builder: (_) => AlertDialog(
@@ -193,11 +195,7 @@ class _SummaryTabState extends State<SummaryTab> {
                         .copyWith(color: Colors.black),
                   ),
                   toggleAnalysis(),
-                  SummaryWidget(
-                    place: widget.data['title'] is String
-                        ? widget.data['title']
-                        : '',
-                  ),
+                  SummaryWidget(placeId: widget.data['_id'].toString()),
                   const Padding(
                     padding: EdgeInsets.fromLTRB(0, 10, 0, 0),
                     child: SizedBox(

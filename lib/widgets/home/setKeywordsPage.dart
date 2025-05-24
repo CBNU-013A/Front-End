@@ -1,7 +1,7 @@
-// pages/recommend/setKeywordsPage.dart
+// widgets/home/setKeywordsPage.dart
 import 'dart:io';
 
-import 'package:final_project/pages/home/homePage.dart';
+import 'package:final_project/pages/home/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:final_project/styles/styles.dart';
@@ -13,9 +13,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 final String baseUrl = Platform.isAndroid
     ? 'http://${dotenv.env['BASE_URL']}:8001'
     : 'http://localhost:8001';
-    
+
 class SetKeywordsPage extends StatefulWidget {
-  const SetKeywordsPage({super.key});
+  final String userId;
+  final String userName;
+
+  const SetKeywordsPage(
+      {super.key, required this.userId, required this.userName});
 
   @override
   State<SetKeywordsPage> createState() => _SetKeywordsPageState();

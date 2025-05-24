@@ -2,38 +2,30 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:final_project/services/location_service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:final_project/main.dart';
-import 'package:final_project/pages/review/summary.dart';
-import 'package:final_project/pages/review/writeReviewPage.dart';
 import 'package:final_project/services/like_service.dart';
-import 'package:final_project/services/user_service.dart';
 import 'package:final_project/styles/styles.dart';
 import 'package:final_project/widgets/BottomNavi.dart';
 import 'package:final_project/widgets/detail/AnalysisTab.dart';
 import 'package:final_project/widgets/detail/InfoTab.dart';
 import 'package:final_project/widgets/detail/ReviewTab.dart';
 import 'package:final_project/widgets/detail/summaryTab.dart';
-import 'package:final_project/widgets/tab_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
-import 'package:kakao_flutter_sdk_common/kakao_flutter_sdk_common.dart';
-import 'package:kakao_map_plugin/kakao_map_plugin.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
-import '../review/reviewPage.dart';
 
 final String baseUrl = Platform.isAndroid
     ? 'http://${dotenv.env['BASE_URL']}:8001'
     : 'http://localhost:8001';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key, required this.place});
+  const DetailPage({super.key, required this.placeName, required this.placeId});
 
-  final String place;
+  final String placeName;
+  final String placeId;
 
   @override
   _DetailPageState createState() => _DetailPageState();
@@ -42,221 +34,210 @@ class DetailPage extends StatefulWidget {
 class _DetailPageState extends State<DetailPage>
     with SingleTickerProviderStateMixin {
   final likeService = LikeService();
-  String? myReview; // 🔥 Add this at the top of _DetailPageState
-  late String placeName;
-  late String userId;
-  late String userName;
+  final _locationSrvice = LocationService();
 
-  final List<String> _AnalysisOptions = ['전체', '내 취향'];
-  int _currentPage = 0;
+  Map<String, dynamic> placeData = {};
+
   bool _isLiked = false;
   bool _isLoading = true;
   bool _isPlaceFound = false;
-  KakaoMapController? _mapController;
   Map<String, dynamic>? _matchedPlace;
-  late PageController _pageController;
-  int _selectedAnalysisIndex = 0; //
+
   late TabController _tabController;
   Timer? _timer;
 
   @override
   void dispose() {
     _timer?.cancel(); // 타이머 해제 (메모리 누수 방지)
-    _pageController.dispose();
     super.dispose();
   }
 
   @override
   void initState() {
     super.initState();
-    _loadUser();
-    _loadPlaceData();
-
-    //WidgetsFlutterBinding.ensureInitialized(); // Flutter 초기화
-    //auth : javascript key
-    // AuthRepository.initialize(appKey: 'c4e1eb2e4df9471dd1f08410194cfd13');
-    // // Kakao SDK 초기화 여부 확인
-    // KakaoSdk.init(
-    //   nativeAppKey: '2a9e7d21868ff0932e17ad3708dcbe9b',
-    //   javaScriptAppKey: 'c4e1eb2e4df9471dd1f08410194cfd13',
-    // );
-
-    _pageController = PageController(viewportFraction: 1.0);
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      if (_matchedPlace != null && _matchedPlace!['firstimage'] != null) {
-        if (_currentPage < _matchedPlace!['firstimage'].length - 1) {
-          _currentPage++;
-        } else {
-          _currentPage = 0; // 마지막 페이지에서 첫 페이지로 이동
-        }
-        _pageController.animateToPage(
-          _currentPage,
-          duration: const Duration(milliseconds: 500), // 애니메이션 속도 조절
-          curve: Curves.easeInOut,
-        );
-      }
-    });
-    _tabController = TabController(length: 4, vsync: this);
+    loadPlace();
   }
 
-  void setMapCenter(Map<String, dynamic> data) {
-    if (_mapController != null) {
-      _mapController!.setCenter(
-        LatLng(
-          data['location']['latitude'],
-          data['location']['longitude'],
-        ),
-      );
-    } else {
-      debugPrint("⚠️ KakaoMapController가 아직 초기화되지 않았습니다.");
-    }
-  }
-
-  Container toggleAnalysis() {
-    return Container(
-      height: 35,
-      margin: const EdgeInsets.fromLTRB(0, 10, 0, 10),
-      decoration: BoxDecoration(
-        color: TextFiledStyles.fillColor,
-        borderRadius: BorderRadius.circular(20),
-      ),
-      child: Stack(
-        children: [
-          AnimatedAlign(
-            alignment: _selectedAnalysisIndex == 0
-                ? Alignment.centerLeft
-                : Alignment.centerRight,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeInOut,
-            child: Container(
-              width: (MediaQuery.of(context).size.width - 80) / 2,
-              height: 38,
-              alignment: Alignment.center,
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-              // margin: const EdgeInsets.symmetric(
-              //     vertical: 5, horizontal: 2),
-              decoration: BoxDecoration(
-                color: AppColors.deepGrean,
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: List.generate(_AnalysisOptions.length, (index) {
-              return GestureDetector(
-                onTap: () {
-                  setState(() {
-                    _selectedAnalysisIndex = index;
-                  });
-                  if (index == 1) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text("사용자 취향이 없어요 😢"),
-                      ),
-                    );
-                  }
-                },
-                child: Container(
-                  width:
-                      (MediaQuery.of(context).size.width - 80) / 2, // 버튼 크기 통일
-                  height: 38,
-                  alignment: Alignment.center,
-                  padding: const EdgeInsets.symmetric(
-                      horizontal: 20, vertical: 6), // 🔥 텍스트 주변 여백
-                  child: Text(
-                    _AnalysisOptions[index],
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: _selectedAnalysisIndex == index
-                          ? Colors.white
-                          : AppColors.deepGrean,
-                    ),
-                  ),
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  void _loadUser() async {
-    final userService = UserService();
-    final userData = await userService.loadUserData();
-
-    if (userData.isNotEmpty) {
-      setState(() {
-        userId = userData['userId'] ?? '';
-        userName = userData['userName'] ?? '';
-      });
-    }
-  }
-
-  // void _loadLikeStatus() async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   final token = prefs.getString('jwt_token') ?? '';
-  //   await LikeService().isLiked(userId, placeName, token);
-  // }
-
-  // Place 정보 가져오기
-  Future<void> _loadPlaceData() async {
+  void loadPlace() async {
+    debugPrint('🧭 placeId 전달됨: ${widget.placeId}');
     try {
-      placeName = Uri.encodeComponent((widget.place));
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/location/$placeName'), // ✅ 서버 API로 요청
-      );
+      final data = await _locationSrvice.fetchLocation("${widget.placeId}");
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> data = json.decode(response.body);
-
+      if (data.isNotEmpty) {
+        placeData = data;
         setState(() {
+          _matchedPlace = placeData;
           _isPlaceFound = true;
-          _matchedPlace = data;
           _isLoading = false;
-        });
-      } else if (response.statusCode == 404) {
-        // ✅ 장소를 찾을 수 없음
-        setState(() {
-          _isLoading = false;
-          _isPlaceFound = false;
+          _tabController = TabController(length: 4, vsync: this);
         });
       } else {
-        throw Exception('Failed to load place data');
+        setState(() {
+          _isPlaceFound = false;
+          _isLoading = false;
+        });
       }
     } catch (e) {
-      debugPrint("❗ 서버 통신 중 오류 발생: $e");
+      debugPrint("❌ 장소 불러오기 실패: $e");
       setState(() {
-        _isLoading = false;
         _isPlaceFound = false;
+        _isLoading = false;
       });
     }
   }
 
-  Widget _buildImageSection(Map<String, dynamic> place) {
-    String imageUrl = place['firstimage'] ?? '';
-    if (imageUrl.isEmpty) {
-      imageUrl = 'https://via.placeholder.com/300x200.png?text=No+Image';
+  @override
+  Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            '${widget.placeName} ',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
-    return SizedBox(
-      height: 250.0,
-      width: MediaQuery.of(context).size.width,
-      child: Image.network(
-        imageUrl,
-        fit: BoxFit.fill,
-        height: 250.0,
-        width: MediaQuery.of(context).size.width,
-        loadingBuilder: (context, child, loadingProgress) {
-          if (loadingProgress == null) return child;
-          return const Center(child: CircularProgressIndicator());
+
+    if (!_isPlaceFound) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(
+            '${widget.placeName} ',
+            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          ),
+          backgroundColor: Colors.transparent,
+        ),
+        body: const Center(
+          child: Text(
+            '해당 장소에 대한 데이터를 찾을 수 없습니다.',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+        ),
+      );
+    }
+
+    return Scaffold(
+      body: NestedScrollView(
+        headerSliverBuilder: (context, innerBoxIsScrolled) {
+          return [
+            SliverAppBar(
+              // 🔥 AppBar도 NestedScrollView 안으로
+              expandedHeight: 60,
+              title: Text(
+                '${widget.placeName} ',
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              floating: true,
+              pinned: true,
+              backgroundColor: AppColors.lightGreen,
+
+              // actions: [
+              //   IconButton(
+              //     icon: Icon(
+              //       _isLiked ? Icons.favorite : Icons.favorite_border,
+              //       color: _isLiked ? Colors.red : Colors.black,
+              //     ),
+              //     onPressed: () async {
+              //       setState(() => _isLiked = !_isLiked);
+              //       final prefs = await SharedPreferences.getInstance();
+              //       final token = prefs.getString('jwt_token') ?? '';
+              //       bool result = await LikeService()
+              //           .toggleLike(
+              //             "임시유저아이디", placeData['title'], token, _isLiked);
+              //       if (result) {
+              //         //setState(() => _isLiked = !_isLiked);
+              //         debugPrint('_isLiked: $_isLiked');
+              //       }
+              //     },
+              //     tooltip: _isLiked ? '즐겨찾기에서 제거' : '즐겨찾기에 추가',
+              //   ),
+              // ],
+            ),
+            SliverOverlapAbsorber(
+              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+              sliver: SliverToBoxAdapter(
+                child: Container(
+                  decoration: BoxStyles.backgroundBox(),
+                  child: Column(
+                    children: [
+                      ImageSection(context: context, place: _matchedPlace!),
+                      InfoSection(data: _matchedPlace!),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            SliverPersistentHeader(
+              pinned: true,
+              delegate: _SliverTabBarDelegate(
+                  child: PreferredSize(
+                preferredSize: const Size.fromHeight(48.0), // ✅ 정확한 높이 지정
+                child: Container(
+                  color: AppColors.lightWhite,
+                  child: TabBar(
+                    controller: _tabController,
+                    indicatorColor: Colors.black,
+                    labelColor: Colors.black,
+                    unselectedLabelColor: Colors.grey,
+                    tabs: const [
+                      Tab(text: '요약'),
+                      Tab(text: '분석'),
+                      Tab(text: '리뷰'),
+                      Tab(text: '정보'),
+                    ],
+                    onTap: (index) {
+                      setState(() {
+                        _tabController.index =
+                            index; // Index 변경: 1, 2, 3, 4로 설정
+                      });
+                    },
+                  ),
+                ),
+              )),
+            ),
+          ];
         },
+        body: _matchedPlace == null
+            ? const Center(child: CircularProgressIndicator())
+            : TabBarView(
+                controller: _tabController,
+                children: [
+                  SummaryTab(data: {
+                    'title': _matchedPlace!['title'],
+                    'overview': _matchedPlace!['overview'],
+                    'onTabChange': () {
+                      setState(() {
+                        _tabController.index = 1; // 분석 탭으로 이동
+                      });
+                    }
+                  }),
+                  AnalysisTab(data: _matchedPlace!),
+                  ReviewsTab(data: _matchedPlace!),
+                  InfoTab(data: _matchedPlace!)
+                ],
+              ),
       ),
+      bottomNavigationBar: const BottomNavi(),
     );
   }
+}
 
-  Widget _buildInfoSection(Map<String, dynamic> data) {
+class InfoSection extends StatelessWidget {
+  const InfoSection({
+    super.key,
+    required this.data,
+  });
+
+  final Map<String, dynamic> data;
+
+  @override
+  Widget build(BuildContext context) {
     String extractHref(String htmlString) {
       final match = RegExp(r'href="([^"]+)"').firstMatch(htmlString);
       return match != null ? match.group(1)! : '';
@@ -359,11 +340,21 @@ class _DetailPageState extends State<DetailPage>
                     final rawHtml = data['homepage'] ?? '';
                     final extractedUrl = extractHref(rawHtml);
                     if (extractedUrl.isEmpty) {
-                      debugPrint("❌ URL이 비어 있습니다.");
+                      debugPrint("❌ URL이 비어 있음");
+                      return;
+                    }
+                    Uri? uri;
+                    try {
+                      uri = Uri.parse(extractedUrl);
+                      if (uri.host.isEmpty || !uri.hasScheme) {
+                        debugPrint("❌ URI 호스트 또는 스킴 없음: $extractedUrl");
+                        return;
+                      }
+                    } catch (e) {
+                      debugPrint("❌ URI 파싱 오류: $e");
                       return;
                     }
                     try {
-                      final uri = Uri.parse(extractedUrl);
                       if (await canLaunchUrl(uri)) {
                         await launchUrl(uri,
                             mode: LaunchMode.externalApplication);
@@ -376,7 +367,7 @@ class _DetailPageState extends State<DetailPage>
                   },
                   child: const Text(
                     '홈페이지로 이동',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 14,
                       color: Colors.black,
                       decoration: TextDecoration.underline,
@@ -390,146 +381,37 @@ class _DetailPageState extends State<DetailPage>
       ),
     );
   }
+}
 
-  Widget _buildTap() {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(48.0), // ✅ 정확한 높이 지정
-      child: Container(
-        color: AppColors.lightWhite,
-        child: TabBar(
-          controller: _tabController,
-          indicatorColor: Colors.black,
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
-          tabs: const [
-            Tab(text: '요약'),
-            Tab(text: '분석'),
-            Tab(text: '리뷰'),
-            Tab(text: '정보'),
-          ],
-          onTap: (index) {
-            setState(() {
-              _tabController.index = index; // Index 변경: 1, 2, 3, 4로 설정
-            });
-          },
-        ),
-      ),
-    );
-  }
+class ImageSection extends StatelessWidget {
+  const ImageSection({
+    super.key,
+    required this.context,
+    required this.place,
+  });
+
+  final BuildContext context;
+  final Map<String, dynamic> place;
 
   @override
   Widget build(BuildContext context) {
-    if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            '${widget.place} ',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.transparent,
-        ),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
+    String imageUrl = place['firstimage'] ?? '';
+    if (imageUrl.isEmpty) {
+      imageUrl = 'https://via.placeholder.com/300x200.png?text=No+Image';
     }
-
-    if (!_isPlaceFound) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text(
-            '${widget.place} ',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          backgroundColor: Colors.transparent,
-        ),
-        body: const Center(
-          child: Text(
-            '해당 장소에 대한 데이터를 찾을 수 없습니다.',
-            style: TextStyle(fontSize: 16, color: Colors.grey),
-          ),
-        ),
-      );
-    }
-
-    return Scaffold(
-      body: NestedScrollView(
-        headerSliverBuilder: (context, innerBoxIsScrolled) {
-          return [
-            SliverAppBar(
-              // 🔥 AppBar도 NestedScrollView 안으로
-              expandedHeight: 60,
-              title: Text(
-                '${widget.place} ',
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              floating: true,
-              pinned: true,
-              backgroundColor: AppColors.lightGreen,
-
-              actions: [
-                IconButton(
-                  icon: Icon(
-                    _isLiked ? Icons.favorite : Icons.favorite_border,
-                    color: _isLiked ? Colors.red : Colors.black,
-                  ),
-                  onPressed: () async {
-                    setState(() => _isLiked = !_isLiked);
-                    final prefs = await SharedPreferences.getInstance();
-                    final token = prefs.getString('jwt_token') ?? '';
-                    bool result = await LikeService()
-                        .toggleLike(userId, placeName, token, _isLiked);
-                    if (result) {
-                      //setState(() => _isLiked = !_isLiked);
-                      debugPrint('_isLiked: $_isLiked');
-                    }
-                  },
-                  tooltip: _isLiked ? '즐겨찾기에서 제거' : '즐겨찾기에 추가',
-                ),
-              ],
-            ),
-            SliverOverlapAbsorber(
-              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-              sliver: SliverToBoxAdapter(
-                child: Container(
-                  decoration: BoxStyles.backgroundBox(),
-                  child: Column(
-                    children: [
-                      _buildImageSection(_matchedPlace!),
-                      _buildInfoSection(_matchedPlace!),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-            SliverPersistentHeader(
-              pinned: true,
-              delegate: _SliverTabBarDelegate(child: _buildTap()),
-            ),
-          ];
+    return SizedBox(
+      height: 250.0,
+      width: MediaQuery.of(context).size.width,
+      child: Image.network(
+        imageUrl,
+        fit: BoxFit.fill,
+        height: 250.0,
+        width: MediaQuery.of(context).size.width,
+        loadingBuilder: (context, child, loadingProgress) {
+          if (loadingProgress == null) return child;
+          return const Center(child: CircularProgressIndicator());
         },
-        body: _matchedPlace == null
-            ? const Center(child: CircularProgressIndicator())
-            : TabBarView(
-                controller: _tabController,
-                children: [
-                  SummaryTab(data: {
-                    'title': _matchedPlace!['title'],
-                    'overview': _matchedPlace!['overview'],
-                    'onTabChange': () {
-                      setState(() {
-                        _tabController.index = 1; // 분석 탭으로 이동
-                      });
-                    }
-                  }),
-                  AnalysisTab(data: _matchedPlace!),
-                  ReviewsTab(data: _matchedPlace!),
-                  InfoTab(data: _matchedPlace!)
-                ],
-              ),
       ),
-      bottomNavigationBar: const BottomNavi(),
     );
   }
 }
@@ -544,10 +426,11 @@ class _SliverTabBarDelegate extends SliverPersistentHeaderDelegate {
     return false;
   }
 
+  @override
   double get minExtent => child is PreferredSizeWidget
       ? (child as PreferredSizeWidget).preferredSize.height
       : 50;
-
+  @override
   double get maxExtent => child is PreferredSizeWidget
       ? (child as PreferredSizeWidget).preferredSize.height
       : 50;
