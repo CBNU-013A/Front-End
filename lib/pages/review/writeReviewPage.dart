@@ -13,12 +13,11 @@ final String baseUrl = Platform.isAndroid
     : 'http://localhost:8001';
 
 class WriteReviewPage extends StatefulWidget {
-  final String? placeId;
+  final String placeId;
+  final String token;
 
-  const WriteReviewPage({
-    Key? key,
-    required this.placeId,
-  }) : super(key: key);
+  const WriteReviewPage({Key? key, required this.placeId, required this.token})
+      : super(key: key);
 
   @override
   _WriteReviewPageState createState() => _WriteReviewPageState();
@@ -27,6 +26,8 @@ class WriteReviewPage extends StatefulWidget {
 class _WriteReviewPageState extends State<WriteReviewPage> {
   final TextEditingController _contentController = TextEditingController();
   String? myReview;
+  String? myReviewId;
+  bool _isEditing = false;
 
   @override
   void initState() {
@@ -35,28 +36,32 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
   }
 
   Future<void> _loadMyReview() async {
+    final reviewService = ReviewService();
+    final placeId = widget.placeId;
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token') ?? '';
-    final myUserId =
-        prefs.getString('userId'); // fixed key to match saved token
-    final reviewService = ReviewService();
-    final placeId = widget.placeId ?? '';
-    debugPrint("✅ 보내는 userId: $myUserId, placeId: $placeId");
+    final userId = prefs.getString('userId') ?? '';
+
     try {
-      final result = await reviewService.fetchReviewsByLocation(
+      final reviewData = await reviewService.getReviewsByLocation(
         placeId,
         token,
+        userId,
       );
-      final myReviewData = result['myReview'];
 
       setState(() {
-        myReview = myReviewData != null ? myReviewData['content'] ?? '' : '';
-        if (myReview != null && myReview!.isNotEmpty) {
-          _contentController.text = myReview!;
-        }
+        myReview = reviewData['content'] ?? '';
+        myReviewId = reviewData['reviewId'] ?? '';
+        _isEditing = myReview!.isNotEmpty;
+        _contentController.text = myReview!;
+        _contentController.selection = TextSelection.fromPosition(
+          TextPosition(offset: _contentController.text.length),
+        );
       });
+
+      debugPrint("📥 내 리뷰: $myReview");
     } catch (e) {
-      debugPrint("❌ 내 리뷰 불러오기 실패: $e");
+      debugPrint("❌ 리뷰 불러오기 실패: $e");
       setState(() {
         myReview = '';
       });
@@ -69,35 +74,69 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
     super.dispose();
   }
 
-  void _submitReview() async {
+  void _createReview() async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('jwt_token') ?? '';
-    final placeId = widget.placeId ?? '';
+    final placeId = widget.placeId;
     final newText = _contentController.text.trim();
 
-    final reviewService = ReviewService();
-    bool success = false;
-
-    if ((myReview == null || myReview!.isEmpty) && newText.isNotEmpty) {
-      // 새로운 리뷰 작성
-      success = await reviewService.createReview(placeId, newText, token);
-    } else if ((myReview != null && myReview!.isNotEmpty) && newText.isEmpty) {
-      // 리뷰 삭제
-      success = await reviewService.deleteReview(placeId, token);
-    } else if ((myReview != null && myReview != newText)) {
-      // 리뷰 수정
-      success = await reviewService.updateReview(placeId, newText, token);
+    if (newText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('내용이 비어있습니다.')),
+      );
+      return;
     }
+
+    final reviewService = ReviewService();
+    final success = await reviewService.createReview(placeId, newText, token);
 
     if (!mounted) return;
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('리뷰 처리 완료')),
+        const SnackBar(content: Text('리뷰 작성 완료')),
       );
       Navigator.pop(context, newText);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('리뷰 처리 실패')),
+        const SnackBar(content: Text('리뷰 작성 실패')),
+      );
+    }
+  }
+
+  void _updateReview() async {
+    if (myReviewId == null || myReviewId!.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('리뷰 ID가 존재하지 않아 수정할 수 없습니다.')),
+      );
+      return;
+    }
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token') ?? '';
+    final placeId = widget.placeId;
+    final newText = _contentController.text.trim();
+
+    if (newText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('내용이 비어있습니다.')),
+      );
+      return;
+    }
+
+    final reviewService = ReviewService();
+
+    final success =
+        await reviewService.updateReview(myReviewId!, newText, token);
+
+    if (!mounted) return;
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('리뷰 수정 완료')),
+      );
+      Navigator.pop(context, newText);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('리뷰 수정 실패')),
       );
     }
   }
@@ -108,34 +147,36 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
       appBar: AppBar(
         backgroundColor: AppColors.lightWhite,
         actions: [
-          const SizedBox(width: 8.0), // Add spacing before the button
+          const SizedBox(width: 8.0),
           TextButton(
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.resolveWith<Color>(
                 (Set<MaterialState> states) {
                   if (states.contains(MaterialState.pressed)) {
-                    return AppColors.lightWhite; // Change color when pressed
+                    return AppColors.lightWhite;
                   }
-                  return AppColors.lightWhite; // Default color
+                  return AppColors.lightWhite;
                 },
               ),
             ),
-            onPressed: _submitReview,
-            child: const Text(
-              '작성하기',
-              style: TextStyle(color: AppColors.deepGrean),
+            onPressed: _isEditing ? _updateReview : _createReview,
+            child: Text(
+              _isEditing ? '수정하기' : '작성하기',
+              style: const TextStyle(color: AppColors.deepGrean),
             ),
           ),
-          const SizedBox(width: 8.0), // Add spacing after the button
+          const SizedBox(width: 8.0),
         ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: TextField(
           controller: _contentController,
+          onChanged: (value) {
+            setState(() {});
+          },
           maxLength: 100,
           maxLines: 10,
-          //expands: true,
           textAlignVertical: TextAlignVertical.top,
           cursorColor: Colors.black,
           decoration: const InputDecoration(

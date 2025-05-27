@@ -9,31 +9,43 @@ class ReviewService {
       ? 'http://${dotenv.env['BASE_URL']}:8001'
       : 'http://localhost:8001';
 
-  Future<Map<String, dynamic>> fetchReviewsByLocation(
-      String locationId, String token) async {
-    final queryParameters = <String, String>{};
-
-    final uri = Uri.parse('$baseUrl/api/review/location/$locationId')
-        .replace(queryParameters: queryParameters);
-
-    final response = await http.get(uri, headers: {
-      'Authorization': 'Bearer $token',
-    });
-
+  Future<Map<String, String>> getReviewsByLocation(
+      String locationId, String token, String userId) async {
+    final url = Uri.parse('$baseUrl/api/review/$locationId');
+    final response = await http.get(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+    );
     if (response.statusCode == 200) {
-      final Map<String, dynamic> body = json.decode(response.body);
-      return {
-        'reviews': List<Map<String, dynamic>>.from(body['reviews']),
-        'myReview': body['myReview'] as Map<String, dynamic>?,
-      };
+      final Map<String, dynamic> data = json.decode(response.body);
+      final List<dynamic> reviews = data['reviews'];
+
+      // 현재 사용자(author)의 리뷰만 필터링
+      final userReview = reviews.firstWhere(
+        (review) => review['author'] == userId,
+        orElse: () => null,
+      );
+      if (userReview != null &&
+          userReview['content'] != null &&
+          userReview['_id'] != null) {
+        return {
+          'content': userReview['content'] as String,
+          'reviewId': userReview['_id'] as String,
+        };
+      }
     } else {
-      throw Exception('리뷰 목록 조회 실패');
+      throw Exception('리뷰 조회 실패');
     }
+    return {};
   }
 
   Future<bool> createReview(
       String placeId, String content, String token) async {
     final url = Uri.parse('$baseUrl/api/review/$placeId');
+
     final response = await http.post(
       url,
       headers: {
@@ -61,7 +73,7 @@ class ReviewService {
   }
 
   Future<bool> updateReview(
-      String reviewId, String newContent, String token) async {
+      String reviewId, String content, String token) async {
     final url = Uri.parse('$baseUrl/api/review/$reviewId');
     final response = await http.patch(
       url,
@@ -70,7 +82,7 @@ class ReviewService {
         'Content-Type': 'application/json',
       },
       body: jsonEncode({
-        'content': newContent,
+        'content': content,
       }),
     );
 

@@ -1,8 +1,10 @@
-// pages/location/detailPage.dart
+// pages/location/DetailPage.dart
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:final_project/services/location_service.dart';
+import 'package:final_project/services/user_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:final_project/main.dart';
@@ -35,6 +37,11 @@ class _DetailPageState extends State<DetailPage>
     with SingleTickerProviderStateMixin {
   final likeService = LikeService();
   final _locationSrvice = LocationService();
+  final userService = UserService();
+
+  dynamic userData = {};
+
+  late Future<bool> _isLikedFuture;
 
   Map<String, dynamic> placeData = {};
 
@@ -42,6 +49,8 @@ class _DetailPageState extends State<DetailPage>
   bool _isLoading = true;
   bool _isPlaceFound = false;
   Map<String, dynamic>? _matchedPlace;
+
+  String userId = '';
 
   late TabController _tabController;
   Timer? _timer;
@@ -56,10 +65,12 @@ class _DetailPageState extends State<DetailPage>
   void initState() {
     super.initState();
     loadPlace();
+    loadUser();
+    // _isLikedFuture =
+    //     _likeService.isLiked(userId, widget.placeName, widget.token);
   }
 
   void loadPlace() async {
-    debugPrint('🧭 placeId 전달됨: ${widget.placeId}');
     try {
       final data = await _locationSrvice.fetchLocation("${widget.placeId}");
 
@@ -84,6 +95,24 @@ class _DetailPageState extends State<DetailPage>
         _isLoading = false;
       });
     }
+  }
+
+  void loadUser() async {
+    final userData = await userService.loadUserData();
+
+    if (userData.isNotEmpty) {
+      setState(() {
+        this.userData = userData;
+      });
+    } else {
+      debugPrint("❌ 사용자 정보 없음 (재접속)");
+    }
+  }
+
+  void _handleLikeChanged(bool isNowLiked) {
+    setState(() {
+      _isLikedFuture = Future.value(isNowLiked);
+    });
   }
 
   @override
@@ -137,27 +166,27 @@ class _DetailPageState extends State<DetailPage>
               pinned: true,
               backgroundColor: AppColors.lightGreen,
 
-              // actions: [
-              //   IconButton(
-              //     icon: Icon(
-              //       _isLiked ? Icons.favorite : Icons.favorite_border,
-              //       color: _isLiked ? Colors.red : Colors.black,
-              //     ),
-              //     onPressed: () async {
-              //       setState(() => _isLiked = !_isLiked);
-              //       final prefs = await SharedPreferences.getInstance();
-              //       final token = prefs.getString('jwt_token') ?? '';
-              //       bool result = await LikeService()
-              //           .toggleLike(
-              //             "임시유저아이디", placeData['title'], token, _isLiked);
-              //       if (result) {
-              //         //setState(() => _isLiked = !_isLiked);
-              //         debugPrint('_isLiked: $_isLiked');
-              //       }
-              //     },
-              //     tooltip: _isLiked ? '즐겨찾기에서 제거' : '즐겨찾기에 추가',
+              //actions: [
+              //likeService.likeButton(user)
+              // IconButton(
+              //   icon: Icon(
+              //     _isLiked ? Icons.favorite : Icons.favorite_border,
+              //     color: _isLiked ? Colors.red : Colors.black,
               //   ),
-              // ],
+              //   onPressed: () async {
+              //     setState(() => _isLiked = !_isLiked);
+              //     final prefs = await SharedPreferences.getInstance();
+              //     final token = prefs.getString('jwt_token') ?? '';
+              //     bool result = await LikeService().toggleLike(
+              //         userData['_id'], placeData['title'], token, _isLiked);
+              //     if (result) {
+              //       setState(() => _isLiked = !_isLiked);
+              //       debugPrint('_isLiked: $_isLiked');
+              //     }
+              //   },
+              //   tooltip: _isLiked ? '즐겨찾기에서 제거' : '즐겨찾기에 추가',
+              // ),
+              //],
             ),
             SliverOverlapAbsorber(
               handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
@@ -218,7 +247,9 @@ class _DetailPageState extends State<DetailPage>
                     }
                   }),
                   AnalysisTab(data: _matchedPlace!),
-                  ReviewsTab(data: _matchedPlace!),
+                  ReviewsTab(
+                    data: _matchedPlace!,
+                  ),
                   InfoTab(data: _matchedPlace!)
                 ],
               ),
@@ -383,7 +414,7 @@ class InfoSection extends StatelessWidget {
   }
 }
 
-class ImageSection extends StatelessWidget {
+class ImageSection extends StatefulWidget {
   const ImageSection({
     super.key,
     required this.context,
@@ -394,8 +425,13 @@ class ImageSection extends StatelessWidget {
   final Map<String, dynamic> place;
 
   @override
+  State<ImageSection> createState() => _ImageSectionState();
+}
+
+class _ImageSectionState extends State<ImageSection> {
+  @override
   Widget build(BuildContext context) {
-    String imageUrl = place['firstimage'] ?? '';
+    String imageUrl = widget.place['firstimage'] ?? '';
     if (imageUrl.isEmpty) {
       imageUrl = 'https://via.placeholder.com/300x200.png?text=No+Image';
     }

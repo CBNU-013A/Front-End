@@ -3,6 +3,7 @@ import 'package:final_project/pages/review/writeReviewPage.dart';
 import 'package:final_project/services/review_service.dart';
 import 'package:flutter/material.dart';
 import 'package:final_project/styles/styles.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ReviewsTab extends StatefulWidget {
   final Map<String, dynamic> data;
@@ -15,6 +16,8 @@ class ReviewsTab extends StatefulWidget {
 
 class _ReviewsTabState extends State<ReviewsTab> {
   String myReview = '';
+  String myReviewId = '';
+  final prefs = SharedPreferences.getInstance();
 
   @override
   void initState() {
@@ -25,15 +28,25 @@ class _ReviewsTabState extends State<ReviewsTab> {
   Future<void> _loadMyReview() async {
     final reviewService = ReviewService();
     final placeId = widget.data['_id'];
-    final token = widget.data['token'];
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('jwt_token') ?? '';
+    final userId = prefs.getString('userId') ?? '';
 
     try {
-      final result = await reviewService.fetchReviewsByLocation(placeId, token);
-      final myReviewData = result['myReview'];
+      final reviewData = await reviewService.getReviewsByLocation(
+        placeId,
+        token,
+        userId,
+      );
+
       setState(() {
-        myReview = myReviewData != null ? myReviewData['content'] ?? '' : '';
+        myReview = reviewData['content'] ?? '';
+        myReviewId = reviewData['_id'] ?? '';
       });
+
+      debugPrint("📥 내 리뷰: $myReview");
     } catch (e) {
+      debugPrint("❌ 리뷰 불러오기 실패: $e");
       setState(() {
         myReview = '';
       });
@@ -43,13 +56,6 @@ class _ReviewsTabState extends State<ReviewsTab> {
   @override
   Widget build(BuildContext context) {
     final List<dynamic> reviews = widget.data['review'] ?? [];
-
-    if (reviews.isEmpty) {
-      return const Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Text('관련 리뷰가 없습니다.', style: TextStyle(color: Colors.grey)),
-      );
-    }
 
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -119,40 +125,43 @@ class _ReviewsTabState extends State<ReviewsTab> {
 
   Widget _myReview() {
     return Container(
-        alignment: Alignment.centerLeft,
-        padding: const EdgeInsets.all(8),
-        margin: const EdgeInsets.all(2),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: TextButton(
-          onPressed: () async {
-            debugPrint("widget.data['_id']: ${widget.data['_id']}");
+      alignment: Alignment.centerLeft,
+      padding: const EdgeInsets.all(8),
+      margin: const EdgeInsets.all(2),
+      decoration: BoxDecoration(
+        color: Colors.grey[200],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: TextButton(
+        onPressed: () async {
+          debugPrint("widget.data['_id']: ${widget.data['_id']}");
 
-            final result = await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => WriteReviewPage(
-                  placeId: widget.data['_id'],
-                ),
+          final prefs = await SharedPreferences.getInstance();
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => WriteReviewPage(
+                placeId: widget.data['_id'],
+                token: prefs.getString('jwt_token') ?? '',
               ),
-            );
-            if (result != null && result is String) {
-              setState(() {
-                myReview = result;
-              });
-            }
-          },
-          child: (myReview.isEmpty)
-              ? const Text(
-                  "리뷰 작성하기",
-                  style: TextStyle(color: AppColors.deepGrean),
-                )
-              : Text(
-                  myReview,
-                  style: const TextStyle(fontSize: 14, color: Colors.black),
-                ),
-        ));
+            ),
+          );
+          if (result != null && result is String) {
+            setState(() {
+              myReview = result;
+            });
+          }
+        },
+        child: (myReview.isEmpty)
+            ? const Text(
+                "리뷰 작성하기",
+                style: TextStyle(color: AppColors.deepGrean),
+              )
+            : Text(
+                myReview,
+                style: const TextStyle(fontSize: 14, color: Colors.black),
+              ),
+      ),
+    );
   }
 }
