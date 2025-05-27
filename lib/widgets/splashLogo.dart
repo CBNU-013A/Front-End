@@ -1,5 +1,6 @@
 // widgets/splashLogo.dart
 import 'package:final_project/styles/styles.dart';
+import 'package:flutter_svg/svg.dart';
 import '../pages/auth/loginPage.dart';
 import 'package:flutter/material.dart';
 
@@ -22,7 +23,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
       duration: const Duration(seconds: 1), // 애니메이션 지속 시간
     );
 
-    _scaleAnimation = Tween(begin: 1.0, end: 1.5).animate(
+    _scaleAnimation = Tween(begin: 1.0, end: 1.3).animate(
       CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
     );
 
@@ -46,7 +47,7 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
         pageBuilder: (context, animation, secondaryAnimation) =>
             const LoginPage(),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          const begin = Offset(0.0, 1.0); // 시작 위치 (아래에서 위쪽으로)
+          const begin = Offset(0.0, 1.5); // 시작 위치 (아래에서 위쪽으로)
           const end = Offset.zero; // 종료 위치
           const curve = Curves.easeInOut;
 
@@ -74,15 +75,12 @@ class _SplashState extends State<Splash> with SingleTickerProviderStateMixin {
             children: [
               ScaleTransition(
                 scale: _scaleAnimation,
-                child: const Text(
-                  "Welcome! 013A",
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 3.0,
-                      fontFamily: 'Pretendard',
-                      color: AppColors.lightGreen),
-                ),
+                child: SizedBox(
+                    height: 120,
+                    child: SvgPicture.asset(
+                      'assets/Logo.svg',
+                      color: AppColors.lightWhite, // 경로가 맞는지 확인
+                    )),
               ),
             ],
           ),

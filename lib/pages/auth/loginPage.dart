@@ -1,4 +1,4 @@
-// pages/auth/loginPage.dart
+// pages/auth/LoginPage.dart
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:final_project/main.dart';
@@ -6,6 +6,7 @@ import 'package:final_project/services/auth_service.dart';
 import 'package:final_project/pages/home/HomePage.dart';
 import 'package:final_project/pages/auth/RegisterPage.dart';
 import 'package:final_project/styles/styles.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -89,12 +90,18 @@ class _LoginPageState extends State<LoginPage> {
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Expanded(
+            Expanded(
               // 여기에 로고를 넣어요
               child: Center(
-                child: Text("로고를 넣어용"),
+                child: SizedBox(
+                    height: 120,
+                    child: SvgPicture.asset(
+                      'assets/Logo.svg',
+                      color: AppColors.lightWhite, // 경로가 맞는지 확인
+                    )),
               ),
             ),
+
             //이메일 필드
             TextField(
               style: TextFiledStyles.textStlye,
