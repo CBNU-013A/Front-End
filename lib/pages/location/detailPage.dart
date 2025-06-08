@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:final_project/services/location_service.dart';
 import 'package:final_project/services/user_service.dart';
+import 'package:final_project/widgets/like_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:final_project/main.dart';
@@ -151,11 +152,10 @@ class _DetailPageState extends State<DetailPage>
               pinned: true,
               backgroundColor: AppColors.lightGreen,
               actions: [
-                likeService.likeButton(
+                LikeButton(
                   userId: userId,
                   placeId: widget.placeId,
                   token: token,
-                  onLikeChanged: _handleLikeChanged,
                 ),
               ],
             ),
