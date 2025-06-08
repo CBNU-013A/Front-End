@@ -26,7 +26,7 @@ class UserService {
   // 사용자 정보 가져오기 (Shared Preference)
   Future<Map<String, String?>> loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
+    final token = prefs.getString('token');
 
     if (token == null || token.isEmpty) {
       debugPrint("SharedPreferences에서 토큰을 찾을 수 없음");
@@ -129,6 +129,27 @@ class UserService {
       }
     } catch (e) {
       debugPrint("❗ 에러 발생 (resetRecentSearch): $e");
+      return false;
+    }
+  }
+
+  // 🔹 사용자 키워드 업데이트
+  Future<bool> updateUserKeyword(String userId, String subKeywordId) async {
+    try {
+      final response = await http.put(
+        Uri.parse('$baseUrl/api/users/$userId/keywords'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'subKeywordId': subKeywordId}),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        debugPrint("❗ 키워드 업데이트 실패: ${response.statusCode}");
+        return false;
+      }
+    } catch (e) {
+      debugPrint("❗ 에러 발생 (updateUserKeyword): $e");
       return false;
     }
   }
