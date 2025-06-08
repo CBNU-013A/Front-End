@@ -51,7 +51,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   void _checkAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
+    final token = prefs.getString('token');
 
     if (token != null && token.isNotEmpty) {
       Navigator.pushReplacement(

@@ -43,6 +43,7 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
+  // 로그인
   void _login() async {
     String email = emailController.text.trim();
     String password = passwordController.text.trim();

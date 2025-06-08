@@ -1,6 +1,5 @@
-// pages/home/searchPage.dart
+// pages/home/SearchPage.dart
 import 'dart:io';
-
 import 'package:final_project/services/location_service.dart';
 import 'package:final_project/services/user_service.dart';
 import 'package:final_project/styles/styles.dart';
@@ -8,11 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:final_project/widgets/search_bar.dart' as custom;
 import 'package:final_project/pages/location/detailPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-
-import 'package:http/http.dart' as http;
-
 import '../../widgets/BottomNavi.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -28,40 +22,36 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  List<dynamic> allPlaces = []; // 모든 장소 데이터
-  final TextEditingController _controller = TextEditingController();
-  List<Map<String, dynamic>> filteredPlaces = []; // 필터링된 검색 결과
-  List<Map<String, dynamic>> recentsearches = []; // 최근 검색 기록
-
+  final userService = UserService();
+  final locationService = LocationService();
   String userId = '';
   String userName = '';
-  final userService = UserService();
-  final locaitonService = LocationService();
+  String token = '';
+  List<dynamic> allPlaces = [];
+  List<dynamic> filteredPlaces = [];
+  List<dynamic> recentsearches = [];
+  final TextEditingController _controller = TextEditingController();
+  late SharedPreferences prefs;
 
   @override
   void initState() {
     super.initState();
-    loadUser();
-    loadPlace();
+    loadPrefs();
+    loadRecentSearches();
+    loadPlaces();
   }
 
-  void loadUser() async {
-    final userData = await userService.loadUserData();
-
-    if (userData.isNotEmpty) {
-      setState(() {
-        userId = userData['userId'] ?? '';
-        userName = userData['userName'] ?? '';
-
-        loadRecentPlace();
-      });
-    } else {
-      debugPrint("사용자 정보 없음");
-    }
+  Future<void> loadPrefs() async {
+    prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userId = prefs.getString('userId') ?? '';
+      userName = prefs.getString('userName') ?? '';
+      token = prefs.getString('token') ?? '';
+    });
   }
 
-  void loadPlace() async {
-    final placeData = await locaitonService.fetchAllLocations();
+  void loadPlaces() async {
+    final placeData = await locationService.fetchAllLocations();
     if (placeData.isNotEmpty) {
       setState(() {
         allPlaces = placeData;
@@ -71,7 +61,7 @@ class _SearchPageState extends State<SearchPage> {
     }
   }
 
-  void loadRecentPlace() async {
+  void loadRecentSearches() async {
     final placeData = await userService.fetchRecentSearch(userId);
     if (placeData.isNotEmpty) {
       setState(() {
