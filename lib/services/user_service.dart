@@ -82,7 +82,13 @@ class UserService {
           await http.get(Uri.parse('$baseUrl/api/users/$userId/recentsearch'));
 
       if (response.statusCode == 200) {
-        return List<Map<String, dynamic>>.from(json.decode(response.body));
+        final List<dynamic> data = json.decode(response.body);
+        return data
+            .map<Map<String, dynamic>>((item) => {
+                  '_id': item['_id'],
+                  'title': item['title'],
+                })
+            .toList();
       } else {
         debugPrint("❗ 최근 검색어 조회 실패: ${response.statusCode}");
         return [];
