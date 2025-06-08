@@ -37,8 +37,6 @@ class _SearchPageState extends State<SearchPage> {
   void initState() {
     super.initState();
     loadPrefs();
-    loadRecentSearches();
-    loadPlaces();
   }
 
   Future<void> loadPrefs() async {
@@ -48,6 +46,9 @@ class _SearchPageState extends State<SearchPage> {
       userName = prefs.getString('userName') ?? '';
       token = prefs.getString('token') ?? '';
     });
+
+    loadRecentSearches();
+    loadPlaces();
   }
 
   void loadPlaces() async {
@@ -65,7 +66,12 @@ class _SearchPageState extends State<SearchPage> {
     final placeData = await userService.fetchRecentSearch(userId);
     if (placeData.isNotEmpty) {
       setState(() {
-        recentsearches = placeData;
+        recentsearches = placeData
+            .map<Map<String, dynamic>>((item) => {
+                  '_id': item['_id'],
+                  'title': item['title'],
+                })
+            .toList();
       });
     } else {
       ("최근 검색 기록 없음");
