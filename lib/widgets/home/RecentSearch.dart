@@ -36,6 +36,7 @@ class RecentSearchState extends State<RecentSearch> {
   bool isLoading = true;
   String userName = "";
   String userId = "";
+  String token = "";
   Timer? _timer;
   final userService = UserService();
   List<Map<String, dynamic>> recentsearches = []; // 최근 검색 기록
@@ -56,12 +57,14 @@ class RecentSearchState extends State<RecentSearch> {
 // 사용자 데이터 로드 (SharedPreferences에서 불러오기)
   void _loadUser() async {
     final userData = await userService.loadUserData();
+    final prefs = await SharedPreferences.getInstance();
+    final storedToken = prefs.getString('token') ?? '';
 
     if (userData.isNotEmpty) {
       setState(() {
         userId = userData['userId'] ?? '';
         userName = userData['userName'] ?? '';
-
+        token = storedToken;
         loadRecentPlace();
       });
     } else {
@@ -148,8 +151,7 @@ class RecentSearchState extends State<RecentSearch> {
 
                             await userService.deleteRecentSearch(
                                 userId, search['_id'].toString());
-                            await userService.addRecentSearch(
-                                userId, search);
+                            await userService.addRecentSearch(userId, search);
                           },
                           child: ClipRRect(
                             borderRadius: const BorderRadius.vertical(
@@ -158,7 +160,7 @@ class RecentSearchState extends State<RecentSearch> {
                             ),
                             child: Builder(
                               builder: (context) {
-                                final imageUrl = search['firstimage'] as String?;
+                                final imageUrl = search['image'] as String?;
 
                                 return imageUrl != null && imageUrl.isNotEmpty
                                     ? Image.network(

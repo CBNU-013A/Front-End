@@ -87,6 +87,7 @@ class UserService {
             .map<Map<String, dynamic>>((item) => {
                   '_id': item['_id'],
                   'title': item['title'],
+                  'image': item['firstimage']
                 })
             .toList();
       } else {
