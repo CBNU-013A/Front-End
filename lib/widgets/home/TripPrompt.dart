@@ -1,4 +1,5 @@
 // widgets/home/TripPrompt.dart
+import 'package:final_project/pages/recommend/setTripPage.dart';
 import 'package:final_project/styles/styles.dart';
 import 'package:final_project/styles/text_styles.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +18,6 @@ class TripPrompt extends StatefulWidget {
 class _TripPromptState extends State<TripPrompt> {
   @override
   Widget build(BuildContext context) {
-    
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -30,13 +30,23 @@ class _TripPromptState extends State<TripPrompt> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "어디로 떠날까요?",
+              "여행을 떠나볼까요?",
               style: AppTextStyles.sectionTitle,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 5),
             ElevatedButton(
-              onPressed: () => {},
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => setTripPage(
+                      userId: widget.userId,
+                      userName: widget.userName,
+                    ),
+                  ),
+                );
+              },
               style: ButtonStyles.bigButtonStyle(context: context),
               child: Text(
                 "추천 받으러 가기",

@@ -1,5 +1,7 @@
+// services/like_service.dart
 import 'dart:convert';
 import 'dart:io';
+import 'package:final_project/services/location_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -58,6 +60,29 @@ class LikeService {
     }
     return [];
   }
+
+  // Future<List<dynamic>> loadUserLikePlaces(String userId, String token) async {
+  //   final response =
+  //       await http.get(Uri.parse('$baseUrl/api/users/$userId/likes'));
+  //   if (response.statusCode == 200) {
+  //     final data = json.decode(response.body);
+  //     final List<dynamic> likeList = data['likes'];
+  //     final List<dynamic> result = [];
+
+  //     for (var item in likeList) {
+  //       final placeId = item['_id'];'
+  //       try {
+  //         final location = await LocationService().fetchLocation(placeId);
+  //         result.add(location);
+  //       } catch (e) {
+  //         // Optionally log or skip
+  //       }
+  //     }
+
+  //     return result;
+  //   }
+  //   return [];
+  // }
 
   Future<bool> likeLocation(String placeName, String token) async {
     final url = Uri.parse('$baseUrl/api/location/$placeName/likes');

@@ -16,7 +16,8 @@ class UserService {
         await http.get(Uri.parse('$baseUrl/api/users/$userId/keywords'));
 
     if (response.statusCode == 200) {
-      final List<dynamic> fetchedKeywords = json.decode(response.body);
+      final Map<String, dynamic> responseBody = json.decode(response.body);
+      final List<dynamic> fetchedKeywords = responseBody['keywords'];
       return fetchedKeywords.map((k) => k['name'].toString()).toList();
     } else {
       throw Exception('🚨 사용자 키워드 불러오기 실패: ${response.statusCode}');

@@ -38,4 +38,18 @@ class LocationService {
       throw Exception('Failed to load location data: ${response.statusCode}');
     }
   }
+
+  Future<List<Map<String, dynamic>>> fetchLocationsByIds(
+      List<String> placeIds) async {
+    List<Map<String, dynamic>> locations = [];
+    for (final id in placeIds) {
+      try {
+        final location = await fetchLocation(id);
+        locations.add(location);
+      } catch (e) {
+        // ignore: avoid_print
+      }
+    }
+    return locations;
+  }
 }

@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:final_project/services/location_service.dart';
-import 'package:final_project/services/user_service.dart';
 import 'package:final_project/widgets/like_button.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -403,20 +402,46 @@ class _ImageSectionState extends State<ImageSection> {
   @override
   Widget build(BuildContext context) {
     String imageUrl = widget.place['firstimage'] ?? '';
-    if (imageUrl.isEmpty) {
-      imageUrl = 'https://via.placeholder.com/300x200.png?text=No+Image';
+    final double imageHeight = 250.0;
+    final double imageWidth = MediaQuery.of(context).size.width;
+
+    Widget noImagePlaceholder() {
+      return SizedBox(
+        height: imageHeight,
+        width: imageWidth,
+        child: Container(
+          color: Colors.grey[300],
+          alignment: Alignment.center,
+          child: const Text(
+            'No Image',
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.black54,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      );
     }
+
+    if (imageUrl.isEmpty) {
+      return noImagePlaceholder();
+    }
+
     return SizedBox(
-      height: 250.0,
-      width: MediaQuery.of(context).size.width,
+      height: imageHeight,
+      width: imageWidth,
       child: Image.network(
         imageUrl,
-        fit: BoxFit.fill,
-        height: 250.0,
-        width: MediaQuery.of(context).size.width,
+        fit: BoxFit.cover,
+        height: imageHeight,
+        width: imageWidth,
         loadingBuilder: (context, child, loadingProgress) {
           if (loadingProgress == null) return child;
           return const Center(child: CircularProgressIndicator());
+        },
+        errorBuilder: (context, error, stackTrace) {
+          return noImagePlaceholder();
         },
       ),
     );

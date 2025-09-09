@@ -96,7 +96,8 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> fetchedKeywords = json.decode(response.body);
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+        final List<dynamic> fetchedKeywords = responseBody['keywords'];
         debugPrint("✅ 사용자 키워드 불러오기 성공: $fetchedKeywords");
 
         final List<String> selectedIds =
@@ -139,7 +140,13 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
 
       if (response.statusCode == 201) {
         debugPrint("✅ 키워드 추가 성공: $keywordId");
-        await _fetchUserKeywords();
+
+        if (!_selectedKeywords.contains(keywordId)) {
+          setState(() {
+            _selectedKeywords.add(keywordId);
+            _sortKeywords();
+          });
+        }
       } else if (response.statusCode == 409) {
         debugPrint("⚠️ 이미 존재하는 키워드: $keywordId");
         ScaffoldMessenger.of(context).showSnackBar(

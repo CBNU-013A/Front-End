@@ -35,23 +35,30 @@ class RecommendState extends State<Recommend> {
   bool isLoading = true;
   String userName = "";
   String userId = "";
+  String token = "";
   List<String> keywords = [];
 
   @override
   void initState() {
     super.initState();
-    loadUser();
+    _loadUser();
   }
 
-  void loadUser() async {
+  void _loadUser() async {
     final userData = await userService.loadUserData();
+    final prefs = await SharedPreferences.getInstance();
+    final storedToken = prefs.getString('token') ?? '';
+
     if (userData.isNotEmpty) {
       setState(() {
         userId = userData['userId'] ?? '';
         userName = userData['userName'] ?? '';
+        token = storedToken;
         loadUserKeywords();
         loadPlaces();
       });
+    } else {
+      debugPrint("❌ 사용자 정보 없음 (재접속)");
     }
   }
 
@@ -161,7 +168,7 @@ class RecommendState extends State<Recommend> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("사용자 정보 : $userId, $userName, $keywords");
+    //debugPrint("사용자 정보 : $userId, $userName, $keywords");
 
     return Container(
       decoration: BoxDecoration(

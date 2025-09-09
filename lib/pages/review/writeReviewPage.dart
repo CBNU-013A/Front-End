@@ -39,7 +39,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
     final reviewService = ReviewService();
     final placeId = widget.placeId;
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token') ?? '';
+    final token = prefs.getString('token') ?? '';
     final userId = prefs.getString('userId') ?? '';
 
     try {
@@ -76,7 +76,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
 
   void _createReview() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token') ?? '';
+    final token = prefs.getString('token') ?? '';
     final placeId = widget.placeId;
     final newText = _contentController.text.trim();
 
@@ -112,7 +112,7 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
     }
 
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token') ?? '';
+    final token = prefs.getString('token') ?? '';
     final placeId = widget.placeId;
     final newText = _contentController.text.trim();
 
@@ -122,6 +122,9 @@ class _WriteReviewPageState extends State<WriteReviewPage> {
       );
       return;
     }
+
+    // Debug log before updating review
+    debugPrint('🛠️ 리뷰 수정 요청 - ID: $myReviewId, 내용: $newText');
 
     final reviewService = ReviewService();
 

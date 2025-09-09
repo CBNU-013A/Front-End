@@ -1,7 +1,10 @@
 import 'package:final_project/styles/styles.dart';
 import 'package:final_project/widgets/BottomNavi.dart';
 import 'package:final_project/widgets/main_app_bar.dart';
+import 'package:final_project/widgets/profile/MyLikeContainer.dart';
+import 'package:final_project/widgets/profile/MyLocationContainer.dart';
 import 'package:final_project/widgets/profile/MyProfileContainer.dart';
+import 'package:final_project/widgets/profile/MyReviewContainer.dart';
 import 'package:flutter/material.dart';
 
 class Profilepage extends StatefulWidget {
@@ -68,13 +71,14 @@ class _ProfilepageState extends State<Profilepage> {
             //내 정보 컨테이너
 
             const SizedBox(height: 10),
-            const MyProfileContainer(infoTitle: "내가 쓴 리뷰"),
+            const MyReviewContainer(),
+            //const MyReviewContainer(infoTitle: "내가 쓴 리뷰"),
             const SizedBox(height: 10),
-            const MyProfileContainer(infoTitle: "즐겨찾기 항목"),
+            const MyLikeContainer(),
             const SizedBox(height: 10),
-            const MyProfileContainer(infoTitle: "나의 지역"),
-            const SizedBox(height: 10),
-            const MyProfileContainer(infoTitle: "내 정보"),
+            const MyLocationContainer(),
+            // const SizedBox(height: 10),
+            // const MyProfileContainer(infoTitle: "내 정보"),
             // 🧾 버튼들
 
             const SizedBox(height: 30),

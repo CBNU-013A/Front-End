@@ -46,6 +46,7 @@ class ShowKeywordsState extends State<ShowKeywords> {
     try {
       final userService = UserService();
       final selectedKeywords = await userService.fetchUserKeywords(userId);
+      
       if (!mounted) return;
       setState(() {
         keywords = selectedKeywords;

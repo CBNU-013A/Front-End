@@ -45,7 +45,7 @@ class AuthService {
     String formattedBirthdate =
         DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(birthdate);
     final response = await http.post(
-      Uri.parse('$baseUrl/api/auth/register'),
+      Uri.parse('$baseUrl/api/register'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "name": name,
