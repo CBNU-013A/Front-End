@@ -1,8 +1,8 @@
-// widgets/tab_bar.dart
+// widgets/detail/DetailTabBar.dart
 import 'package:flutter/material.dart';
 
-class MyTabbedPage extends StatelessWidget {
-  const MyTabbedPage({super.key});
+class DetailTabBar extends StatelessWidget {
+  const DetailTabBar({super.key});
 
   @override
   Widget build(BuildContext context) {

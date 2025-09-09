@@ -1,7 +1,7 @@
-// pages/recommend/setKeywordsPage.dart
+// widgets/home/setKeywordsPage.dart
 import 'dart:io';
 
-import 'package:final_project/pages/home/homePage.dart';
+import 'package:final_project/pages/home/HomePage.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:final_project/styles/styles.dart';
@@ -13,9 +13,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 final String baseUrl = Platform.isAndroid
     ? 'http://${dotenv.env['BASE_URL']}:8001'
     : 'http://localhost:8001';
-    
+
 class SetKeywordsPage extends StatefulWidget {
-  const SetKeywordsPage({super.key});
+  final String userId;
+  final String userName;
+
+  const SetKeywordsPage(
+      {super.key, required this.userId, required this.userName});
 
   @override
   State<SetKeywordsPage> createState() => _SetKeywordsPageState();
@@ -92,7 +96,8 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
       );
 
       if (response.statusCode == 200) {
-        final List<dynamic> fetchedKeywords = json.decode(response.body);
+        final Map<String, dynamic> responseBody = json.decode(response.body);
+        final List<dynamic> fetchedKeywords = responseBody['keywords'];
         debugPrint("✅ 사용자 키워드 불러오기 성공: $fetchedKeywords");
 
         final List<String> selectedIds =
@@ -135,7 +140,13 @@ class _SetKeywordsPageState extends State<SetKeywordsPage> {
 
       if (response.statusCode == 201) {
         debugPrint("✅ 키워드 추가 성공: $keywordId");
-        await _fetchUserKeywords();
+
+        if (!_selectedKeywords.contains(keywordId)) {
+          setState(() {
+            _selectedKeywords.add(keywordId);
+            _sortKeywords();
+          });
+        }
       } else if (response.statusCode == 409) {
         debugPrint("⚠️ 이미 존재하는 키워드: $keywordId");
         ScaffoldMessenger.of(context).showSnackBar(

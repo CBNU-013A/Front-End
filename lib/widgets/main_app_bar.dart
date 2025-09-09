@@ -6,8 +6,13 @@ import 'package:final_project/styles/text_styles.dart';
 
 class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
+  final List<Widget> actions;
 
-  const MainAppBar({super.key, required this.title});
+  const MainAppBar({
+    super.key,
+    required this.title,
+    required this.actions,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +37,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Text(title, style: AppTextStyles.appBarTitle),
           ),
         ),
+        actions: actions,
       ),
     );
   }

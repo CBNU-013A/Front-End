@@ -1,13 +1,18 @@
 // widgets/BottomNavi.dart
+import 'package:final_project/pages/home/ProfilePage.dart';
 import 'package:flutter/material.dart';
-import '../pages/home/homePage.dart';
-import '../pages/home/favoritePage.dart';
-import '../pages/home/searchPage.dart';
+import '../pages/home/HomePage.dart';
+import '../pages/home/SearchPage.dart';
+import 'package:final_project/pages/home/LikePage.dart';
 
 class BottomNavi extends StatelessWidget {
-  const BottomNavi({super.key});
+  final int currentIndex;
+
+  const BottomNavi({super.key, this.currentIndex = 0});
 
   void _onItemTapped(BuildContext context, int index) {
+    // if (index == currentIndex) return;
+
     switch (index) {
       case 0:
         Navigator.pushReplacement(
@@ -23,19 +28,16 @@ class BottomNavi extends StatelessWidget {
         Navigator.pushReplacement(
           context,
           PageRouteBuilder(
-            pageBuilder: (_, __, ___) => const FavoritePage(),
+            pageBuilder: (_, __, ___) => const Likepage(),
             transitionDuration: Duration.zero,
             reverseTransitionDuration: Duration.zero,
           ),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('즐겨찾기 페이지로 이동해야함.')),
         );
         break;
       case 2:
         Navigator.pushReplacement(
           context,
-         PageRouteBuilder(
+          PageRouteBuilder(
             pageBuilder: (_, __, ___) => const SearchPage(),
             transitionDuration: Duration.zero,
             reverseTransitionDuration: Duration.zero,
@@ -43,9 +45,15 @@ class BottomNavi extends StatelessWidget {
         );
         break;
       case 3:
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('마이페이지로 이동해야함.')),
+        Navigator.pushReplacement(
+          context,
+          PageRouteBuilder(
+            pageBuilder: (_, __, ___) => const Profilepage(),
+            transitionDuration: Duration.zero,
+            reverseTransitionDuration: Duration.zero,
+          ),
         );
+
         break;
     }
   }
@@ -53,6 +61,7 @@ class BottomNavi extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
+      currentIndex: currentIndex,
       type: BottomNavigationBarType.fixed,
       selectedItemColor: Colors.black,
       unselectedItemColor: Colors.grey,

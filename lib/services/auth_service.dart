@@ -12,31 +12,33 @@ final String baseUrl = Platform.isAndroid
     : 'http://localhost:8001';
 
 class AuthService {
+  //로그인 서비스
   Future<bool> login(String email, String password) async {
     final response = await http.post(
       Uri.parse('$baseUrl/api/login'),
       headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": email.trim(), "password": password.trim()}),
+      body: jsonEncode({"email": email, "password": password.trim()}),
     );
     debugPrint("응답 본문: ${response.body}");
     if (response.statusCode == 200) {
+      //로그인 성공
       final data = json.decode(response.body);
-      if (data["message"] == "로그인 성공") {
-        final token = data["token"];
-        final user = data["user"];
 
-        if (token != null) {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setString("jwt_token", token);
-          await prefs.setString("userId", user["_id"] ?? "");
-          await prefs.setString("userName", user["name"] ?? "");
-          debugPrint('${user['_id']}');
-          return true; // 로그인 성공
-        }
+      final token = data["token"]; //토큰 저장
+      final user = data["user"]; //유저 정보 저장
+
+      if (token != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString("token", token); //토큰
+        await prefs.setString("userId", user["_id"] ?? ""); //유저 오브젝트 아이디
+        await prefs.setString("userName", user["name"] ?? ""); //유저 네임
+        await prefs.setString(
+            "userEmail", user["email"] ?? email); //유저 이메일 추가 저장
       }
+      return true;
+    } else {
+      return false; // 로그인 실패
     }
-
-    return false; // 로그인 실패
   }
 
 // 회원가입 API
@@ -45,7 +47,7 @@ class AuthService {
     String formattedBirthdate =
         DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(birthdate);
     final response = await http.post(
-      Uri.parse('$baseUrl/api/auth/register'),
+      Uri.parse('$baseUrl/api/register'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "name": name,
@@ -54,11 +56,6 @@ class AuthService {
         "birthdate": formattedBirthdate,
       }),
     );
-    debugPrint("📌api_service.dart : 회원가입 요청 데이터:");
-    debugPrint("이름: $name");
-    debugPrint("이메일: $email");
-    debugPrint("비밀번호: $password");
-    debugPrint("생년월일: $formattedBirthdate\n");
 
     debugPrint("[회원가입 요청] 서버 응답 코드: ${response.statusCode}");
     debugPrint("[회원가입 요청] 서버 응답 본문: ${response.body}");

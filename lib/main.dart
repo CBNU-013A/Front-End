@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:kakao_flutter_sdk/kakao_flutter_sdk_template.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'pages/home/homePage.dart'; // 홈 페이지
+import 'pages/home/HomePage.dart'; // 홈 페이지
 import 'pages/auth/loginPage.dart';
 import 'widgets/splashLogo.dart'; // 로그인 페이지
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -51,7 +51,7 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
   void _checkAutoLogin() async {
     final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString('jwt_token');
+    final token = prefs.getString('token');
 
     if (token != null && token.isNotEmpty) {
       Navigator.pushReplacement(
