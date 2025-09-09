@@ -23,6 +23,14 @@ class _TripPromptState extends State<TripPrompt> {
         color: Colors.white,
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 10),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),

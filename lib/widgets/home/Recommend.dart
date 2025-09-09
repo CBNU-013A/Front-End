@@ -243,6 +243,14 @@ class RecommendState extends State<Recommend> {
         color: Colors.white,
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 10),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
       child: Column(

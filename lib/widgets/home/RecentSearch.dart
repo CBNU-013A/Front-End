@@ -73,14 +73,22 @@ class RecentSearchState extends State<RecentSearch> {
   }
 
   void loadRecentPlace() async {
-    final placeData = await userService.fetchRecentSearch(userId);
-    if (placeData.isNotEmpty) {
+    try {
+      final placeData = await userService.fetchRecentSearch(userId);
+
       setState(() {
-        recentsearches = placeData;
-        isLoading = false;
+        // placeData가 비어 있거나 null이어도 안전하게 처리
+        recentsearches = (placeData is List)
+            ? placeData.whereType<Map<String, dynamic>>().toList()
+            : <Map<String, dynamic>>[];
+        isLoading = false; // ✅ 항상 로딩 종료
       });
-    } else {
-      debugPrint("최근 검색 기록 없음");
+    } catch (e) {
+      debugPrint("최근 검색 기록 불러오기 실패: $e");
+      setState(() {
+        recentsearches = [];
+        isLoading = false; // ✅ 실패해도 로딩 종료
+      });
     }
   }
 
@@ -89,15 +97,20 @@ class RecentSearchState extends State<RecentSearch> {
     if (isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
-    if (recentsearches.isEmpty) {
-      return const Center(child: Text("최근 검색 기록이 없어요"));
-    }
 
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
         shape: BoxShape.rectangle,
         borderRadius: BorderRadius.circular(10),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 10),
+            spreadRadius: 0,
+          ),
+        ],
       ),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10),
       child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
@@ -106,139 +119,179 @@ class RecentSearchState extends State<RecentSearch> {
           style: AppTextStyles.sectionTitle,
           textAlign: TextAlign.center,
         ),
-        SizedBox(
-          height: 200,
-          width: MediaQuery.of(context).size.width,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: recentsearches.length,
-            controller: _pageController,
-            itemBuilder: (context, index) {
-              final search = recentsearches[index];
-
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
-                child: Container(
-                  height: 171,
-                  width: 160,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: const [
-                      BoxShadow(
-                        color: Colors.grey,
-                        blurRadius: 4,
-                        offset: Offset(0, 4),
-                      )
-                    ],
+        const SizedBox(height: 8),
+        if (recentsearches.isEmpty) ...[
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  // const Icon(Icons.search_off, size: 36, color: Colors.grey),
+                  // const SizedBox(height: 8),
+                  const Text(
+                    "최근 검색 기록이 없어요",
+                    style: TextStyle(fontSize: 14, color: Colors.grey),
                   ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: GestureDetector(
-                          onTap: () async {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailPage(
-                                  placeName: search['title'],
-                                  placeId: search['_id'].toString(),
+                  const SizedBox(height: 12),
+                  // ElevatedButton(
+                  //   onPressed: () {
+                  //     Navigator.pushNamed(context, '/search');
+                  //   },
+                  //   style: ElevatedButton.styleFrom(
+                  //     backgroundColor: AppColors.mainGreen,
+                  //     foregroundColor: Colors.white,
+                  //     padding: const EdgeInsets.symmetric(
+                  //         horizontal: 20, vertical: 10),
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(8),
+                  //     ),
+                  //   ),
+                  //   child: const Text("검색하러 가기"),
+                  // ),
+                ],
+              ),
+            ),
+          ),
+        ] else ...[
+          SizedBox(
+            height: 200,
+            width: MediaQuery.of(context).size.width,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: recentsearches.length,
+              controller: _pageController,
+              itemBuilder: (context, index) {
+                final search = recentsearches[index];
+                return Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 6, vertical: 8),
+                  child: Container(
+                    height: 171,
+                    width: 160,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.grey,
+                          blurRadius: 4,
+                          offset: Offset(0, 4),
+                        )
+                      ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(top: 8.0),
+                          child: GestureDetector(
+                            onTap: () async {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => DetailPage(
+                                    placeName: search['title'],
+                                    placeId: search['_id'].toString(),
+                                  ),
                                 ),
+                              );
+                              await userService.deleteRecentSearch(
+                                  userId, search['_id'].toString());
+                              await userService.addRecentSearch(userId, search);
+                            },
+                            child: ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(15),
+                                bottom: Radius.circular(15),
                               ),
-                            );
-
-                            await userService.deleteRecentSearch(
-                                userId, search['_id'].toString());
-                            await userService.addRecentSearch(userId, search);
-                          },
-                          child: ClipRRect(
-                            borderRadius: const BorderRadius.vertical(
-                              top: Radius.circular(15),
-                              bottom: Radius.circular(15),
-                            ),
-                            child: Builder(
-                              builder: (context) {
-                                final imageUrl = search['image'] as String?;
-
-                                return imageUrl != null && imageUrl.isNotEmpty
-                                    ? Image.network(
-                                        imageUrl,
-                                        height: 140,
-                                        width: 140,
-                                        fit: BoxFit.cover,
-                                        errorBuilder:
-                                            (context, error, stackTrace) =>
-                                                Container(
+                              child: Builder(
+                                builder: (context) {
+                                  final imageUrl = search['image'] as String?;
+                                  return imageUrl != null && imageUrl.isNotEmpty
+                                      ? Image.network(
+                                          imageUrl,
+                                          height: 140,
+                                          width: 140,
+                                          fit: BoxFit.cover,
+                                          errorBuilder:
+                                              (context, error, stackTrace) =>
+                                                  Container(
+                                            height: 140,
+                                            width: 140,
+                                            color: Colors.grey[300],
+                                            child: const Center(
+                                              child: Icon(Icons.broken_image,
+                                                  size: 40, color: Colors.grey),
+                                            ),
+                                          ),
+                                        )
+                                      : Container(
                                           height: 140,
                                           width: 140,
                                           color: Colors.grey[300],
                                           child: const Center(
-                                            child: Icon(Icons.broken_image,
-                                                size: 40, color: Colors.grey),
+                                            child: Text(
+                                              "No Image",
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                color: Colors.grey,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
                                           ),
-                                        ),
-                                      )
-                                    : Container(
-                                        height: 140,
-                                        width: 140,
-                                        color: Colors.grey[300],
-                                        child: const Center(
-                                          child: Icon(Icons.place,
-                                              size: 40, color: Colors.grey),
-                                        ));
-                              },
+                                        );
+                                },
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(16.0, 5, 16.0, 5),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Expanded(
-                              child: GestureDetector(
-                                onTap: () async {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => DetailPage(
-                                        placeName: search['title'],
-                                        placeId: search['_id'].toString(),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16.0, 5, 16.0, 5),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: GestureDetector(
+                                  onTap: () async {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => DetailPage(
+                                          placeName: search['title'],
+                                          placeId: search['_id'].toString(),
+                                        ),
                                       ),
+                                    );
+                                    await userService.deleteRecentSearch(
+                                        userId, search['_id'].toString());
+                                    await userService.addRecentSearch(
+                                        userId, search);
+                                  },
+                                  child: Text(
+                                    search['title'],
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                  );
-
-                                  // 화면 전환 후 백그라운드로 최근 검색 업데이트
-                                  await userService.deleteRecentSearch(
-                                      userId, search['_id'].toString());
-                                  await userService.addRecentSearch(
-                                      userId, search);
-                                },
-                                child: Text(
-                                  search['title'],
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    softWrap: true,
                                   ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: true,
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           ),
-        ),
+        ],
       ]),
     );
   }
