@@ -1,3 +1,4 @@
+// widgets/profile/MyLikeContainer.dart
 import 'package:final_project/pages/location/DetailPage.dart';
 import 'package:final_project/services/like_service.dart';
 import 'package:final_project/services/location_service.dart';
@@ -101,18 +102,19 @@ class _MyLikeContainerState extends State<MyLikeContainer> {
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 margin: const EdgeInsets.only(right: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.mainGreen.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.deepGrean, width: 1.2),
                 ),
                 child: Text(
                   '${likedPlaces.length}개',
                   style: const TextStyle(
                     color: AppColors.deepGrean,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -150,7 +152,6 @@ class _MyLikeContainerState extends State<MyLikeContainer> {
                           );
                           return;
                         }
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -162,25 +163,27 @@ class _MyLikeContainerState extends State<MyLikeContainer> {
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(12, 10, 12, 10),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.favorite,
-                              color: AppColors.errorRed,
-                              size: 18,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 8),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          leading: const Icon(
+                            Icons.favorite,
+                            color: AppColors.errorRed,
+                            size: 18,
+                          ),
+                          title: Text(
+                            placeName,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
                             ),
-                            const SizedBox(width: 6),
-                            Expanded(
-                              child: Text(
-                                placeName,
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                            ),
-                          ],
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          trailing: const Icon(Icons.chevron_right,
+                              color: Colors.grey),
                         ),
                       ),
                     ),
@@ -188,7 +191,7 @@ class _MyLikeContainerState extends State<MyLikeContainer> {
                 );
               },
             ),
-       ],
+        ],
       ),
     );
   }

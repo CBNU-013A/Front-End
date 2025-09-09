@@ -32,6 +32,8 @@ class AuthService {
         await prefs.setString("token", token); //토큰
         await prefs.setString("userId", user["_id"] ?? ""); //유저 오브젝트 아이디
         await prefs.setString("userName", user["name"] ?? ""); //유저 네임
+        await prefs.setString(
+            "userEmail", user["email"] ?? email); //유저 이메일 추가 저장
       }
       return true;
     } else {

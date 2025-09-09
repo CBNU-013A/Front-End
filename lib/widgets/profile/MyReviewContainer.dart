@@ -100,18 +100,19 @@ class _MyReviewContainerState extends State<MyReviewContainer> {
               ),
               Container(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 15, vertical: 2),
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 margin: const EdgeInsets.only(right: 6),
                 decoration: BoxDecoration(
-                  color: AppColors.mainGreen.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  border: Border.all(color: AppColors.deepGrean, width: 1.2),
                 ),
                 child: Text(
                   '${reviews.length}개',
                   style: const TextStyle(
                     color: AppColors.deepGrean,
-                    fontWeight: FontWeight.w600,
-                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
                   ),
                 ),
               ),
@@ -173,7 +174,6 @@ class _MyReviewContainerState extends State<MyReviewContainer> {
                           );
                           return;
                         }
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -185,103 +185,83 @@ class _MyReviewContainerState extends State<MyReviewContainer> {
                         );
                       },
                       child: Padding(
-                        padding: const EdgeInsets.fromLTRB(3, 3, 1, 3),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  content,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 14,
-                                    height: 1.4,
-                                  ),
-                                  textAlign: TextAlign.end,
-                                ),
-                                IconButton(
-                                  icon: Icon(
-                                    Icons.delete_outline,
-                                    color: Colors.grey[400],
-                                    size: 20,
-                                  ),
-                                  onPressed: () async {
-                                    debugPrint(
-                                        '🗑️ 삭제 버튼 클릭 - 리뷰 ID: $reviewId');
-                                    final confirmed = await showDialog<bool>(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: const Text('리뷰 삭제'),
-                                        content:
-                                            const Text('정말로 이 리뷰를 삭제하시겠습니까?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, false),
-                                            child: const Text('취소'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, true),
-                                            child: const Text(
-                                              '확인',
-                                              style:
-                                                  TextStyle(color: Colors.red),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-
-                                    debugPrint('🧾 삭제 확인 결과: $confirmed');
-
-                                    if (confirmed == true) {
-                                      try {
-                                        debugPrint(
-                                            '📡 삭제 요청 전송 중... : ${review['id']}');
-                                        await reviewService.deleteReview(
-                                            review['id'], token);
-                                        debugPrint('✅ 삭제 성공. 리뷰 목록 다시 불러옴.');
-                                        loadUsersReview();
-                                      } catch (e) {
-                                        debugPrint('❌ 삭제 요청 실패: $e');
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                              content:
-                                                  Text("❌ 리뷰 삭제에 실패했습니다.")),
-                                        );
-                                      }
-                                    }
-                                  },
-                                  //padding: EdgeInsets.zero,
-                                  constraints: const BoxConstraints(),
-                                ),
-                              ],
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 8),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 4),
+                          title: Text(
+                            content,
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              height: 1.4,
+                              color: Colors.black87,
                             ),
-                            const SizedBox(height: 1),
-                            Row(
+                          ),
+                          subtitle: Padding(
+                            padding: const EdgeInsets.only(top: 6.0),
+                            child: Row(
                               children: [
                                 const Icon(
                                   Icons.place_outlined,
                                   color: AppColors.mainGreen,
                                   size: 16,
                                 ),
-                                Text(
-                                  location,
-                                  style: const TextStyle(
-                                    color: AppColors.deepGrean,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    location,
+                                    style: const TextStyle(
+                                      color: AppColors.deepGrean,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
                             ),
-                          ],
+                          ),
+                          trailing: IconButton(
+                            tooltip: '삭제',
+                            icon: const Icon(Icons.delete_outline,
+                                color: Colors.grey),
+                            onPressed: () async {
+                              final confirmed = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: const Text('리뷰 삭제'),
+                                  content: const Text('정말로 이 리뷰를 삭제하시겠습니까?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                      child: const Text('취소'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                      child: const Text('확인',
+                                          style: TextStyle(color: Colors.red)),
+                                    ),
+                                  ],
+                                ),
+                              );
+                              if (confirmed == true) {
+                                try {
+                                  await reviewService.deleteReview(
+                                      review['id'], token);
+                                  loadUsersReview();
+                                } catch (e) {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text("❌ 리뷰 삭제에 실패했습니다.")),
+                                  );
+                                }
+                              }
+                            },
+                          ),
                         ),
                       ),
                     ),

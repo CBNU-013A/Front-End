@@ -1,3 +1,4 @@
+// widgets/profile/MyLocationContainer.dart
 import 'package:final_project/pages/location/DetailPage.dart';
 import 'package:final_project/services/like_service.dart';
 import 'package:final_project/services/location_service.dart';
@@ -156,21 +157,27 @@ class _MyLocationContainerState extends State<MyLocationContainer> {
                 ],
               ),
               Container(
-                padding: const EdgeInsets.all(0),
-                // decoration: BoxDecoration(
-                //   color: AppColors.mainGreen.withOpacity(0.1),
-                //   borderRadius: BorderRadius.circular(12),
-                // ),
-                child: TextButton(
-                  onPressed: () async {
+                margin: const EdgeInsets.only(right: 6),
+                child: InkWell(
+                  onTap: () async {
                     await Geolocator.openAppSettings();
                   },
-                  child: const Text(
-                    "설정",
-                    style: TextStyle(
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    height: 28,
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
                       color: AppColors.deepGrean,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 13,
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: const Text(
+                      "설정",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w700,
+                        fontSize: 12,
+                      ),
                     ),
                   ),
                 ),
@@ -182,14 +189,36 @@ class _MyLocationContainerState extends State<MyLocationContainer> {
               padding: const EdgeInsets.symmetric(vertical: 12.0),
               child: _isLoading
                   ? const CircularProgressIndicator()
-                  : Text(
-                      _currentAddress ?? '주소 없음',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.marineBlue,
+                  : Container(
+                      decoration: BoxDecoration(
+                        color: AppColors.lighterGreen.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(
+                          color: AppColors.mainGreen.withOpacity(0.1),
+                          width: 1,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 10, vertical: 8),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          leading: const Icon(
+                            Icons.place_outlined,
+                            color: AppColors.mainGreen,
+                            size: 18,
+                          ),
+                          title: Text(
+                            _currentAddress ?? '주소 없음',
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                      ),
                     ),
             )
         ],

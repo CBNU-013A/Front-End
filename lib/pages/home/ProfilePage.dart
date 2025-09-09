@@ -1,11 +1,11 @@
+// pages/home/ProfilePage.dart
 import 'package:final_project/styles/styles.dart';
 import 'package:final_project/widgets/BottomNavi.dart';
-import 'package:final_project/widgets/main_app_bar.dart';
 import 'package:final_project/widgets/profile/MyLikeContainer.dart';
 import 'package:final_project/widgets/profile/MyLocationContainer.dart';
-import 'package:final_project/widgets/profile/MyProfileContainer.dart';
 import 'package:final_project/widgets/profile/MyReviewContainer.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Profilepage extends StatefulWidget {
   const Profilepage({super.key});
@@ -15,6 +15,23 @@ class Profilepage extends StatefulWidget {
 }
 
 class _ProfilepageState extends State<Profilepage> {
+  String userName = '';
+  String userEmail = '';
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUser();
+  }
+
+  Future<void> _loadUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('userName') ?? '';
+      userEmail = prefs.getString('userEmail') ?? '';
+    });
+  }
+
   Widget _section(String title, List<String> items) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 12),
@@ -62,9 +79,14 @@ class _ProfilepageState extends State<Profilepage> {
               child: Icon(Icons.person, size: 50, color: Colors.grey[600]),
             ),
             const SizedBox(height: 10),
-            const Text('조은지',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            const Text('@joeunji', style: TextStyle(color: Colors.grey)),
+            Text(
+              userName.isNotEmpty ? userName : '사용자',
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            Text(
+              userEmail.isNotEmpty ? '@$userEmail' : '@unknown',
+              style: const TextStyle(color: Colors.grey),
+            ),
 
             const SizedBox(height: 20),
 
