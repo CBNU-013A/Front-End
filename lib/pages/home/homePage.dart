@@ -1,4 +1,4 @@
-// pages/home/homePage.dart
+// pages/home/HomePage.dart
 import 'dart:io';
 import 'package:final_project/widgets/home/ShowPreferences.dart';
 import 'package:final_project/widgets/home/TripPrompt.dart';
@@ -12,6 +12,7 @@ import 'package:final_project/widgets/BottomNavi.dart';
 import 'package:final_project/widgets/home/Recommend.dart';
 import 'package:final_project/services/user_service.dart';
 import 'package:final_project/pages/auth/loginPage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 final String baseUrl = Platform.isAndroid
     ? 'http://${dotenv.env['BASE_URL']}:8001'
@@ -50,6 +51,13 @@ class HomePageState extends State<HomePage> {
 
   void logout() async {
     await userService.logout();
+    // Clear all SharedPreferences except 'savedEmail'
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('savedEmail');
+    await prefs.clear();
+    if (savedEmail != null) {
+      await prefs.setString('savedEmail', savedEmail);
+    }
     // 로그아웃 후 로그인 페이지로 이동 등 추가 처리 가능
     if (mounted) {
       Navigator.pushAndRemoveUntil(
@@ -65,7 +73,7 @@ class HomePageState extends State<HomePage> {
     return Scaffold(
       backgroundColor: AppColors.lighterGreen,
       extendBodyBehindAppBar: false,
-      appBar: MainAppBar(title: '여행지 추천 시스템', actions: [
+      appBar: MainAppBar(title: 'Pik', actions: [
         IconButton(
             icon: const Icon(Icons.logout),
             tooltip: '로그아웃',
@@ -84,9 +92,9 @@ class HomePageState extends State<HomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const SizedBox(height: 20.0),
+                      //const SizedBox(height: 20.0),
                       // ... 님의 주요 여행 취향
-                      ShowPreferences(userName: userName, userId: userId),
+                     // ShowPreferences(userName: userName, userId: userId),
                       const SizedBox(height: 20),
                       // 어디로 떠날까요?
                       TripPrompt(userId: userId, userName: userName),

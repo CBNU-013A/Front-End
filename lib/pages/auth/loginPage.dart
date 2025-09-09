@@ -7,6 +7,10 @@ import 'package:final_project/pages/home/HomePage.dart';
 import 'package:final_project/pages/auth/RegisterPage.dart';
 import 'package:final_project/styles/styles.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:final_project/services/like_service.dart';
+import 'package:final_project/pages/onboarding/RandomLocationPage.dart';
+import 'package:final_project/pages/home/HomePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -63,11 +67,35 @@ class _LoginPageState extends State<LoginPage> {
       } else {
         await prefs.remove('savedEmail');
       }
+      // ✅ 로그인 성공 분기: 좋아요가 없으면 랜덤 선택 페이지, 있으면 홈으로
+      final userId = prefs.getString('userId') ?? '';
+      final token = prefs.getString('token') ?? '';
+      List<dynamic>? likes;
+      try {
+        likes = await LikeService().loadUserLikePlaces(userId, token);
+      } catch (e) {
+        likes = [];
+        debugPrint('❌ 좋아요 조회 실패: $e');
+      }
+
       if (!mounted) return;
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
-      );
+
+      if (likes == null || likes.isEmpty) {
+        // 좋아요 항목이 없을 경우 → 랜덤 선택 페이지
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const RandomLocationPage()),
+          (route) => false,
+        );
+      } else {
+        // 좋아요 항목이 있을 경우 → 홈 화면
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+          (route) => false,
+        );
+      }
+
       rootScaffoldMessengerKey.currentState!.showSnackBar(
         SnackBarStyles.info("😎 로그인 성공!"),
       );

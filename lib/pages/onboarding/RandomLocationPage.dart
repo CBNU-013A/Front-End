@@ -4,7 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../services/random_location_service.dart';
 import '../../services/like_service.dart';
 import '../../styles/styles.dart';
-import 'package:final_project/pages/auth/LoginPage.dart'; // 상단에 추가
+import 'package:final_project/pages/home/HomePage.dart';
 
 class RandomLocationPage extends StatefulWidget {
   const RandomLocationPage({super.key});
@@ -148,7 +148,7 @@ class _RandomLocationPageState extends State<RandomLocationPage> {
                 ),
                 const SizedBox(height: 12),
                 const Text(
-                  "선택이 완료되었습니다!\n로그인 화면으로 이동합니다.",
+                  "관심있는 여행지 선택이 완료되었습니다!\n홈 화면으로 이동합니다.",
                   style: TextStyle(
                       fontSize: 16, color: Colors.black54, height: 1.4),
                   textAlign: TextAlign.center,
@@ -162,7 +162,7 @@ class _RandomLocationPageState extends State<RandomLocationPage> {
                       Navigator.pushAndRemoveUntil(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => const LoginPage()),
+                            builder: (context) => const HomePage()),
                         (route) => false,
                       );
                     },

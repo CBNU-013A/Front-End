@@ -12,6 +12,7 @@ import '../../styles/styles.dart';
 import '../../main.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 final String baseUrl = (Platform.isAndroid || Platform.isIOS)
     ? 'http://172.30.1.72:8001' // 안드로이드
@@ -89,6 +90,50 @@ class _RegisterPageState extends State<RegisterPage> {
     });
   }
 
+  /// 회원가입 직후 자동 로그인 시도해서 토큰 저장
+  Future<void> _loginAndSaveToken(String email, String password) async {
+    final candidates = <String>[
+      '/login',
+    ];
+
+    String? token;
+
+    for (final path in candidates) {
+      try {
+        final uri = Uri.parse('$baseUrl$path');
+        final res = await http.post(
+          uri,
+          headers: {'Content-Type': 'application/json; charset=utf-8'},
+          body: jsonEncode({'email': email, 'password': password}),
+        );
+        if (res.statusCode == 200 || res.statusCode == 201) {
+          final decoded = jsonDecode(utf8.decode(res.bodyBytes));
+          if (decoded is Map) {
+            token = (decoded['token'] ??
+                    decoded['accessToken'] ??
+                    decoded['access_token'])
+                ?.toString();
+          }
+          if (token != null && token!.isNotEmpty) {
+            break;
+          }
+        } else {
+          debugPrint('⚠️ 로그인 시도 실패(${res.statusCode}) on $path: ${res.body}');
+        }
+      } catch (e) {
+        debugPrint('❌ 로그인 요청 오류 on $path: $e');
+      }
+    }
+
+    if (token != null && token!.isNotEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token!);
+      debugPrint('✅ 토큰 저장 완료');
+    } else {
+      debugPrint('❌ 토큰을 얻지 못했습니다. (서버 응답에 토큰 키가 없거나 엔드포인트 불일치)');
+    }
+  }
+
   // 회원가입 요청
   void _register() async {
     // 이메일 입력 확인
@@ -149,6 +194,15 @@ class _RegisterPageState extends State<RegisterPage> {
       rootScaffoldMessengerKey.currentState!.showSnackBar(
         SnackBarStyles.info("😎 회원가입 성공 !"),
       );
+
+      // ✅ 회원가입 성공 시 SharedPreferences에 저장
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(
+          'userId', emailController.text); // or the actual userId returned
+      await prefs.setString('userName', nameController.text);
+
+      // 토큰 자동 로그인으로 저장 시도
+      await _loginAndSaveToken(emailController.text, passwordController.text);
 
       await Future.delayed(const Duration(seconds: 2));
 
