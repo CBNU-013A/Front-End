@@ -1,10 +1,11 @@
-// pages/auth/registerPage.dart
+// pages/auth/RegisterPage.dart
 import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import '../../services/auth_service.dart';
 import 'loginPage.dart';
+import '../onboarding/RandomLocationPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import '../../styles/styles.dart';
@@ -156,7 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
             .hideCurrentSnackBar(); // ✅ 페이지 이동 전 스낵바 숨기기
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const LoginPage()),
+          MaterialPageRoute(builder: (context) => const RandomLocationPage()),
         );
       }
     } else {
